@@ -9,4 +9,4 @@ Route::view('/', 'home')->name('home');
 Route::view('/reserveren', 'reserveren')->name('reserveren');
 
 // Admin Route
-Route::view('/admin', 'admin')->name('admin');
+Route::view('/admin', 'admin/dashboard')->name('admin');

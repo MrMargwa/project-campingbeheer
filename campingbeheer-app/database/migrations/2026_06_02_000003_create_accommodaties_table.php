@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->bigInteger('max_personen');
             $table->decimal('prijs_per_nacht', 10, 2);
             $table->string('afbeelding');
-            $table->boolean('actief');
+            $table->enum('status', ['beschikbaar', 'niet_beschikbaar']);
             $table->timestamp('aangemaakt_op')->useCurrent();
             $table->timestamp('bewerkt_op')->nullable();
         });

@@ -16,7 +16,7 @@ class Accommodatie extends Model
         'max_personen',
         'prijs_per_nacht',
         'afbeelding',
-        'actief',
+        'status',
     ];
 
     public const CREATED_AT = 'aangemaakt_op';

@@ -6,30 +6,29 @@
 @source '../**/*.js';
 
 :root {
-    /* Backgrounds */
-    --primary: #ffffff;
-    --secondary: #f8fafc;
-    --surface: #ffffff;
+  /* Backgrounds */
+    --primary: #F5F7F6;
+    --secondary: #E9ECEB;
+    --surface: #FFFFFF;
 
     /* Accent */
-    --accent: #22c55e;
-    --accent-hover: #16a34a;
+    --accent: #2A6A4E;
+    --accent-hover: #1E4D39;
 
-    /* Text */
-    --text: #111827;
-    --text-muted: #6b7280;
+    /* Tekst */
+    --text: #19201C;
+    --text-muted: #647069;
 
-    /* Borders */
-    --border: #e5e7eb;
+    /* Border */
+    --border: #D1D9D4;
 
-    /* Status */
-    --success: #22c55e;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-
-    /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0,0,0,.05);
-    --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+    /* Info */
+    --success: #2A6A4E;
+    --success-hover: #1E4D39; /* Zelfde als accent-hover voor consistentie */
+    --warning: #C78B32;
+    --warning-hover: #A87326; /* Iets donkerder voor hover */
+    --danger: #BD4C4C;
+    --danger-hover: #9E3E3E;
 }
 
 @layer utilities {
@@ -99,5 +98,17 @@
 
     .hover\:bg-accent-hover:hover {
         background-color: var(--accent-hover);
+    }
+    
+    .hover\:bg-success-hover:hover {
+        background-color: var(--success-hover);
+    }
+
+    .hover\:bg-warning-hover:hover {
+        background-color: var(--warning-hover);
+    }
+
+    .hover\:bg-danger-hover:hover {
+        background-color: var(--danger-hover);
     }
 }
