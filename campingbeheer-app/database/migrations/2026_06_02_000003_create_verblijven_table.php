@@ -6,27 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('verblijven', function (Blueprint $table) {
             $table->id();
-            $table->string('naam');
-            $table->string('email');
-            $table->string('wachtwoord');
-            $table->enum('rol', ['admin', 'gast']);
+            $table->string('titel');
+            $table->string('type');
+            $table->text('beschrijving');
+            $table->bigInteger('max_personen');
+            $table->decimal('prijs_per_nacht', 10, 2);
+            $table->string('afbeelding');
+            $table->boolean('actief');
             $table->timestamp('aangemaakt_op')->useCurrent();
             $table->timestamp('bewerkt_op')->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('verblijven');
     }
 };
