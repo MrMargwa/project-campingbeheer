@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Home Route
+Route::view('/', 'home')->name('home');
+
+// Reserveren Route
+Route::view('/reserveren', 'reserveren')->name('reserveren');
