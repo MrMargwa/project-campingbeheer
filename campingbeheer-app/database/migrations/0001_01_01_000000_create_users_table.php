@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,6 +14,12 @@ return new class extends Migration
             $table->id();
             $table->string('naam');
             $table->string('email');
+            $table->string('telefoonnummer')->nullable();
+            $table->string('postcode')->nullable();
+            $table->integer('huisnummer')->nullable();
+            $table->string('straatnaam')->nullable();
+            $table->string('plaatsnaam')->nullable();
+            $table->string('land')->nullable();
             $table->string('wachtwoord');
             $table->enum('rol', ['admin', 'gast']);
             $table->timestamp('aangemaakt_op')->useCurrent();

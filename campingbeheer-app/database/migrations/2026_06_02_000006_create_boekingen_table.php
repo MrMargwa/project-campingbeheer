@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('boekingen', function (Blueprint $table) {
@@ -13,8 +12,8 @@ return new class extends Migration
             $table->foreignId('gebruiker_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
-            $table->foreignId('verblijf_id')
-                ->constrained('verblijven')
+            $table->foreignId('accommodatie_id')
+                ->constrained('accommodaties')
                 ->cascadeOnDelete();
             $table->date('aankomst_datum');
             $table->date('vertrek_datum');

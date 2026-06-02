@@ -9,7 +9,7 @@ class Boeking extends Model
 {
     protected $fillable = [
         'gebruiker_id',
-        'verblijf_id',
+        'accommodatie_id',
         'aankomst_datum',
         'vertrek_datum',
         'aantal_personen',
@@ -25,8 +25,8 @@ class Boeking extends Model
         return $this->belongsTo(User::class, 'gebruiker_id');
     }
 
-    public function verblijf(): BelongsTo
+    public function accommodatie(): BelongsTo
     {
-        return $this->belongsTo(Verblijf::class, 'verblijf_id');
+        return $this->belongsTo(Accommodatie::class, 'accommodatie_id');
     }
 }

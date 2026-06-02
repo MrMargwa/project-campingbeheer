@@ -5,20 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class VerblijfKenmerk extends Model
+class AccommodatieKenmerk extends Model
 {
-    protected $table = 'verblijf_kenmerk';
+    protected $table = 'accommodatie_kenmerk';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'verblijf_id',
+        'accommodatie_id',
         'kenmerk_id',
     ];
 
-    public function verblijf(): BelongsTo
+    public function accommodatie(): BelongsTo
     {
-        return $this->belongsTo(Verblijf::class, 'verblijf_id');
+        return $this->belongsTo(Accommodatie::class, 'accommodatie_id');
     }
 
     public function kenmerk(): BelongsTo

@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Verblijf extends Model
+class Accommodatie extends Model
 {
     protected $fillable = [
         'titel',
         'type',
         'beschrijving',
+        'min_personen',
         'max_personen',
         'prijs_per_nacht',
         'afbeelding',
@@ -23,11 +24,11 @@ class Verblijf extends Model
 
     public function boekingen(): HasMany
     {
-        return $this->hasMany(Boeking::class, 'verblijf_id');
+        return $this->hasMany(Boeking::class, 'ccommodatie_id');
     }
 
     public function kenmerken(): BelongsToMany
     {
-        return $this->belongsToMany(Kenmerk::class, 'verblijf_kenmerk', 'verblijf_id', 'kenmerk_id');
+        return $this->belongsToMany(Kenmerk::class, 'accommodatie_kenmerk', 'accommodatie_id', 'kenmerk_id');
     }
 }

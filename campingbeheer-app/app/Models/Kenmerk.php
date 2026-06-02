@@ -16,6 +16,6 @@ class Kenmerk extends Model
 
     public function verblijven(): BelongsToMany
     {
-        return $this->belongsToMany(Verblijf::class, 'verblijf_kenmerk', 'kenmerk_id', 'verblijf_id');
+        return $this->belongsToMany(Accommodatie::class, 'accommodatie_kenmerk', 'kenmerk_id', 'accommodatie_id');
     }
 }
