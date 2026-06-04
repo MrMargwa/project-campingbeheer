@@ -38,6 +38,7 @@ class AccommodatieSeeder extends Seeder
                     'max_personen' => rand(4, 10),
                     'prijs_per_nacht' => rand(50, 250),
                     'afbeelding' => strtolower(str_replace(' ', '-', $type)) . '.jpg',
+                    'coords' => null,
                     'status' => 'beschikbaar',
                 ]);
             }

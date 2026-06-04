@@ -1,5 +1,5 @@
-<nav class="bg-primary border-b border-border">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+<nav class="bg-surface border-b border-border">
+    <div class="w-full px-4 md:px-8 lg:px-18">
         <div class="flex items-center justify-between h-16">
 
             <!-- Logo -->
@@ -13,7 +13,7 @@
 
             <!-- Reserveer Knop -->
             <div>
-                <a href="#"
+                <a href="/reserveren"
                     class="bg-accent hover:bg-accent-hover text-white font-medium px-5 py-2 rounded-md transition">
                     Reserveer Nu
                 </a>

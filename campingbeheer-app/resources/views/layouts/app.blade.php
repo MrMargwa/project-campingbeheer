@@ -10,7 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-900">
+<body class="min-h-screen bg-primary text-slate-900">
     @include('partials.nav')
 
     <main class="mx-auto max-w-6xl px-6 py-10 min-h-screen">
@@ -18,6 +18,8 @@
     </main>
 
     @include('partials.footer')
+
+    @yield('scripts')
 </body>
 
 </html>

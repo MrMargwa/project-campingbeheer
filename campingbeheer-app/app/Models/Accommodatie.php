@@ -16,6 +16,7 @@ class Accommodatie extends Model
         'max_personen',
         'prijs_per_nacht',
         'afbeelding',
+        'coords',
         'status',
     ];
 
