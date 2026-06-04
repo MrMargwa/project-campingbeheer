@@ -12,7 +12,13 @@ Route::view('/', 'home')->name('home');
 Route::get('/reserveren', [ReserverenController::class, 'index'])->name('reserveren');
 
 // Admin Route
-Route::view('/admin', 'admin/dashboard')->name('admin');
+Route::get('/admin', function () {
+	return redirect()->route('login');
+})->name('admin');
+
+Route::view('/admin/dashboard', 'admin/dashboard')
+	->middleware(['auth', 'admin'])
+	->name('admin.dashboard');
 
 Route::get('/login', function () {
 	return view('auth.login');
@@ -28,7 +34,7 @@ Route::post('/login', function (Request $request) {
 
 	if (Auth::attempt($credentials)) {
 		$request->session()->regenerate();
-		return redirect()->route('admin')->with('success', 'Welkom terug!');
+		return redirect()->route('admin.dashboard')->with('success', 'Welkom terug!');
 	}
 
 	return back()->withInput($request->only('naam'))->with('error', 'Gebruikersnaam of wachtwoord onjuist. Probeer opnieuw.');
