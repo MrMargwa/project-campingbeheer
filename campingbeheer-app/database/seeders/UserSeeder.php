@@ -25,5 +25,12 @@ class UserSeeder extends Seeder
             "wachtwoord" => bcrypt("password123"),
             "rol" => "admin"
         ]);
+        User::create([
+            "naam" => "kijkinteams",
+            "email" => "kijkinteams@gmail.com",
+            "wachtwoord" => bcrypt("jonge"),
+            "rol" => "admin"
+        ]);
+  
     }
 }
