@@ -24,6 +24,14 @@ Route::get('/login', function () {
 	return view('auth.login');
 })->name('login');
 
+Route::view('/admin/accommodatie', 'admin.accommodatie.index')
+	->middleware(['auth', 'admin'])
+	->name('admin.accommodatie.index');
+
+Route::view('/admin/planbord', 'planbord.index')
+	->middleware(['auth', 'admin'])
+	->name('admin.planbord.index');
+
 Route::post('/login', function (Request $request) {
 	$request->validate([
 		'naam' => 'required|string',

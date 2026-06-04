@@ -3,38 +3,41 @@
 @section('title', 'Login Dashboard')
 
 @section('content')
-    <section>
-        <div class="max-w-md mx-auto border border-gray-300 rounded-lg p-6 bg-white shadow-sm">
-            {{-- Hier komt de Login --}}
-            <h1 class="text-center text-6xl mb-6">login</h1>
+    <section class="flex min-h-[calc(100vh-14rem)] items-start justify-center pt-16">
+        <div class="w-full max-w-xl">
+            <div class="rounded-xl border border-border bg-surface p-10 shadow-sm">
+                <h2 class="mb-15 text-center text-xl font-semibold text-primary sm:text-4xl">Inloggen</h2>
 
-            <form id="login-form" method="POST" action="{{ route('login') }}" class="flex flex-col items-center space-y-4">
-                @csrf
+                <form id="login-form" method="POST" action="{{ route('login') }}" class="space-y-4">
+                    @csrf
 
-                @if(session('error'))
-                    <div class="w-full text-red-600 mb-2">{{ session('error') }}</div>
-                @endif
-                @if(session('success'))
-                    <div class="w-full text-green-600 mb-2">{{ session('success') }}</div>
-                @endif
-                <div class="w-full">
-                    <label for="naam" class="block text-sm font-medium mb-1">Naam</label>
-                    <input type="text" id="naam" name="naam" class="w-full border border-gray-300 rounded px-3 py-2" />
-                </div>
+                    @if(session('error'))
+                        <div class="rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">{{ session('error') }}</div>
+                    @endif
+                    @if(session('success'))
+                        <div class="rounded-lg bg-success/10 px-4 py-3 text-sm text-success">{{ session('success') }}</div>
+                    @endif
 
-                <div class="w-full">
-                    <label for="password" class="block text-sm font-medium mb-1">Wachtwoord</label>
-                    <input type="password" id="password" name="password"
-                        class="w-full border border-gray-300 rounded px-3 py-2" />
-                </div>
+                    <div>
+                        <label for="naam" class="mb-1 block text-xs font-medium text-primary">Naam</label>
+                        <input type="text" id="naam" name="naam"
+                            class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary" />
+                    </div>
 
-                <div>
-                    <button id="btn-login"
-                        class="text-2xl bg-accent text-white px-6 py-2 rounded hover:bg-accent-hover">Inloggen</button>
-                </div>
+                    <div>
+                        <label for="password" class="mb-1 block text-xs font-medium text-primary">Wachtwoord</label>
+                        <input type="password" id="password" name="password"
+                            class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary" />
+                    </div>
 
-                <div id="login-message" class="mt-4 text-sm text-green-600 hidden"></div>
-            </form>
+                    <div class="pt-2">
+                        <button id="btn-login"
+                            class="w-full rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-hover">Inloggen</button>
+                    </div>
+
+                    <div id="login-message" class="hidden text-center text-sm text-success"></div>
+                </form>
+            </div>
         </div>
     </section>
 @endsection
@@ -52,17 +55,16 @@
                 const naam = document.getElementById('naam').value.trim();
                 const ww = document.getElementById('password').value.trim();
 
-                msg.classList.remove('text-red-600', 'text-green-600', 'hidden');
+                msg.classList.remove('text-danger', 'text-success', 'hidden');
 
                 if (!naam || !ww) {
                     msg.textContent = 'Vul zowel naam als wachtwoord in.';
-                    msg.classList.add('text-red-600');
+                    msg.classList.add('text-danger');
                     return;
                 }
 
-                // Submit the form to let the server authenticate
                 msg.textContent = 'Inloggen...';
-                msg.classList.add('text-green-600');
+                msg.classList.add('text-success');
                 document.getElementById('login-form').submit();
             });
         })();
