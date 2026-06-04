@@ -4,7 +4,6 @@
 
 @section('content')
     <section>
-
         {{-- Hier komt de homepagina --}}
     </section>
 @endsection
