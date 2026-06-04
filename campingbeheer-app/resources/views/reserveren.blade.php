@@ -14,19 +14,12 @@
     <section class="flex flex-col lg:flex-row gap-8">
         {{-- Links: Plattegrond --}}
         <div class="flex-1">
-            <div class="relative bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
-                <img src="{{ asset('images/plattegrond.png') }}" usemap="#plattegrond" alt="Plattegrond camping"
-                    class="w-full h-auto" id="kaart-img">
+            <div class="relative bg-surface rounded-xl shadow-sm border border-border overflow-hidden" id="kaart-container">
+                <img src="{{ asset('images/plattegrond.png') }}" alt="Plattegrond camping" class="w-full h-auto"
+                    id="kaart-img">
 
-                <map name="plattegrond" id="plattegrond-map">
-                    @foreach ($accommodaties as $accommodatie)
-                        <area shape="rect" coords="0,0,0,0" data-id="{{ $accommodatie->id }}"
-                            data-type="{{ $accommodatie->type }}" data-status="{{ $accommodatie->status }}"
-                            data-titel="{{ $accommodatie->titel }}" data-prijs="{{ $accommodatie->prijs_per_nacht }}"
-                            data-min="{{ $accommodatie->min_personen }}" data-max="{{ $accommodatie->max_personen }}"
-                            href="#" data-orig-coords="{{ $accommodatie->coords ?? '0,0,0,0' }}">
-                    @endforeach
-                </map>
+                {{-- Dots overlay --}}
+                <div id="dots-overlay" class="absolute inset-0"></div>
 
                 {{-- Tooltip --}}
                 <div id="tooltip"
@@ -47,10 +40,10 @@
             {{-- Geselecteerde accommodatie info --}}
             <div id="geselecteerd-info" class="mt-6 hidden">
                 <div class="p-4 bg-surface border border-border rounded-xl shadow-sm">
-                    <div class="flex items-start justify-between">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
                         <div>
                             <h3 class="text-lg font-semibold text-primary" id="sel-titel"></h3>
-                            <p class="text-sm text-muted" id="sel-type"></p>
+                            <p class="text-sm text-muted capitalize" id="sel-type"></p>
                             <p class="text-sm text-muted mt-1" id="sel-beschrijving"></p>
                             <p class="text-sm mt-2">
                                 <span class="text-muted" id="sel-personen"></span>
@@ -58,7 +51,7 @@
                                 <span class="font-semibold text-accent" id="sel-prijs"></span>
                             </p>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-sm font-medium" id="sel-status-badge"></span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium self-start" id="sel-status-badge"></span>
                     </div>
                     <button id="sel-reserveer-btn"
                         class="mt-4 w-full bg-accent hover:bg-accent-hover text-white font-medium px-5 py-2.5 rounded-lg transition text-sm hidden">
@@ -73,7 +66,6 @@
             <div class="bg-surface border border-border rounded-xl shadow-sm p-5 sticky top-6">
                 <h2 class="font-semibold text-primary mb-4">Filter</h2>
 
-                {{-- Type filter --}}
                 <div class="space-y-2 mb-6" id="filter-types">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="radio" name="filter-type" value="alle" checked class="accent-accent">
@@ -82,7 +74,6 @@
                     </label>
                 </div>
 
-                {{-- Status filter --}}
                 <div class="mb-6">
                     <h3 class="text-sm font-medium text-primary mb-2">Status</h3>
                     <select id="filter-status"
@@ -93,7 +84,6 @@
                     </select>
                 </div>
 
-                {{-- Resultaat telling --}}
                 <div class="border-t border-border pt-4">
                     <p class="text-sm text-muted" id="resultaat-telling"></p>
                 </div>
@@ -102,28 +92,41 @@
     </section>
 @endsection
 
+
 @section('scripts')
     <script>
         (function() {
+            // ============================================================
+            // ZONE POLYGONEN — overgenomen van image-map.net
+            // ============================================================
+            const ZONES = {
+                'Blokhut': [331, 333, 230, 391, 363, 649, 499, 604],
+                'Camperplaats': [554, 239, 768, 38, 1005, 400, 937, 499, 866, 672],
+                'Vakantiewoning': [418, 425, 537, 348, 612, 461, 494, 537],
+                'Safaritent': [491, 68, 583, 201, 759, 30, 709, -1],
+                'Chalet': [487, 75, 575, 203, 342, 322, 274, 205],
+            };
+
             const accommodaties = @json($accommodaties);
             const types = [...new Set(accommodaties.map(a => a.type))];
-            const areas = document.querySelectorAll('#plattegrond-map area');
+            const overlay = document.getElementById('dots-overlay');
             const img = document.getElementById('kaart-img');
+            const container = document.getElementById('kaart-container');
             const tooltip = document.getElementById('tooltip');
             const tooltipContent = document.getElementById('tooltip-content');
             const placeholderMsg = document.getElementById('placeholder-msg');
             const geselecteerdDiv = document.getElementById('geselecteerd-info');
-
-            // Filter elementen
-            const filterTypeRadios = document.querySelectorAll('input[name="filter-type"]');
             const filterStatusSelect = document.getElementById('filter-status');
             const resultaatTelling = document.getElementById('resultaat-telling');
-
-            // ---- Filter types opbouwen ----
             const filterTypesDiv = document.getElementById('filter-types');
             const aantalAlleSpan = document.getElementById('aantal-alle');
-            aantalAlleSpan.textContent = accommodaties.length;
 
+            let imgW = 0,
+                imgH = 0; // natural dimensions
+            let dots = [];
+
+            // ---- Filter types opbouwen ----
+            aantalAlleSpan.textContent = accommodaties.length;
             types.forEach(type => {
                 const label = document.createElement('label');
                 label.className = 'flex items-center gap-2 cursor-pointer';
@@ -135,42 +138,139 @@
             `;
                 filterTypesDiv.appendChild(label);
             });
+            const filterTypeRadios = document.querySelectorAll('input[name="filter-type"]');
 
-            // ---- Image map coördinaten schalen ----
-            function schaalCoordinaten() {
-                if (!img || !img.naturalWidth) return;
-                const scaleX = img.clientWidth / img.naturalWidth;
-                const scaleY = img.clientHeight / img.naturalHeight;
+            // ---- Hulpfuncties ----
+            function perType(type) {
+                return accommodaties.filter(a => a.type === type);
+            }
 
-                areas.forEach(area => {
-                    const orig = area.dataset.origCoords || '0,0,0,0';
-                    area.dataset.origCoords = orig;
-                    const coords = orig.split(',').map(Number);
-                    if (coords.length === 4) {
-                        area.coords = [
-                            Math.round(coords[0] * scaleX),
-                            Math.round(coords[1] * scaleY),
-                            Math.round(coords[2] * scaleX),
-                            Math.round(coords[3] * scaleY),
-                        ].join(',');
+            // ---- Point-in-polygon (ray casting) ----
+            function isInPolygon(px, py, poly) {
+                let inside = false;
+                for (let i = 0, j = poly.length - 2; i < poly.length; j = i, i += 2) {
+                    const xi = poly[i],
+                        yi = poly[i + 1];
+                    const xj = poly[j],
+                        yj = poly[j + 1];
+                    if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) {
+                        inside = !inside;
                     }
+                }
+                return inside;
+            }
+
+            // ---- Random punt in polygoon (rejection sampling) ----
+            function randomPuntInPolygoon(poly, maxPogingen) {
+                const xs = [],
+                    ys = [];
+                for (let i = 0; i < poly.length; i += 2) {
+                    xs.push(poly[i]);
+                    ys.push(poly[i + 1]);
+                }
+                const minX = Math.min(...xs),
+                    maxX = Math.max(...xs);
+                const minY = Math.min(...ys),
+                    maxY = Math.max(...ys);
+                const cx = (minX + maxX) / 2;
+                const cy = (minY + maxY) / 2;
+
+                for (let poging = 0; poging < maxPogingen; poging++) {
+                    const px = minX + Math.random() * (maxX - minX);
+                    const py = minY + Math.random() * (maxY - minY);
+                    if (isInPolygon(px, py, poly)) {
+                        return {
+                            x: Math.round(px),
+                            y: Math.round(py)
+                        };
+                    }
+                }
+                return {
+                    x: Math.round(cx),
+                    y: Math.round(cy)
+                };
+            }
+
+            // ---- Random punten in polygoon genereren ----
+            function verdeelPunten(type, aantal) {
+                const poly = ZONES[type];
+                if (!poly) return [];
+
+                const punten = [];
+                for (let i = 0; i < aantal; i++) {
+                    const p = randomPuntInPolygoon(poly, 100);
+                    punten.push(p);
+                }
+                return punten;
+            }
+
+            // ---- Dots aanmaken ----
+            function maakDots() {
+                overlay.innerHTML = '';
+                dots = [];
+
+                if (!imgW || !imgH) return;
+
+                types.forEach(type => {
+                    const items = perType(type);
+                    if (items.length === 0) return;
+                    const punten = verdeelPunten(type, items.length);
+
+                    items.forEach((acc, i) => {
+                        const p = punten[i] || {
+                            x: 50,
+                            y: 50
+                        };
+                        const pctX = (p.x / imgW) * 100;
+                        const pctY = (p.y / imgH) * 100;
+
+                        const dot = document.createElement('div');
+                        const kleur = acc.status === 'beschikbaar' ? 'bg-green-500' : 'bg-red-500';
+                        dot.className =
+                            `dot absolute w-3.5 h-3.5 -ml-[7px] -mt-[7px] rounded-full ${kleur} border-2 border-white shadow-md cursor-pointer transition-transform hover:scale-150 hover:z-10`;
+                        dot.style.left = pctX + '%';
+                        dot.style.top = pctY + '%';
+
+                        dot.dataset.id = acc.id;
+                        dot.dataset.type = acc.type;
+                        dot.dataset.status = acc.status;
+                        dot.dataset.titel = acc.titel;
+                        dot.dataset.prijs = acc.prijs_per_nacht;
+                        dot.dataset.min = acc.min_personen;
+                        dot.dataset.max = acc.max_personen;
+                        dot.dataset.beschrijving = acc.beschrijving || '';
+
+                        dot.addEventListener('mouseenter', toonTooltip);
+                        dot.addEventListener('mouseleave', verbergTooltip);
+                        dot.addEventListener('mousemove', verplaatsTooltip);
+                        dot.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            selecteerAccommodatie(acc);
+                        });
+
+                        overlay.appendChild(dot);
+                        dots.push(dot);
+                    });
                 });
+
+                pasFilterToe();
             }
 
             // ---- Tooltip ----
-            function toonTooltip(e, data) {
-                const statusLabel = data.dataset.status === 'beschikbaar' ? 'Vrij' : 'Bezet';
-                const statusClass = data.dataset.status === 'beschikbaar' ? 'text-accent bg-accent/10' :
+            function toonTooltip(e) {
+                const d = e.currentTarget.dataset;
+                const statusLabel = d.status === 'beschikbaar' ? 'Vrij' : 'Bezet';
+                const statusClass = d.status === 'beschikbaar' ? 'text-accent bg-accent/10' :
                     'text-danger bg-danger/10';
-                const prijs = parseFloat(data.dataset.prijs).toFixed(2);
+                const prijs = parseFloat(d.prijs).toFixed(2);
 
                 tooltipContent.innerHTML = `
                 <div class="flex items-center justify-between mb-1">
-                    <strong class="text-sm text-primary">${data.dataset.titel}</strong>
+                    <strong class="text-sm text-primary">${d.titel}</strong>
                     <span class="text-xs px-2 py-0.5 rounded-full font-medium ${statusClass}">${statusLabel}</span>
                 </div>
-                <p class="text-xs text-muted mb-1">${data.dataset.type}</p>
-                <p class="text-xs text-muted">${data.dataset.min}-${data.dataset.max} personen</p>
+                <p class="text-xs text-muted capitalize">${d.type}</p>
+                <p class="text-xs text-muted">${d.min}-${d.max} personen</p>
                 <p class="text-sm font-semibold text-accent mt-1">&euro;${prijs} <span class="text-xs text-muted font-normal">/ nacht</span></p>
             `;
                 tooltip.classList.remove('hidden');
@@ -192,10 +292,7 @@
             }
 
             // ---- Selecteer accommodatie ----
-            function selecteerAccommodatie(id) {
-                const acc = accommodaties.find(a => a.id == id);
-                if (!acc) return;
-
+            function selecteerAccommodatie(acc) {
                 document.getElementById('sel-titel').textContent = acc.titel;
                 document.getElementById('sel-type').textContent = acc.type;
                 document.getElementById('sel-beschrijving').textContent = acc.beschrijving || '';
@@ -223,27 +320,23 @@
                 });
             }
 
-            // ---- Filter toepassen ----
+            // ---- Filter ----
             function pasFilterToe() {
-                const selectedType = document.querySelector('input[name="filter-type"]:checked').value;
+                const selectedType = document.querySelector('input[name="filter-type"]:checked')?.value || 'alle';
                 const selectedStatus = filterStatusSelect.value;
 
                 let getoondeCount = 0;
 
-                areas.forEach((area, index) => {
-                    const acc = accommodaties[index];
+                dots.forEach(dot => {
+                    const acc = accommodaties.find(a => a.id == dot.dataset.id);
                     if (!acc) return;
 
                     const matchType = selectedType === 'alle' || acc.type === selectedType;
                     const matchStatus = selectedStatus === 'alle' || acc.status === selectedStatus;
                     const toon = matchType && matchStatus;
 
-                    if (toon) {
-                        area.style.display = '';
-                        getoondeCount++;
-                    } else {
-                        area.style.display = 'none';
-                    }
+                    dot.style.display = toon ? '' : 'none';
+                    if (toon) getoondeCount++;
                 });
 
                 resultaatTelling.textContent = getoondeCount === 1 ?
@@ -252,35 +345,25 @@
             }
 
             // ---- Events ----
-            areas.forEach(area => {
-                area.addEventListener('mouseenter', toonTooltip);
-                area.addEventListener('mouseleave', verbergTooltip);
-                area.addEventListener('mousemove', verplaatsTooltip);
-                area.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    selecteerAccommodatie(this.dataset.id);
-                });
-            });
-
-            filterTypeRadios.forEach(radio => {
-                radio.addEventListener('change', pasFilterToe);
-            });
+            filterTypeRadios.forEach(r => r.addEventListener('change', pasFilterToe));
             filterStatusSelect.addEventListener('change', pasFilterToe);
 
-            // ---- Init bij laden ----
-            if (img.complete && img.naturalWidth > 0) {
+            // ---- Init ----
+            function init() {
+                if (!img.complete || !img.naturalWidth) {
+                    img.addEventListener('load', init);
+                    return;
+                }
+
+                imgW = img.naturalWidth;
+                imgH = img.naturalHeight;
+
                 if (placeholderMsg) placeholderMsg.style.display = 'none';
-                schaalCoordinaten();
-                pasFilterToe();
-            } else {
-                img.addEventListener('load', function() {
-                    if (placeholderMsg) placeholderMsg.style.display = 'none';
-                    schaalCoordinaten();
-                    pasFilterToe();
-                });
+                maakDots();
             }
 
-            window.addEventListener('resize', schaalCoordinaten);
+            init();
+            window.addEventListener('resize', () => {}); // dots use %, no recalculation needed
         })();
     </script>
 @endsection

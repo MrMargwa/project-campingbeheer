@@ -113,7 +113,7 @@
 
 @section('scripts')
     <script>
-        (function () {
+        (function() {
             const personenSelect = document.getElementById('filter-personen');
             const typeSelect = document.getElementById('filter-type');
             const kenmerkenSelect = document.getElementById('filter-kenmerken');
@@ -229,7 +229,8 @@
 
                 filterMessage.classList.add('hidden');
                 resultsWrapper.classList.remove('hidden');
-                resultsCount.textContent = visibleCount === 1 ? '1 chalet gevonden' : `${visibleCount} chalets gevonden`;
+                resultsCount.textContent = visibleCount === 1 ? '1 chalet gevonden' :
+                `${visibleCount} chalets gevonden`;
                 noResults.classList.toggle('hidden', visibleCount > 0);
                 noResults.textContent = visibleCount > 0 ? '' : 'Geen chalets gevonden met deze filters.';
             }

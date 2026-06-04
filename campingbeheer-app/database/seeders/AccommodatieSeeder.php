@@ -14,16 +14,11 @@ class AccommodatieSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            'Chalet' => 6,
-            'Blokhut' => 12,
-            'Camperplaats' => 20,
-            'Safaritent' => 8,
-            'Stacaravan' => 10,
-            'Lodge' => 4,
-            'Tiny House' => 5,
-            'Bungalow' => 7,
-            'Trekkershut' => 15,
-            'Vakantiewoning' => 3,
+            'Chalet' => 8,
+            'Blokhut' => 10,
+            'Camperplaats' => 16,
+            'Safaritent' => 9,
+            'Vakantiewoning' => 7,
         ];
 
         foreach ($types as $type => $aantal) {
@@ -38,7 +33,6 @@ class AccommodatieSeeder extends Seeder
                     'max_personen' => rand(4, 10),
                     'prijs_per_nacht' => rand(50, 250),
                     'afbeelding' => strtolower(str_replace(' ', '-', $type)) . '.jpg',
-                    'coords' => null,
                     'status' => 'beschikbaar',
                 ]);
             }
