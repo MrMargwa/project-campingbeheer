@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('accommodatie_id')
                 ->nullable()
-                ->constrained('accommodatie')
+                ->constrained('accommodaties')
                 ->nullOnDelete();
             $table->foreignId('kenmerk_id')
                 ->constrained('kenmerken')

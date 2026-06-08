@@ -24,7 +24,7 @@ class Accommodatie extends Model
 
     public function boekingen(): HasMany
     {
-        return $this->hasMany(Boeking::class, 'ccommodatie_id');
+        return $this->hasMany(Boeking::class, 'accommodatie_id');
     }
 
     public function kenmerken(): BelongsToMany

@@ -1,12 +1,20 @@
 <?php
 
 use App\Http\Controllers\ReserverenController;
+use App\Models\Accommodatie;
+use App\Models\Kenmerk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Home Route
-Route::view('/', 'home')->name('home');
+Route::get('/', function () {
+    $accommodaties = Accommodatie::with('kenmerken')->get();
+    $types = Accommodatie::select('type')->distinct()->pluck('type');
+    $kenmerken = Kenmerk::all();
+
+    return view('home', compact('accommodaties', 'types', 'kenmerken'));
+})->name('home');
 
 // Reserveren Route
 Route::get('/reserveren', [ReserverenController::class, 'index'])->name('reserveren');
