@@ -1,0 +1,819 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687045,
+                    53.096667
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 1"
+            },
+            "id": "pRMJU"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687159,
+                    53.09671
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 2"
+            },
+            "id": "5Kq2p"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687274,
+                    53.096744
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 3"
+            },
+            "id": "boJMu"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687112,
+                    53.096587
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 4"
+            },
+            "id": "tysHQ"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687233,
+                    53.096624
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 5"
+            },
+            "id": "wXUNP"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687345,
+                    53.096646
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 6"
+            },
+            "id": "iU1uw"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687184,
+                    53.096515
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 7"
+            },
+            "id": "FyJed"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687292,
+                    53.096536
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 8"
+            },
+            "id": "DOGBr"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687418,
+                    53.096569
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 9"
+            },
+            "id": "qq9Y4"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687257,
+                    53.096432
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 10"
+            },
+            "id": "ul0i3"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687369,
+                    53.096456
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 11"
+            },
+            "id": "qIrrA"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687513,
+                    53.096477
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 12"
+            },
+            "id": "kVBFi"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687318,
+                    53.096359
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 13"
+            },
+            "id": "seWeh"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687442,
+                    53.096378
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 14"
+            },
+            "id": "vJgP2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687595,
+                    53.096406
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 15"
+            },
+            "id": "OGShA"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687379,
+                    53.096281
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 16"
+            },
+            "id": "Zt5vI"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687509,
+                    53.096312
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 17"
+            },
+            "id": "NfcZx"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687643,
+                    53.096339
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Blokhut 18"
+            },
+            "id": "0vPsw"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688182,
+                    53.096949
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 1"
+            },
+            "id": "hxJQo"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688268,
+                    53.097062
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 2"
+            },
+            "id": "utw6g"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688437,
+                    53.097145
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 3"
+            },
+            "id": "F1rbu"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688348,
+                    53.096789
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 4"
+            },
+            "id": "nKxNN"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688469,
+                    53.096928
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 5"
+            },
+            "id": "h7BdY"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688619,
+                    53.097012
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 6"
+            },
+            "id": "gylw2"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688536,
+                    53.096632
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 7"
+            },
+            "id": "1PnDG"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688724,
+                    53.096701
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 8"
+            },
+            "id": "DB6jv"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688845,
+                    53.09683
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 9"
+            },
+            "id": "XyA7p"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688724,
+                    53.096495
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 10"
+            },
+            "id": "rrVh5"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.689059,
+                    53.096677
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Camping 11"
+            },
+            "id": "NdCR6"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687214,
+                    53.096951
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Chalet 1"
+            },
+            "id": "cYXzF"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687455,
+                    53.097018
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Chalet 2"
+            },
+            "id": "xdDz1"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687691,
+                    53.097105
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Chalet 3"
+            },
+            "id": "i4UhN"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687359,
+                    53.096825
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Chalet 4"
+            },
+            "id": "QRrbV"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687592,
+                    53.096894
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Chalet 5"
+            },
+            "id": "uVq6m"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687844,
+                    53.096954
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Chalet 6"
+            },
+            "id": "IBT0N"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.686935,
+                    53.097229
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 1"
+            },
+            "id": "Ly2pr"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687251,
+                    53.097324
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 2"
+            },
+            "id": "wjV3Z"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687514,
+                    53.097395
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 3"
+            },
+            "id": "xOb0k"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687766,
+                    53.097511
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 4"
+            },
+            "id": "ZWccT"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688002,
+                    53.097611
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 5"
+            },
+            "id": "Ce0qY"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687112,
+                    53.097029
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 6"
+            },
+            "id": "XbwWa"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687375,
+                    53.097126
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 7"
+            },
+            "id": "aqC9i"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687748,
+                    53.097221
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 8"
+            },
+            "id": "4qXCU"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687994,
+                    53.097331
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 9"
+            },
+            "id": "xjeHq"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688185,
+                    53.097439
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 10"
+            },
+            "id": "8MRry"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687938,
+                    53.09705
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 12"
+            },
+            "id": "DeBOu"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688158,
+                    53.097171
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 13"
+            },
+            "id": "9cR22"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.688324,
+                    53.097295
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Safaritent 14"
+            },
+            "id": "iNSZC"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687579,
+                    53.096599
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Vakantiehuis 1"
+            },
+            "id": "wOa9z"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687723,
+                    53.096453
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Vakantiehuis 2"
+            },
+            "id": "2NUcI"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687962,
+                    53.096554
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Vakantiehuis 3"
+            },
+            "id": "gyZX4"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687807,
+                    53.096699
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Vakantiehuis 4"
+            },
+            "id": "7vBsb"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.687812,
+                    53.096833
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Vakantiehuis 5"
+            },
+            "id": "e2Fak"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    5.68742,
+                    53.096727
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "name": "Vakantiehuis 6"
+            },
+            "id": "FRqp5"
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            5.688622,
+                            53.09602
+                        ],
+                        [
+                            5.688611,
+                            53.096106
+                        ],
+                        [
+                            5.688606,
+                            53.096171
+                        ],
+                        [
+                            5.688579,
+                            53.096188
+                        ],
+                        [
+                            5.688466,
+                            53.096079
+                        ],
+                        [
+                            5.688512,
+                            53.095909
+                        ],
+                        [
+                            5.688533,
+                            53.095818
+                        ],
+                        [
+                            5.688576,
+                            53.095727
+                        ],
+                        [
+                            5.688613,
+                            53.095787
+                        ],
+                        [
+                            5.688649,
+                            53.095849
+                        ],
+                        [
+                            5.688622,
+                            53.09602
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "name": "Parkeerplaats"
+            },
+            "id": "TI40X"
+        }
+    ]
+}

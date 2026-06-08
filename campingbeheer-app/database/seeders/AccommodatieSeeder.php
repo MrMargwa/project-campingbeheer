@@ -3,39 +3,40 @@
 namespace Database\Seeders;
 
 use App\Models\Accommodatie;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AccommodatieSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $types = [
-            'Chalet' => 8,
-            'Blokhut' => 10,
-            'Camperplaats' => 16,
-            'Safaritent' => 9,
-            'Vakantiewoning' => 7,
-        ];
+        $geojsonPath = base_path('/data.geojson');
 
-        foreach ($types as $type => $aantal) {
+        if (!file_exists($geojsonPath)) {
+            echo "data.geojson niet gevonden. Sla AccommodatieSeeder over.\n";
+            return;
+        }
 
-            for ($i = 1; $i <= $aantal; $i++) {
+        $geojson = json_decode(file_get_contents($geojsonPath), true);
+        $features = $geojson['features'] ?? [];
 
-                Accommodatie::create([
-                    'titel' => "{$type} {$i}",
-                    'type' => $type,
-                    'beschrijving' => "Mooie {$type} geschikt voor vakantiegangers.",
-                    'min_personen' => rand(1, 4),
-                    'max_personen' => rand(4, 10),
-                    'prijs_per_nacht' => rand(50, 250),
-                    'afbeelding' => strtolower(str_replace(' ', '-', $type)) . '.jpg',
-                    'status' => 'beschikbaar',
-                ]);
-            }
+        foreach ($features as $feature) {
+            $name = $feature['properties']['name'];
+            $coords = $feature['geometry']['coordinates']; // [lng, lat]
+
+            $type = preg_replace('/\s+\d+$/', '', $name);
+
+            Accommodatie::create([
+                'titel' => $name,
+                'type' => $type,
+                'beschrijving' => "Mooie {$type} geschikt voor vakantiegangers.",
+                'min_personen' => rand(1, 4),
+                'max_personen' => rand(4, 10),
+                'prijs_per_nacht' => rand(50, 250) + 0.50,
+                'afbeelding' => strtolower(str_replace(' ', '-', $type)) . '.jpg',
+                'latitude' => $coords[1],
+                'longitude' => $coords[0],
+                'status' => 'beschikbaar',
+            ]);
         }
     }
 }

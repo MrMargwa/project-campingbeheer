@@ -10,8 +10,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="h-full bg-primary text-primary">
-    <div class="flex h-full">
+<body class="min-h-screen bg-primary text-primary">
+    <div class="flex min-h-screen">
         {{-- Sidebar --}}
         @include('partials.admin-sidebar')
 
