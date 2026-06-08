@@ -1,0 +1,4 @@
+compose run dev
+
+php artisan migrate:fresh --seed.
+
