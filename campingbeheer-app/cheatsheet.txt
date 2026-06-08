@@ -1,7 +1,0 @@
-in /campingbeheer-app/: compose run dev.
-
-runt de server.
-
-in /campingbeheer-app/: php artisan migrate:fresh --seed.
-
-vult opnieuw de database
