@@ -3,7 +3,8 @@
 @section('title', 'Home')
 
 @section('content')
-    <section class="space-y-10">
+
+    <section class="space-y-10 mx-auto w-full">
         <div class="relative overflow-hidden rounded-3xl border border-border bg-surface shadow-sm">
             <div class="relative h-56 bg-secondary bg-cover bg-center md:h-72 lg:h-80"
                 style="background-image: url('{{ asset('images/camping.png') }}');">
@@ -127,7 +128,7 @@
 
 @section('scripts')
     <script>
-        (function () {
+        (function() {
             const personenSelect = document.getElementById('filter-personen');
             const typeSelect = document.getElementById('filter-type');
             const kenmerkenSelect = document.getElementById('filter-kenmerken');

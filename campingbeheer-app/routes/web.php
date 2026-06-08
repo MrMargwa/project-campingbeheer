@@ -24,9 +24,16 @@ Route::get('/login', function () {
 	return view('auth.login');
 })->name('login');
 
-Route::view('/admin/accommodatie', 'admin.accommodatie.index')
-	->middleware(['auth', 'admin'])
-	->name('admin.accommodatie.index');
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::prefix('admin')->name('admin.accommodatie.')->controller(\App\Http\Controllers\AccommodatieController::class)->group(function () {
+        Route::get('/accommodatie', 'index')->name('index');
+        Route::get('/accommodatie/aanmaken', 'create')->name('create');
+        Route::post('/accommodatie', 'store')->name('store');
+        Route::get('/accommodatie/{accommodatie}/bewerken', 'edit')->name('edit');
+        Route::put('/accommodatie/{accommodatie}', 'update')->name('update');
+        Route::delete('/accommodatie/{accommodatie}', 'destroy')->name('destroy');
+    });
+});
 
 Route::view('/admin/planbord', 'planbord.index')
 	->middleware(['auth', 'admin'])
