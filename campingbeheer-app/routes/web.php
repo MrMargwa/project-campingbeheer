@@ -43,8 +43,47 @@ Route::middleware(['auth', 'admin'])->group(function () {
     });
 });
 
-Route::view('/admin/planbord', 'planbord.index')
-	->middleware(['auth', 'admin'])
+Route::get('/admin/planbord', function (Request $request) {
+	$types = Accommodatie::select('type')->distinct()->pluck('type');
+
+	$selectedType = $request->input('type');
+	$weekOffset = (int) $request->input('week', 0);
+
+	$startOfWeek = now()->startOfWeek()->addWeeks($weekOffset);
+	$endOfWeek = $startOfWeek->copy()->endOfWeek();
+
+	$weekNumber = $startOfWeek->weekOfYear;
+	$year = $startOfWeek->year;
+
+	$days = [];
+	for ($i = 0; $i < 7; $i++) {
+		$date = $startOfWeek->copy()->addDays($i);
+		$days[] = [
+			'label' => $date->locale('nl')->isoFormat('dd'),
+			'date' => $date->format('Y-m-d'),
+			'day' => $date->format('d-m-Y'),
+			'isToday' => $date->isToday(),
+		];
+	}
+
+	$query = Accommodatie::query();
+	if ($selectedType) {
+		$query->where('type', $selectedType);
+	}
+	$accommodaties = $query->orderBy('titel')->get();
+
+	$boekingen = \App\Models\Boeking::with('gebruiker')
+		->where('aankomst_datum', '<', $endOfWeek->format('Y-m-d'))
+		->where('vertrek_datum', '>', $startOfWeek->format('Y-m-d'))
+		->whereIn('accommodatie_id', $accommodaties->pluck('id'))
+		->get()
+		->groupBy('accommodatie_id');
+
+	return view('planbord.index', compact(
+		'types', 'selectedType', 'weekOffset', 'weekNumber', 'year',
+		'days', 'accommodaties', 'boekingen'
+	));
+})->middleware(['auth', 'admin'])
 	->name('admin.planbord.index');
 
 Route::post('/login', function (Request $request) {

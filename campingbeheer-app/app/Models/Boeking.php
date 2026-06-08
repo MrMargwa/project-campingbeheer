@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Boeking extends Model
 {
+    protected $table = 'boekingen';
+
     protected $fillable = [
         'gebruiker_id',
         'accommodatie_id',
