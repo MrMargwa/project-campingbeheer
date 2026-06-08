@@ -5,7 +5,7 @@
 @section('content')
 
     <section class="space-y-10 mx-auto w-full">
-        <div class="relative overflow-hidden rounded-3xl border border-border bg-surface shadow-sm">
+        <div class="relative overflow-visible rounded-3xl border border-border bg-surface shadow-sm">
             <div class="relative h-56 bg-secondary bg-cover bg-center md:h-72 lg:h-80"
                 style="background-image: url('{{ asset('images/camping.png') }}');">
                 <div class="absolute inset-0 bg-primary/15"></div>
@@ -17,16 +17,14 @@
                         <div class="relative">
                             <label class="mb-1 block text-xs font-medium text-primary">Reisgezelschap</label>
 
-                            <input type="hidden" id="filter-personen" value="2">
+                            <input type="hidden" id="filter-personen" value="0">
 
                             <button id="personen-control" type="button"
-                                class="w-full rounded-lg border border-border bg-white px-3 py-3 text-left text-sm text-primary flex items-center justify-between">
-                                <div>
-                                    <div class="text-sm">Reisgezelschap</div>
-                                    <div id="personen-summary" class="text-base font-medium">2 personen</div>
-                                </div>
-                                <svg id="personen-chevron" class="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                class="w-full rounded-lg border border-border bg-white px-3 py-2 text-left text-sm text-primary flex items-center justify-between gap-2">
+                                <span id="personen-summary" class="truncate"></span>
+                                <svg id="personen-chevron" class="h-4 w-4 shrink-0 text-primary transition-transform"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
                                 </svg>
                             </button>
@@ -42,11 +40,11 @@
                                             <div class="text-xs text-muted">Aantal volwassenen</div>
                                         </div>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" data-target="adults"
-                                                class="personen-decrement rounded-full border border-border px-3 py-1 text-sm">-</button>
-                                            <div id="count-adults" class="w-6 text-center">2</div>
-                                            <button type="button" data-target="adults"
-                                                class="personen-increment rounded-full border border-border px-3 py-1 text-sm">+</button>
+                                            <button type="button" data-key="adults"
+                                                class="personen-btn personen-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
+                                            <span id="count-adults" class="w-6 text-center text-sm tabular-nums">0</span>
+                                            <button type="button" data-key="adults"
+                                                class="personen-btn personen-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
 
@@ -56,11 +54,11 @@
                                             <div class="text-xs text-muted">Kinderen</div>
                                         </div>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" data-target="children"
-                                                class="personen-decrement rounded-full border border-border px-3 py-1 text-sm">-</button>
-                                            <div id="count-children" class="w-6 text-center">0</div>
-                                            <button type="button" data-target="children"
-                                                class="personen-increment rounded-full border border-border px-3 py-1 text-sm">+</button>
+                                            <button type="button" data-key="children"
+                                                class="personen-btn personen-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
+                                            <span id="count-children" class="w-6 text-center text-sm tabular-nums">0</span>
+                                            <button type="button" data-key="children"
+                                                class="personen-btn personen-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
 
@@ -70,11 +68,11 @@
                                             <div class="text-xs text-muted">Baby's</div>
                                         </div>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" data-target="babies"
-                                                class="personen-decrement rounded-full border border-border px-3 py-1 text-sm">-</button>
-                                            <div id="count-babies" class="w-6 text-center">0</div>
-                                            <button type="button" data-target="babies"
-                                                class="personen-increment rounded-full border border-border px-3 py-1 text-sm">+</button>
+                                            <button type="button" data-key="babies"
+                                                class="personen-btn personen-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
+                                            <span id="count-babies" class="w-6 text-center text-sm tabular-nums">0</span>
+                                            <button type="button" data-key="babies"
+                                                class="personen-btn personen-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
 
@@ -213,7 +211,18 @@
             const resultsWrapper = document.getElementById('results-wrapper');
             const resultsCount = document.getElementById('results-count');
             const noResults = document.getElementById('no-results');
-            const cards = document.querySelectorAll('.chalet-card');
+            const cards = document.querySelectorAll('.accommodatie-card');
+            const personenControl = document.getElementById('personen-control');
+            const personenPanel = document.getElementById('personen-panel');
+            const personenChevron = document.getElementById('personen-chevron');
+            const personenSummary = document.getElementById('personen-summary');
+            const personenClose = document.getElementById('personen-close');
+
+            const counts = {
+                adults: 0,
+                children: 0,
+                babies: 0,
+            };
 
             function toDateValue(date) {
                 return new Date(date + 'T00:00:00');
@@ -294,10 +303,25 @@
                 return !hasError;
             }
 
+            function getTotalPersons() {
+                return counts.adults + counts.children + counts.babies;
+            }
+
+            function updatePersonenSummary() {
+                const total = getTotalPersons();
+                personenSelect.value = total;
+                personenSummary.textContent = total === 1 ? '1 persoon' : total + ' personen';
+            }
+
+            function togglePanel(open) {
+                personenPanel.classList.toggle('hidden', !open);
+                personenChevron.classList.toggle('rotate-180', open);
+            }
+
             function applyFilters() {
                 if (!validateDates()) return;
 
-                const selectedPersons = personenSelect ? parseInt(personenSelect.value, 10) : 0;
+                const selectedPersons = parseInt(personenSelect.value, 10) || 0;
                 const selectedType = typeSelect.value;
                 const selectedFeature = kenmerkenSelect.value;
 
@@ -322,11 +346,48 @@
                 noResults.textContent = visibleCount > 0 ? '' : 'Geen verblijven gevonden met deze filters.';
             }
 
-            [personenSelect, typeSelect, kenmerkenSelect, aankomstInput, vertrekInput].forEach(el => {
+            personenControl.addEventListener('click', function (e) {
+                e.stopPropagation();
+                togglePanel(personenPanel.classList.contains('hidden'));
+            });
+
+            personenClose.addEventListener('click', function () {
+                togglePanel(false);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!personenControl.contains(e.target) && !personenPanel.contains(e.target)) {
+                    togglePanel(false);
+                }
+            });
+
+            document.querySelectorAll('.personen-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const key = btn.dataset.key;
+                    const isInc = btn.classList.contains('personen-increment');
+                    const el = document.getElementById('count-' + key);
+
+                    if (isInc) {
+                        counts[key]++;
+                    } else {
+                        if (counts[key] <= 0) return;
+                        counts[key]--;
+                    }
+
+                    el.textContent = counts[key];
+                    updatePersonenSummary();
+                    applyFilters();
+                });
+            });
+
+            [typeSelect, kenmerkenSelect, aankomstInput, vertrekInput].forEach(el => {
                 if (!el) return;
                 el.addEventListener('change', applyFilters);
             });
+
             syncDateLimits();
+            updatePersonenSummary();
+            applyFilters();
         })();
     </script>
 @endsection
