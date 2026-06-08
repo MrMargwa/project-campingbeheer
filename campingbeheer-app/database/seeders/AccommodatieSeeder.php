@@ -20,6 +20,10 @@ class AccommodatieSeeder extends Seeder
         $features = $geojson['features'] ?? [];
 
         foreach ($features as $feature) {
+            if ($feature['geometry']['type'] !== 'Point') {
+                continue;
+            }
+
             $name = $feature['properties']['name'];
             $coords = $feature['geometry']['coordinates']; // [lng, lat]
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BoekingController;
 use App\Http\Controllers\ReserverenController;
 use App\Models\Accommodatie;
 use App\Models\Kenmerk;
@@ -16,8 +17,9 @@ Route::get('/', function () {
     return view('home', compact('accommodaties', 'types', 'kenmerken'));
 })->name('home');
 
-// Reserveren Route
+// Reserveren Routes
 Route::get('/reserveren', [ReserverenController::class, 'index'])->name('reserveren');
+Route::post('/reserveren', [BoekingController::class, 'store'])->name('reserveren.store');
 
 // Admin Route
 Route::get('/admin', function () {

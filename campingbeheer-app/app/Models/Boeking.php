@@ -10,9 +10,18 @@ class Boeking extends Model
     protected $fillable = [
         'gebruiker_id',
         'accommodatie_id',
+        'naam',
+        'email',
+        'telefoon',
+        'postcode',
+        'huisnummer',
+        'straat',
+        'plaats',
+        'land',
         'aankomst_datum',
         'vertrek_datum',
         'aantal_personen',
+        'opmerking',
         'totaal_prijs',
         'status',
     ];
