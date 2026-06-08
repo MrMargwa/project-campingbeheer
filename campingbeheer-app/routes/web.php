@@ -49,16 +49,16 @@ Route::view('/admin/planbord', 'planbord.index')
 
 Route::post('/login', function (Request $request) {
 	$request->validate([
-		'naam' => 'required|string',
+		'email' => 'required|email',
 		'password' => 'required|string',
 	]);
 
-	$credentials = ['naam' => $request->input('naam'), 'password' => $request->input('password')];
+	$credentials = ['email' => $request->input('email'), 'password' => $request->input('password')];
 
 	if (Auth::attempt($credentials)) {
 		$request->session()->regenerate();
 		return redirect()->route('admin.dashboard')->with('success', 'Welkom terug!');
 	}
 
-	return back()->withInput($request->only('naam'))->with('error', 'Gebruikersnaam of wachtwoord onjuist. Probeer opnieuw.');
+	return back()->withInput($request->only('email'))->with('error', 'E-mailadres of wachtwoord onjuist. Probeer opnieuw.');
 });

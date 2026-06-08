@@ -19,8 +19,8 @@
                     @endif
 
                     <div>
-                        <label for="naam" class="mb-1 block text-xs font-medium text-primary">Naam</label>
-                        <input type="text" id="naam" name="naam"
+                        <label for="email" class="mb-1 block text-xs font-medium text-primary">E-mail</label>
+                        <input type="email" id="email" name="email"
                             class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary" />
                     </div>
 
@@ -52,13 +52,13 @@
 
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-                const naam = document.getElementById('naam').value.trim();
+                const email = document.getElementById('email').value.trim();
                 const ww = document.getElementById('password').value.trim();
 
                 msg.classList.remove('text-danger', 'text-success', 'hidden');
 
-                if (!naam || !ww) {
-                    msg.textContent = 'Vul zowel naam als wachtwoord in.';
+                if (!email || !ww) {
+                    msg.textContent = 'Vul zowel e-mail als wachtwoord in.';
                     msg.classList.add('text-danger');
                     return;
                 }
