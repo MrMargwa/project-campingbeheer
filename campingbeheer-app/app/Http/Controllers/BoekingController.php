@@ -24,11 +24,12 @@ class BoekingController extends Controller
             'land' => 'required|string|max:255',
             'aantal_personen' => 'required|integer|min:1',
             'opmerking' => 'nullable|string|max:1000',
-            'aankomst_datum' => 'required|date',
+            'aankomst_datum' => 'required|date|after_or_equal:today',
             'vertrek_datum' => 'required|date|after:aankomst_datum',
-            'aankomst_tijd' => 'required|in:ochtend,middag',
-            'vertrek_tijd' => 'required|in:ochtend,middag',
         ]);
+
+        $validated['aankomst_tijd'] = 'middag';
+        $validated['vertrek_tijd'] = 'ochtend';
 
         $accommodatie = Accommodatie::findOrFail($validated['accommodatie_id']);
 

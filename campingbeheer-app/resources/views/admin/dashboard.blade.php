@@ -222,13 +222,17 @@
         document.getElementById('reserveer-error').classList.add('hidden');
         document.getElementById('reserveer-error').textContent = '';
 
-        var tomorrow = new Date();
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
-        var dayAfter = new Date();
+        var dayAfter = new Date(today);
         dayAfter.setDate(dayAfter.getDate() + 2);
 
         var aankomstInput = document.getElementById('aankomst-datum');
         var vertrekInput = document.getElementById('vertrek-datum');
+        aankomstInput.min = tomorrow.toISOString().split('T')[0];
+        vertrekInput.min = dayAfter.toISOString().split('T')[0];
         if (aankomstInput && !aankomstInput.value) {
             aankomstInput.value = tomorrow.toISOString().split('T')[0];
         }

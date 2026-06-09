@@ -92,6 +92,8 @@
                 </div>
             </div>
 
+            <input type="hidden" name="aankomst_tijd" value="middag">
+            <input type="hidden" name="vertrek_tijd" value="ochtend">
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-primary mb-1">Aankomstdatum *</label>
@@ -99,27 +101,9 @@
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Aankomst *</label>
-                    <select name="aankomst_tijd" required
-                        class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                        <option value="ochtend">'s Ochtends</option>
-                        <option value="middag">'s Middags</option>
-                    </select>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
                     <label class="block text-sm font-medium text-primary mb-1">Vertrekdatum *</label>
                     <input type="date" name="vertrek_datum" id="vertrek-datum" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Vertrek *</label>
-                    <select name="vertrek_tijd" required
-                        class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                        <option value="ochtend">'s Ochtends</option>
-                        <option value="middag">'s Middags</option>
-                    </select>
                 </div>
             </div>
 
