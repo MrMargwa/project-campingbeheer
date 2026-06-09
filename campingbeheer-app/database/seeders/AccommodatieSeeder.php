@@ -7,44 +7,21 @@ use Illuminate\Database\Seeder;
 
 class AccommodatieSeeder extends Seeder
 {
-    private array $images = [
-        'Camping' => ['camping-1.jpg', 'camping-2.jpg', 'camping-3.jpg', 'camping-4.jpg'],
-        'Vakantiehuis' => ['vakantiehuis-1.jpg', 'vakantiehuis-2.jpg', 'vakantiehuis-3.jpg', 'vakantiehuis-4.jpg'],
-        'Blokhut' => ['blokhut-1.jpg', 'blokhut-2.jpg', 'blokhut-3.jpg', 'blokhut-4.jpg'],
-        'Chalet' => ['chalet-1.jpg', 'chalet-2.jpg', 'chalet-3.jpg', 'chalet-4.jpg'],
-        'Safaritent' => ['safaritent-1.jpg', 'safaritent-2.jpg', 'safaritent-3.jpg', 'safaritent-4.jpg'],
-    ];
-
     public function run(): void
     {
         Accommodatie::truncate();
 
-        $index = 0;
-
-        Accommodatie::truncate();
-
-        $geojson = json_decode(file_get_contents($geojsonPath), true);
-        $features = $geojson['features'] ?? [];
-
         $imageCounters = [];
 
-        foreach ($features as $feature) {
-            if ($feature['geometry']['type'] !== 'Point') {
-                continue;
-            }
-
-            $name = $feature['properties']['name'];
-            $coords = $feature['geometry']['coordinates'];
-
-            $type = preg_replace('/\s+\d+$/', '', $name);
-            $type = str_replace('Camping', 'Camper', $type);
-            $name = str_replace('Camping', 'Camper', $name);
+        foreach ($this->data() as $item) {
+            $type = str_replace('Camping', 'Camper', $item['type']);
+            $titel = str_replace('Camping', 'Camper', $item['titel']);
 
             $baseName = strtolower(str_replace(' ', '-', $type));
 
             if (!isset($imageCounters[$type])) {
-                $imageFiles = glob(public_path('images') . '/' . $baseName . '-*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
-                $imageCounters[$type] = ['index' => 0, 'total' => count($imageFiles)];
+                $files = glob(public_path('images') . '/' . $baseName . '-*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
+                $imageCounters[$type] = ['index' => 0, 'total' => count($files)];
             }
 
             $counter = &$imageCounters[$type];
@@ -58,26 +35,23 @@ class AccommodatieSeeder extends Seeder
             }
 
             Accommodatie::create([
-                'titel' => $item['titel'],
+                'titel' => $titel,
                 'type' => $type,
-                'beschrijving' => "Mooie {$type} geschikt voor vakantiegangers.",
-                'min_personen' => rand(1, 4),
-                'max_personen' => rand(4, 10),
-                'prijs_per_nacht' => rand(50, 250) + 0.50,
+                'beschrijving' => $item['beschrijving'],
+                'min_personen' => $item['min_personen'],
+                'max_personen' => $item['max_personen'],
+                'prijs_per_nacht' => $item['prijs_per_nacht'],
                 'afbeelding' => $afbeelding,
-                'latitude' => $coords[1],
-                'longitude' => $coords[0],
+                'latitude' => $item['latitude'],
+                'longitude' => $item['longitude'],
                 'status' => 'beschikbaar',
             ]);
-
-            $index++;
         }
     }
 
     private function data(): array
     {
         return [
-            // ===== CAMPING (11) — €22,50–€42,50/nacht, cluster 53.0970, 5.6870 =====
             ['titel' => 'Camping 1', 'type' => 'Camping', 'beschrijving' => 'Ruime grasplek met wateraansluiting, geschikt voor tenten en caravans.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 27.50, 'latitude' => 53.0971, 'longitude' => 5.6868],
             ['titel' => 'Camping 2', 'type' => 'Camping', 'beschrijving' => 'Zonnige plek met halfverharde ondergrond, dicht bij sanitair.', 'min_personen' => 2, 'max_personen' => 4, 'prijs_per_nacht' => 22.50, 'latitude' => 53.0973, 'longitude' => 5.6872],
             ['titel' => 'Camping 3', 'type' => 'Camping', 'beschrijving' => 'Ruime plek met elektra en picknicktafel, ideaal voor campers.', 'min_personen' => 2, 'max_personen' => 8, 'prijs_per_nacht' => 35.00, 'latitude' => 53.0968, 'longitude' => 5.6865],
@@ -90,7 +64,6 @@ class AccommodatieSeeder extends Seeder
             ['titel' => 'Camping 10', 'type' => 'Camping', 'beschrijving' => 'Plek met eigen terras en verlichting, naast het centrale plein.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 30.00, 'latitude' => 53.0967, 'longitude' => 5.6866],
             ['titel' => 'Camping 11', 'type' => 'Camping', 'beschrijving' => 'Natuurlijke schaduwboom en ruime oprit, prachtig uitzicht.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 27.50, 'latitude' => 53.0971, 'longitude' => 5.6880],
 
-            // ===== VAKANTIEHUIS (6) — €85–€150/nacht, cluster 53.0965, 5.6885 =====
             ['titel' => 'Vakantiehuis 1', 'type' => 'Vakantiehuis', 'beschrijving' => 'Sfeervol huis met authentieke uitstraling, houtkachel en eigen tuin.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 95.00, 'latitude' => 53.0964, 'longitude' => 5.6886],
             ['titel' => 'Vakantiehuis 2', 'type' => 'Vakantiehuis', 'beschrijving' => 'Rustig gelegen met moderne inrichting, ruime woonkamer en volledige keuken.', 'min_personen' => 2, 'max_personen' => 8, 'prijs_per_nacht' => 110.00, 'latitude' => 53.0966, 'longitude' => 5.6888],
             ['titel' => 'Vakantiehuis 3', 'type' => 'Vakantiehuis', 'beschrijving' => 'Zonnig huis met grote tuin en overdekt terras, ideaal voor gezinnen.', 'min_personen' => 3, 'max_personen' => 8, 'prijs_per_nacht' => 125.00, 'latitude' => 53.0962, 'longitude' => 5.6883],
@@ -98,7 +71,6 @@ class AccommodatieSeeder extends Seeder
             ['titel' => 'Vakantiehuis 5', 'type' => 'Vakantiehuis', 'beschrijving' => 'Luxe huis met privésauna en openslaande deuren naar de tuin.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 150.00, 'latitude' => 53.0963, 'longitude' => 5.6890],
             ['titel' => 'Vakantiehuis 6', 'type' => 'Vakantiehuis', 'beschrijving' => 'Gezellig met open haard en speelkamer, aan de rand van het park.', 'min_personen' => 2, 'max_personen' => 8, 'prijs_per_nacht' => 85.00, 'latitude' => 53.0968, 'longitude' => 5.6885],
 
-            // ===== BLOKHUT (18) — €45–€85/nacht, cluster 53.0975, 5.6875 =====
             ['titel' => 'Blokhut 1', 'type' => 'Blokhut', 'beschrijving' => 'Knusse houten blokhut met overkapping, eenvoudig maar sfeervol.', 'min_personen' => 2, 'max_personen' => 4, 'prijs_per_nacht' => 55.00, 'latitude' => 53.0976, 'longitude' => 5.6874],
             ['titel' => 'Blokhut 2', 'type' => 'Blokhut', 'beschrijving' => 'Blokhut met tuin, picknicktafel en vuurplaats voor een rustige vakantie.', 'min_personen' => 2, 'max_personen' => 4, 'prijs_per_nacht' => 50.00, 'latitude' => 53.0978, 'longitude' => 5.6878],
             ['titel' => 'Blokhut 3', 'type' => 'Blokhut', 'beschrijving' => 'Hut met beschut terras en overdekte berging voor fietsen.', 'min_personen' => 2, 'max_personen' => 4, 'prijs_per_nacht' => 52.50, 'latitude' => 53.0974, 'longitude' => 5.6872],
@@ -118,7 +90,6 @@ class AccommodatieSeeder extends Seeder
             ['titel' => 'Blokhut 17', 'type' => 'Blokhut', 'beschrijving' => 'Hoog plafond met vide voor extra slaapruimte, deuren naar zonnig terras.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 72.50, 'latitude' => 53.0978, 'longitude' => 5.6868],
             ['titel' => 'Blokhut 18', 'type' => 'Blokhut', 'beschrijving' => 'Knus met gashaard en zachte zithoek, romantisch weekendje weg.', 'min_personen' => 2, 'max_personen' => 4, 'prijs_per_nacht' => 65.00, 'latitude' => 53.0973, 'longitude' => 5.6884],
 
-            // ===== CHALET (6) — €95–€165/nacht, cluster 53.0965, 5.6865 =====
             ['titel' => 'Chalet 1', 'type' => 'Chalet', 'beschrijving' => 'Modern chalet met luxe uitstraling, ruim terras met loungeset en open keuken.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 110.00, 'latitude' => 53.0964, 'longitude' => 5.6864],
             ['titel' => 'Chalet 2', 'type' => 'Chalet', 'beschrijving' => 'Stijlvol met houtkachel en panoramisch uitzicht, boxspringbedden.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 120.00, 'latitude' => 53.0966, 'longitude' => 5.6868],
             ['titel' => 'Chalet 3', 'type' => 'Chalet', 'beschrijving' => 'Ruim chalet met eigen sauna en balkon, heerlijk ontspannen.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 145.00, 'latitude' => 53.0962, 'longitude' => 5.6862],
@@ -126,7 +97,6 @@ class AccommodatieSeeder extends Seeder
             ['titel' => 'Chalet 5', 'type' => 'Chalet', 'beschrijving' => 'Sfeervol met rieten dak en veranda rondom, open haard voor avonden.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 115.00, 'latitude' => 53.0963, 'longitude' => 5.6870],
             ['titel' => 'Chalet 6', 'type' => 'Chalet', 'beschrijving' => 'Luxe met eigen hottub op overdekt terras en hoogwaardige keuken.', 'min_personen' => 2, 'max_personen' => 8, 'prijs_per_nacht' => 165.00, 'latitude' => 53.0968, 'longitude' => 5.6860],
 
-            // ===== SAFARITENT (14) — €35–€65/nacht, cluster 53.0975, 5.6885 =====
             ['titel' => 'Safaritent 1', 'type' => 'Safaritent', 'beschrijving' => 'Ruime safaritent met overkapping en eigen terras voor een avontuurlijke vakantie.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 49.50, 'latitude' => 53.0976, 'longitude' => 5.6886],
             ['titel' => 'Safaritent 2', 'type' => 'Safaritent', 'beschrijving' => 'Luxe tent met comfortabele bedden en volledig ingerichte kitchenette.', 'min_personen' => 2, 'max_personen' => 4, 'prijs_per_nacht' => 55.00, 'latitude' => 53.0978, 'longitude' => 5.6890],
             ['titel' => 'Safaritent 3', 'type' => 'Safaritent', 'beschrijving' => 'Uniek met aparte slaapcabines, onvergetelijke kampeerervaring.', 'min_personen' => 2, 'max_personen' => 6, 'prijs_per_nacht' => 62.50, 'latitude' => 53.0974, 'longitude' => 5.6884],
