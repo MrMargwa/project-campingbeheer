@@ -7,19 +7,18 @@
 #map-form {
     border-radius: 0.75rem;
 }
-.pin-marker {
-    width: 36px;
-    height: 36px;
-    background: #dc2626;
-    border: 4px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.new-pin {
+    background: #dc2626 !important;
+    border: 4px solid #fff !important;
+    border-radius: 50% !important;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.45) !important;
     font-size: 22px;
     font-weight: bold;
     color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 </style>
 @endpush
@@ -27,8 +26,8 @@
 @section('content')
 <section class="p-8">
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-primary" data-i18n="admin.create.title">Nieuwe accommodatie</h1>
-        <p class="text-sm text-muted mt-1" data-i18n="admin.create.map_hint">Klik op de kaart om de locatie aan te wijzen.</p>
+        <h1 class="text-2xl font-bold text-primary">Nieuwe accommodatie</h1>
+        <p class="text-sm text-muted mt-1">Klik op de kaart om de locatie aan te wijzen.</p>
     </div>
 
     <form action="{{ route('admin.accommodatie.store') }}" method="POST" class="max-w-3xl">
@@ -39,13 +38,13 @@
             {{-- Title + Type --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label for="titel" class="block text-sm font-medium text-primary mb-1">Titel (NL) *</label>
+                    <label for="titel" class="block text-sm font-medium text-primary mb-1">Titel *</label>
                     <input type="text" name="titel" id="titel" value="{{ old('titel') }}" required
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                     @error('titel') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label for="type" class="block text-sm font-medium text-primary mb-1">Type (NL) *</label>
+                    <label for="type" class="block text-sm font-medium text-primary mb-1">Type *</label>
                     <select name="type" id="type" required
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                         <option value="">Kies een type…</option>
@@ -57,25 +56,13 @@
                 </div>
             </div>
 
-            <input type="hidden" name="titel_en" id="titel_en" value="{{ old('titel_en') }}">
-            <input type="hidden" name="titel_de" id="titel_de" value="{{ old('titel_de') }}">
-            <input type="hidden" name="titel_fy" id="titel_fy" value="{{ old('titel_fy') }}">
-
-            <input type="hidden" name="type_en" id="type_en" value="{{ old('type_en') }}">
-            <input type="hidden" name="type_de" id="type_de" value="{{ old('type_de') }}">
-            <input type="hidden" name="type_fy" id="type_fy" value="{{ old('type_fy') }}">
-
             {{-- Description --}}
             <div>
-                <label for="beschrijving" class="block text-sm font-medium text-primary mb-1">Beschrijving (NL)</label>
+                <label for="beschrijving" class="block text-sm font-medium text-primary mb-1">Beschrijving</label>
                 <textarea name="beschrijving" id="beschrijving" rows="3"
                     class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">{{ old('beschrijving') }}</textarea>
                 @error('beschrijving') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
             </div>
-
-            <input type="hidden" name="beschrijving_en" id="beschrijving_en" value="{{ old('beschrijving_en') }}">
-            <input type="hidden" name="beschrijving_de" id="beschrijving_de" value="{{ old('beschrijving_de') }}">
-            <input type="hidden" name="beschrijving_fy" id="beschrijving_fy" value="{{ old('beschrijving_fy') }}">
 
             {{-- Persons + Price --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -103,7 +90,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="afbeelding" class="block text-sm font-medium text-primary mb-1">Afbeelding (bestandsnaam)</label>
-                    <input type="text" name="afbeelding" id="afbeelding" value="{{ old('afbeelding') }}" placeholder="bv. chalet.jpg"
+                    <input type="text" name="afbeelding" id="afbeelding" value="{{ old('afbeelding') }}" placeholder="bv. blokhut-1.jpg"
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                     @error('afbeelding') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -139,11 +126,11 @@
         {{-- Submit --}}
         <div class="mt-6 flex items-center gap-3">
             <button type="submit"
-                class="bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm" data-i18n="admin.create.submit">
+                class="bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm">
                 Accommodatie aanmaken
             </button>
             <a href="{{ route('admin.accommodatie.index') }}"
-                class="text-muted hover:text-primary font-medium transition text-sm" data-i18n="admin.create.cancel">Annuleren</a>
+                class="text-muted hover:text-primary font-medium transition text-sm">Annuleren</a>
         </div>
     </form>
 </section>
@@ -151,56 +138,7 @@
 
 @section('scripts')
 <script>
-async function autoTranslate(sourceFieldId, targets) {
-    var el = document.getElementById(sourceFieldId);
-    if (!el) return;
-    var text = el.value.trim();
-    if (!text) return;
-    for (var pair of targets) {
-        var tgt = document.getElementById(pair.id);
-        if (!tgt) continue;
-        tgt.value = '...';
-        try {
-            var res = await fetch('https://libretranslate.com/translate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ q: text, source: 'nl', target: pair.lang })
-            });
-            var data = await res.json();
-            tgt.value = data.translatedText || text;
-        } catch(e) {
-            tgt.value = text;
-        }
-    }
-}
-
-function setupAutoTranslate(sourceId, targets) {
-    var el = document.getElementById(sourceId);
-    if (!el) return;
-    var timer;
-    el.addEventListener('input', function () {
-        clearTimeout(timer);
-        timer = setTimeout(function () { autoTranslate(sourceId, targets); }, 600);
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function () {
-    setupAutoTranslate('titel', [
-        { id: 'titel_en', lang: 'en' },
-        { id: 'titel_de', lang: 'de' },
-        { id: 'titel_fy', lang: 'fy' }
-    ]);
-    setupAutoTranslate('type', [
-        { id: 'type_en', lang: 'en' },
-        { id: 'type_de', lang: 'de' },
-        { id: 'type_fy', lang: 'fy' }
-    ]);
-    setupAutoTranslate('beschrijving', [
-        { id: 'beschrijving_en', lang: 'en' },
-        { id: 'beschrijving_de', lang: 'de' },
-        { id: 'beschrijving_fy', lang: 'fy' }
-    ]);
-
 (function () {
     var latInput = document.getElementById('latitude');
     var lngInput = document.getElementById('longitude');
@@ -254,13 +192,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (marker) {
             marker.setLatLng([lat, lng]);
         } else {
-            marker = L.marker([lat, lng], {
-                icon: L.divIcon({
-                    className: '',
-                    html: '<div class="pin-marker">+</div>',
-                    iconSize: [36, 36],
-                    iconAnchor: [18, 18],
-                })
+            marker = L.circleMarker([lat, lng], {
+                radius: 18,
+                color: '#fff',
+                weight: 4,
+                fillColor: '#dc2626',
+                fillOpacity: 1,
             }).addTo(map);
         }
         latInput.value = lat.toFixed(7);

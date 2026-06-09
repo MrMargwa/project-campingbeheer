@@ -24,19 +24,23 @@ class BoekingController extends Controller
             'land' => 'required|string|max:255',
             'aantal_personen' => 'required|integer|min:1',
             'opmerking' => 'nullable|string|max:1000',
-            'aankomst_datum' => 'nullable|date',
-            'vertrek_datum' => 'nullable|date',
-            'aankomst_tijd' => 'nullable|in:ochtend,middag',
-            'vertrek_tijd' => 'nullable|in:ochtend,middag',
+            'aankomst_datum' => 'required|date|after_or_equal:today',
+            'vertrek_datum' => 'required|date|after:aankomst_datum',
         ]);
+
+        $validated['aankomst_tijd'] = 'middag';
+        $validated['vertrek_tijd'] = 'ochtend';
 
         $accommodatie = Accommodatie::findOrFail($validated['accommodatie_id']);
 
-        if (empty($validated['aankomst_datum'])) {
-            $validated['aankomst_datum'] = now()->addDay()->toDateString();
-        }
-        if (empty($validated['vertrek_datum'])) {
-            $validated['vertrek_datum'] = now()->addDays(2)->toDateString();
+        if ($validated['aantal_personen'] < $accommodatie->min_personen || $validated['aantal_personen'] > $accommodatie->max_personen) {
+            return response()->json([
+                'errors' => [
+                    'aantal_personen' => [
+                        'Het aantal personen moet tussen ' . $accommodatie->min_personen . ' en ' . $accommodatie->max_personen . ' liggen.',
+                    ],
+                ],
+            ], 422);
         }
 
         $validated['status'] = 'in_afwachting';
