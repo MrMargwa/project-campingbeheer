@@ -57,43 +57,13 @@
                 </div>
             </div>
 
-            {{-- Translated titles --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label for="titel_en" class="block text-sm font-medium text-primary mb-1">Titel (EN) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="titel_en" id="titel_en" value="{{ old('titel_en') }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-                <div>
-                    <label for="titel_de" class="block text-sm font-medium text-primary mb-1">Titel (DE) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="titel_de" id="titel_de" value="{{ old('titel_de') }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-                <div>
-                    <label for="titel_fy" class="block text-sm font-medium text-primary mb-1">Titel (FY) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="titel_fy" id="titel_fy" value="{{ old('titel_fy') }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-            </div>
+            <input type="hidden" name="titel_en" id="titel_en" value="{{ old('titel_en') }}">
+            <input type="hidden" name="titel_de" id="titel_de" value="{{ old('titel_de') }}">
+            <input type="hidden" name="titel_fy" id="titel_fy" value="{{ old('titel_fy') }}">
 
-            {{-- Translated types --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label for="type_en" class="block text-sm font-medium text-primary mb-1">Type (EN) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="type_en" id="type_en" value="{{ old('type_en') }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-                <div>
-                    <label for="type_de" class="block text-sm font-medium text-primary mb-1">Type (DE) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="type_de" id="type_de" value="{{ old('type_de') }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-                <div>
-                    <label for="type_fy" class="block text-sm font-medium text-primary mb-1">Type (FY) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="type_fy" id="type_fy" value="{{ old('type_fy') }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-            </div>
+            <input type="hidden" name="type_en" id="type_en" value="{{ old('type_en') }}">
+            <input type="hidden" name="type_de" id="type_de" value="{{ old('type_de') }}">
+            <input type="hidden" name="type_fy" id="type_fy" value="{{ old('type_fy') }}">
 
             {{-- Description --}}
             <div>
@@ -103,24 +73,9 @@
                 @error('beschrijving') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Translated descriptions --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label for="beschrijving_en" class="block text-sm font-medium text-primary mb-1">Beschrijving (EN) <span class="text-xs text-muted">automatisch</span></label>
-                    <textarea name="beschrijving_en" id="beschrijving_en" rows="2" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">{{ old('beschrijving_en') }}</textarea>
-                </div>
-                <div>
-                    <label for="beschrijving_de" class="block text-sm font-medium text-primary mb-1">Beschrijving (DE) <span class="text-xs text-muted">automatisch</span></label>
-                    <textarea name="beschrijving_de" id="beschrijving_de" rows="2" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">{{ old('beschrijving_de') }}</textarea>
-                </div>
-                <div>
-                    <label for="beschrijving_fy" class="block text-sm font-medium text-primary mb-1">Beschrijving (FY) <span class="text-xs text-muted">automatisch</span></label>
-                    <textarea name="beschrijving_fy" id="beschrijving_fy" rows="2" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">{{ old('beschrijving_fy') }}</textarea>
-                </div>
-            </div>
+            <input type="hidden" name="beschrijving_en" id="beschrijving_en" value="{{ old('beschrijving_en') }}">
+            <input type="hidden" name="beschrijving_de" id="beschrijving_de" value="{{ old('beschrijving_de') }}">
+            <input type="hidden" name="beschrijving_fy" id="beschrijving_fy" value="{{ old('beschrijving_fy') }}">
 
             {{-- Persons + Price --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">

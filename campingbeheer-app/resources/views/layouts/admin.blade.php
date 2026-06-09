@@ -1,7 +1,8 @@
 @php
     $supported = ['nl', 'en', 'de', 'fy'];
     $locale = request()->cookie('locale', 'nl');
-    if (!in_array($locale, $supported, true)) $locale = 'nl';
+    if (!in_array($locale, $supported, true))
+        $locale = 'nl';
 @endphp
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
