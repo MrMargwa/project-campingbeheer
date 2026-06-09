@@ -6,6 +6,7 @@ use App\Models\Accommodatie;
 use App\Models\Boeking;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class BoekingController extends Controller
 {
@@ -45,9 +46,34 @@ class BoekingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Reservering succesvol aangemaakt!',
+            'message' => 'Reservering succesvol aangemaakt! Deze moet nog worden goedgekeurd door de beheerder.',
             'boeking' => $boeking,
         ]);
+    }
+
+    public function approve(Boeking $boeking)
+    {
+        $boeking->update(['status' => 'goedgekeurd']);
+
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'Reservering van ' . $boeking->naam . ' is goedgekeurd.');
+    }
+
+    public function reject(Request $request, Boeking $boeking)
+    {
+        $request->validate([
+            'afkeur_reden' => 'nullable|string|max:1000',
+        ]);
+
+        $boeking->update([
+            'status' => 'geannuleerd',
+            'opmerking' => $request->afkeur_reden
+                ? trim($boeking->opmerking . "\nAfgekeurd: " . $request->afkeur_reden)
+                : $boeking->opmerking,
+        ]);
+
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'Reservering van ' . $boeking->naam . ' is afgekeurd.');
     }
 
     public function searchGasten(Request $request): JsonResponse
