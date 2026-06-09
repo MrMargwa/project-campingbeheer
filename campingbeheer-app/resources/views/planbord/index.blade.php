@@ -56,56 +56,64 @@
                             {{ $accommodatie->titel }}
                         </td>
                         @foreach($days as $day)
-                            @php
+                        @php
                                 $date = $day['date'];
 
                                 $hasCheckin = false;
                                 $hasCheckout = false;
                                 $isOccupied = false;
-                                $guestNames = [];
+                                $cellBookings = [];
 
                                 foreach ($accommodatieBoekingen as $boeking) {
                                     $aankomst = $boeking->aankomst_datum;
                                     $vertrek = $boeking->vertrek_datum;
-                                    $gast = $boeking->gebruiker?->naam ?? 'Onbekend';
+                                    $gast = $boeking->gebruiker?->naam ?? $boeking->naam ?? 'Onbekend';
 
                                     if ($date === $aankomst) {
                                         $hasCheckin = true;
-                                        $guestNames[] = 'In: ' . $gast;
                                     }
                                     if ($date === $vertrek) {
                                         $hasCheckout = true;
-                                        $guestNames[] = 'Uit: ' . $gast;
                                     }
                                     if ($date > $aankomst && $date < $vertrek) {
                                         $isOccupied = true;
-                                        $guestNames[] = $gast;
+                                    }
+
+                                    if ($date >= $aankomst && $date <= $vertrek) {
+                                        $cellBookings[] = [
+                                            'naam' => $gast,
+                                            'aankomst' => \Carbon\Carbon::parse($boeking->aankomst_datum)->format('d-m-Y'),
+                                            'vertrek' => \Carbon\Carbon::parse($boeking->vertrek_datum)->format('d-m-Y'),
+                                            'personen' => $boeking->aantal_personen,
+                                            'opmerking' => $boeking->opmerking,
+                                        ];
                                     }
                                 }
 
                                 if ($hasCheckin && $hasCheckout) {
                                     $cellClass = 'diagonal-wissel';
                                     $label = '';
-                                    $title = implode(' | ', $guestNames);
                                 } elseif ($hasCheckin) {
                                     $cellClass = 'diagonal-checkin';
                                     $label = '';
-                                    $title = implode(' | ', $guestNames);
                                 } elseif ($hasCheckout) {
                                     $cellClass = 'diagonal-checkout';
                                     $label = '';
-                                    $title = implode(' | ', $guestNames);
                                 } elseif ($isOccupied) {
                                     $cellClass = 'bg-red-400';
                                     $label = '';
-                                    $title = implode(' | ', $guestNames);
                                 } else {
                                     $cellClass = 'bg-green-300';
                                     $label = '';
-                                    $title = 'Beschikbaar';
                                 }
                             @endphp
-                            <td class="border-r border-border px-1 py-1 text-center align-middle last:border-r-0 {{ $cellClass }}" title="{{ $title }}">{{ $label }}</td>
+                            <td class="planbord-cell border-r border-border px-1 py-1 text-center align-middle last:border-r-0 {{ $cellClass }} {{ count($cellBookings) > 0 ? 'cursor-pointer' : '' }}"
+                                @if(count($cellBookings) > 0) data-tooltip="{{ json_encode([
+                                    'verblijf' => $accommodatie->titel,
+                                    'boekingen' => $cellBookings,
+                                ]) }}" @endif>
+                                <span>{{ $label }}</span>
+                            </td>
                         @endforeach
                     </tr>
                 @empty
@@ -158,10 +166,6 @@
             linear-gradient(to top right, #f87171 50%, transparent 50%),
             #86efac;
     }
-    td.bg-green-200, td.bg-green-300, td.bg-red-300, td.bg-red-400,
-    td.diagonal-checkin, td.diagonal-checkout, td.diagonal-wissel {
-        cursor: default;
-    }
 </style>
 
 <script>
@@ -171,5 +175,71 @@
         params.set('week', '{{ $weekOffset }}');
         window.location.search = params.toString();
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let tooltipEl = null;
+
+        document.querySelectorAll('.planbord-cell[data-tooltip]').forEach(function (cell) {
+            cell.addEventListener('mouseenter', function (e) {
+                var data = JSON.parse(this.getAttribute('data-tooltip'));
+                if (!data) return;
+
+                tooltipEl = document.createElement('div');
+                tooltipEl.className = 'fixed z-[9999] min-w-[220px] whitespace-nowrap rounded-lg bg-gray-800 px-2.5 py-2 text-left text-xs leading-relaxed text-gray-100 shadow-lg pointer-events-none';
+
+                var html = '';
+                for (var i = 0; i < data.boekingen.length; i++) {
+                    var b = data.boekingen[i];
+                    if (i > 0) {
+                        html += '<div class="mt-1.5 border-t border-gray-600 pt-1.5"></div>';
+                    }
+                    html += '<div><span class="font-semibold text-gray-400">Naam:</span> ' + escHtml(b.naam) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Verblijf:</span> ' + escHtml(data.verblijf) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Aankomst:</span> ' + escHtml(b.aankomst) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Vertrek:</span> ' + escHtml(b.vertrek) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Personen:</span> ' + escHtml(b.personen) + '</div>';
+                    if (b.opmerking) {
+                        html += '<div><span class="font-semibold text-gray-400">Opmerking:</span> ' + escHtml(b.opmerking) + '</div>';
+                    }
+                }
+                // Arrow
+                html += '<div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>';
+
+                tooltipEl.innerHTML = html;
+                document.body.appendChild(tooltipEl);
+
+                var rect = this.getBoundingClientRect();
+                var top = rect.top - tooltipEl.offsetHeight - 6;
+                var left = rect.left + rect.width / 2 - tooltipEl.offsetWidth / 2;
+
+                if (top < 4) {
+                    top = rect.bottom + 6;
+                    tooltipEl.querySelector('div:last-child').className = 'absolute top-0 left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-800 -translate-y-full';
+                }
+
+                if (left < 4) left = 4;
+                if (left + tooltipEl.offsetWidth > window.innerWidth - 4) {
+                    left = window.innerWidth - tooltipEl.offsetWidth - 4;
+                }
+
+                tooltipEl.style.top = top + 'px';
+                tooltipEl.style.left = left + 'px';
+            });
+
+            cell.addEventListener('mouseleave', function () {
+                if (tooltipEl) {
+                    tooltipEl.remove();
+                    tooltipEl = null;
+                }
+            });
+        });
+
+        function escHtml(str) {
+            if (str == null) return '';
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+    });
 </script>
 @endsection
