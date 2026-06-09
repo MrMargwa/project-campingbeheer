@@ -10,11 +10,8 @@ class Accommodatie extends Model
 {
     protected $fillable = [
         'titel',
-        'titel_en', 'titel_de', 'titel_fy',
         'type',
-        'type_en', 'type_de', 'type_fy',
         'beschrijving',
-        'beschrijving_en', 'beschrijving_de', 'beschrijving_fy',
         'min_personen',
         'max_personen',
         'prijs_per_nacht',
