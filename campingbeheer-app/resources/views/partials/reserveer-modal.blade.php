@@ -10,7 +10,20 @@
                 class="text-muted hover:text-primary text-2xl leading-none bg-transparent border-0 cursor-pointer">&times;</button>
         </div>
         <form id="reserveer-form" class="p-6 space-y-4">
+            @if ($showSearch)
+            <div>
+                <label class="block text-sm font-medium text-primary mb-1">Accommodatie</label>
+                <select name="accommodatie_id" id="modal-accommodatie-select" required
+                    class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
+                    <option value="">Selecteer accommodatie...</option>
+                    @foreach ($accommodaties as $acc)
+                        <option value="{{ $acc->id }}">{{ $acc->titel }}</option>
+                    @endforeach
+                </select>
+            </div>
+            @else
             <input type="hidden" name="accommodatie_id" id="modal-accommodatie-id">
+            @endif
 
             @if ($showSearch)
             <div>
