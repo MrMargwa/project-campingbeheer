@@ -16,8 +16,12 @@ class AccommodatieSeeder extends Seeder
             return;
         }
 
+        Accommodatie::truncate();
+
         $geojson = json_decode(file_get_contents($geojsonPath), true);
         $features = $geojson['features'] ?? [];
+
+        $imageCounters = [];
 
         foreach ($features as $feature) {
             if ($feature['geometry']['type'] !== 'Point') {
@@ -25,9 +29,28 @@ class AccommodatieSeeder extends Seeder
             }
 
             $name = $feature['properties']['name'];
-            $coords = $feature['geometry']['coordinates']; // [lng, lat]
+            $coords = $feature['geometry']['coordinates'];
 
             $type = preg_replace('/\s+\d+$/', '', $name);
+            $type = str_replace('Camping', 'Camper', $type);
+            $name = str_replace('Camping', 'Camper', $name);
+
+            $baseName = strtolower(str_replace(' ', '-', $type));
+
+            if (!isset($imageCounters[$type])) {
+                $imageFiles = glob(public_path('images') . '/' . $baseName . '-*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
+                $imageCounters[$type] = ['index' => 0, 'total' => count($imageFiles)];
+            }
+
+            $counter = &$imageCounters[$type];
+
+            if ($counter['total'] > 0) {
+                $imageIndex = ($counter['index'] % $counter['total']) + 1;
+                $afbeelding = $baseName . '-' . $imageIndex . '.png';
+                $counter['index']++;
+            } else {
+                $afbeelding = $baseName . '.png';
+            }
 
             Accommodatie::create([
                 'titel' => $name,
@@ -36,7 +59,7 @@ class AccommodatieSeeder extends Seeder
                 'min_personen' => rand(1, 4),
                 'max_personen' => rand(4, 10),
                 'prijs_per_nacht' => rand(50, 250) + 0.50,
-                'afbeelding' => strtolower(str_replace(' ', '-', $type)) . '.jpg',
+                'afbeelding' => $afbeelding,
                 'latitude' => $coords[1],
                 'longitude' => $coords[0],
                 'status' => 'beschikbaar',
