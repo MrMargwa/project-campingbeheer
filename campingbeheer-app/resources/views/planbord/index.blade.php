@@ -37,11 +37,14 @@
         <table class="mx-auto w-full text-xs">
             <thead>
                 <tr class="border-b border-border bg-secondary/50">
-                    <th class="sticky left-0 z-10 min-w-[8rem] bg-secondary/50 px-2 py-1.5 text-left font-medium text-muted">Accommodatie</th>
+                    <th class="sticky left-0 z-10 min-w-[7rem] bg-secondary/50 px-2 py-1.5 text-left font-medium text-muted">Accommodatie</th>
                     @foreach($days as $day)
-                        <th class="min-w-[4rem] border-r border-border px-1 py-1.5 text-center font-medium last:border-r-0 {{ $day['isToday'] ? 'text-accent' : 'text-muted' }}">
-                            <div class="text-[10px] uppercase leading-tight">{{ $day['label'] }}</div>
-                            <div class="mt-0 leading-tight font-semibold">{{ \Carbon\Carbon::parse($day['date'])->format('d-m') }}</div>
+                        @php
+                            $isWeekend = in_array($day['label'], ['za', 'zo']);
+                        @endphp
+                        <th class="min-w-[2.5rem] border-r border-border px-1 py-1 text-center font-medium last:border-r-0 {{ $day['isToday'] ? 'text-accent' : 'text-muted' }} {{ $isWeekend ? 'bg-secondary/80' : '' }}">
+                            <div class="text-[9px] uppercase leading-tight">{{ $day['label'] }}</div>
+                            <div class="mt-0 text-[11px] leading-tight font-bold">{{ \Carbon\Carbon::parse($day['date'])->format('d-m') }}</div>
                         </th>
                     @endforeach
                 </tr>
@@ -51,13 +54,14 @@
                     @php
                         $accommodatieBoekingen = $boekingen->get($accommodatie->id, collect());
                     @endphp
-                    <tr class="border-b border-border last:border-b-0">
+                    <tr class="border-b border-border last:border-b-0 hover:bg-black/[0.03]">
                         <td class="sticky left-0 z-10 bg-surface px-2 py-1 font-medium text-primary">
                             {{ $accommodatie->titel }}
                         </td>
                         @foreach($days as $day)
                         @php
                                 $date = $day['date'];
+                                $isWeekend = in_array($day['label'], ['za', 'zo']);
 
                                 $hasCheckin = false;
                                 $hasCheckout = false;
@@ -107,7 +111,7 @@
                                     $label = '';
                                 }
                             @endphp
-                            <td class="planbord-cell border-r border-border px-1 py-1 text-center align-middle last:border-r-0 {{ $cellClass }} {{ count($cellBookings) > 0 ? 'cursor-pointer' : '' }}"
+                            <td class="planbord-cell border-r border-border px-0.5 py-0.5 text-center align-middle last:border-r-0 {{ $cellClass }} {{ count($cellBookings) > 0 ? 'cursor-pointer' : '' }}"
                                 @if(count($cellBookings) > 0) data-tooltip="{{ json_encode([
                                     'verblijf' => $accommodatie->titel,
                                     'boekingen' => $cellBookings,
@@ -139,7 +143,7 @@
             Check-in
         </div>
         <div class="flex items-center gap-1">
-            <span class="inline-block h-3 w-3 rounded-sm" style="background: linear-gradient(to bottom right, #f87171 50%, #86efac 50%);"></span>
+            <span class="inline-block h-3 w-3 rounded-sm" style="background: linear-gradient(to top right, #f87171 50%, #86efac 50%);"></span>
             Check-out
         </div>
         <div class="flex items-center gap-1">
@@ -158,13 +162,16 @@
         background: linear-gradient(to bottom right, #86efac 50%, #f87171 50%);
     }
     .diagonal-checkout {
-        background: linear-gradient(to bottom right, #f87171 50%, #86efac 50%);
+        background: linear-gradient(to top right, #f87171 50%, #86efac 50%);
     }
     .diagonal-wissel {
         background:
             linear-gradient(to top left, #f87171 50%, transparent 50%),
             linear-gradient(to top right, #f87171 50%, transparent 50%),
             #86efac;
+    }
+    tbody tr:hover td.sticky {
+        background-color: #f0f2f1;
     }
 </style>
 
