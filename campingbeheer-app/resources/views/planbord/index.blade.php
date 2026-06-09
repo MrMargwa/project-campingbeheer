@@ -69,13 +69,20 @@
                                     $vertrek = $boeking->vertrek_datum;
                                     $gast = $boeking->gebruiker?->naam ?? 'Onbekend';
 
+                                    $aankomstTijd = $boeking->aankomst_tijd
+                                        ? ' (' . ($boeking->aankomst_tijd === 'middag' ? "'s Middags" : "'s Ochtends") . ')'
+                                        : '';
+                                    $vertrekTijd = $boeking->vertrek_tijd
+                                        ? ' (' . ($boeking->vertrek_tijd === 'middag' ? "'s Middags" : "'s Ochtends") . ')'
+                                        : '';
+
                                     if ($date === $aankomst) {
                                         $hasCheckin = true;
-                                        $guestNames[] = 'In: ' . $gast;
+                                        $guestNames[] = 'In: ' . $gast . $aankomstTijd;
                                     }
                                     if ($date === $vertrek) {
                                         $hasCheckout = true;
-                                        $guestNames[] = 'Uit: ' . $gast;
+                                        $guestNames[] = 'Uit: ' . $gast . $vertrekTijd;
                                     }
                                     if ($date > $aankomst && $date < $vertrek) {
                                         $isOccupied = true;

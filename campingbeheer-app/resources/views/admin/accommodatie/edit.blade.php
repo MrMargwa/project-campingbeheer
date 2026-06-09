@@ -7,17 +7,19 @@
 #map-form {
     border-radius: 0.75rem;
 }
-#map-form .leaflet-div-icon {
-    background: none !important;
-    border: none !important;
-}
 .pin-marker {
-    width: 24px;
-    height: 24px;
-    background: #2A6A4E;
-    border: 3px solid #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    width: 36px;
+    height: 36px;
+    background: #dc2626;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #fff;
 }
 </style>
 @endpush
@@ -266,6 +268,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }).addTo(map);
 
     var marker = null;
+    var areaColors = {
+        'Chalets': '#2A6A4E', 'Blokhutten': '#8B4513', 'Safaritenten': '#D97706',
+        'Vakantiehuisjes': '#7C3AED', 'Campings': '#2563EB', 'Parkeerplaats': '#6B7280',
+    };
+
+    fetch('/data.geojson')
+        .then(function (r) { return r.json(); })
+        .then(function (geojson) {
+            L.geoJSON(geojson, {
+                filter: function (f) { return f.geometry.type === 'Polygon'; },
+                style: function (f) {
+                    var c = areaColors[f.properties.name] || '#647069';
+                    return { color: c, weight: 2, opacity: 0.8, fillColor: c, fillOpacity: 0.12 };
+                }
+            }).addTo(map);
+        });
+
+    var bestaande = @json($accommodaties);
+    var huidigId = {{ $accommodatie->id }};
+    bestaande.forEach(function (acc) {
+        if (acc.id === huidigId) return;
+        if (acc.latitude && acc.longitude) {
+            L.circleMarker([acc.latitude, acc.longitude], {
+                radius: 5, color: '#647069', fillColor: '#647069',
+                fillOpacity: 0.5, weight: 2, opacity: 0.7,
+            }).addTo(map)
+            .bindTooltip(acc.titel, { direction: 'top', offset: [0, -6] });
+        }
+    });
 
     function placeMarker(lat, lng) {
         if (marker) {
@@ -274,9 +305,9 @@ document.addEventListener('DOMContentLoaded', function () {
             marker = L.marker([lat, lng], {
                 icon: L.divIcon({
                     className: '',
-                    html: '<div class="pin-marker"></div>',
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12],
+                    html: '<div class="pin-marker">+</div>',
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18],
                 })
             }).addTo(map);
         }
