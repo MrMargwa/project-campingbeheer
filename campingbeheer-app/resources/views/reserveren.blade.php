@@ -124,95 +124,7 @@
     {{-- Detail card --}}
     <div id="detail-card" class="hidden mt-8"></div>
 
-    {{-- Reserveer Modal --}}
-    <div id="reserveer-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center bg-black/60 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
-                <h3 class="text-lg font-semibold text-primary" id="modal-title">Reserveren</h3>
-                <button type="button" onclick="closeReserveerModal()" class="text-muted hover:text-primary text-2xl leading-none bg-transparent border-0 cursor-pointer">&times;</button>
-            </div>
-            <form id="reserveer-form" class="p-6 space-y-4">
-                <input type="hidden" name="accommodatie_id" id="modal-accommodatie-id">
-
-                <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Volledige naam</label>
-                    <input type="text" name="naam" required
-                        class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Email</label>
-                        <input type="email" name="email" required
-                            class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Telefoonnummer</label>
-                        <input type="tel" name="telefoon" required
-                            class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Postcode</label>
-                        <input type="text" name="postcode" id="postcode-input" maxlength="7" required
-                            class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none uppercase"
-                            placeholder="1234 AB">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Huisnummer</label>
-                        <input type="text" name="huisnummer" id="huisnummer-input" required
-                            class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                    </div>
-                    <div class="flex items-end">
-                        <button type="button" id="postcode-zoeken" disabled
-                            class="w-full bg-secondary text-primary font-medium px-3 py-2 rounded-lg text-sm border border-border cursor-not-allowed opacity-50">
-                            Zoeken
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Straatnaam</label>
-                    <input type="text" name="straat" id="straat-input" required
-                        class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Plaatsnaam</label>
-                        <input type="text" name="plaats" id="plaats-input" required
-                            class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Land</label>
-                        <input type="text" name="land" value="Nederland" required
-                            class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Aantal personen</label>
-                    <input type="number" name="aantal_personen" min="1" max="99" required
-                        class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Opmerking</label>
-                    <textarea name="opmerking" rows="3"
-                        class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none resize-none"></textarea>
-                </div>
-
-                <div id="reserveer-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
-
-                <button type="submit" id="reserveer-submit"
-                    class="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">
-                    Reservering Bevestigen
-                </button>
-            </form>
-        </div>
-    </div>
+    @include('partials.reserveer-modal')
 @endsection
 
 @section('scripts')
@@ -255,7 +167,9 @@
                 };
 
                 fetch('/data.geojson')
-                    .then(function(r) { return r.json(); })
+                    .then(function(r) {
+                        return r.json();
+                    })
                     .then(function(geojson) {
                         L.geoJSON(geojson, {
                             filter: function(feature) {
@@ -479,7 +393,8 @@
                         '</div>',
                         '<div class="mt-auto pt-3 border-t border-border flex justify-end">',
                         (free && acc.id) ? '<button type="button" data-id="' + acc.id +
-'" data-titel="' + esc(acc.titel) + '" class="reserveer-btn bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">Reserveer Nu</button>' :
+                        '" data-titel="' + esc(acc.titel) +
+                        '" class="reserveer-btn bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">Reserveer Nu</button>' :
                         '<span class="text-sm text-muted italic">Deze accommodatie is momenteel niet beschikbaar voor reservering.</span>',
                         '</div>',
                         '</div>',
@@ -614,7 +529,9 @@
                 '&number=' + encodeURIComponent(huisnummer || '');
 
             return fetch(url, {
-                    headers: { 'Authorization': 'Bearer ' + POSTCODE_API_KEY }
+                    headers: {
+                        'Authorization': 'Bearer ' + POSTCODE_API_KEY
+                    }
                 })
                 .then(function(r) {
                     if (!r.ok) throw new Error();
@@ -638,11 +555,18 @@
                 if (huisnummer) fqParts.push('huisnummer:' + encodeURIComponent(huisnummer));
                 var url = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free' +
                     '?q=*:*&rows=1&fq=' + fqParts.join('&fq=');
-                return fetch(url).then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+                return fetch(url).then(function(r) {
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
                     .then(function(json) {
                         var doc = json.response?.docs?.[0];
                         if (!doc) throw new Error();
-                        return { straat: doc.straatnaam || '', plaats: doc.woonplaatsnaam || doc.city || '', land: 'Nederland' };
+                        return {
+                            straat: doc.straatnaam || '',
+                            plaats: doc.woonplaatsnaam || doc.city || '',
+                            land: 'Nederland'
+                        };
                     });
             }
 
@@ -652,26 +576,46 @@
                 var url = 'https://nominatim.openstreetmap.org/search' +
                     '?q=' + encodeURIComponent(query) +
                     '&format=json&addressdetails=1&countrycodes=nl&limit=1';
-                return fetch(url, { headers: { 'User-Agent': 'Campingbeheer-App/1.0' } })
-                    .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+                return fetch(url, {
+                        headers: {
+                            'User-Agent': 'Campingbeheer-App/1.0'
+                        }
+                    })
+                    .then(function(r) {
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
                     .then(function(json) {
                         if (!json || json.length === 0) throw new Error();
                         var addr = json[0].address || {};
-                        return { straat: addr.road || addr.street || '', plaats: addr.city || addr.town || addr.village || addr.place || '', land: addr.country || 'Nederland' };
+                        return {
+                            straat: addr.road || addr.street || '',
+                            plaats: addr.city || addr.town || addr.village || addr.place || '',
+                            land: addr.country || 'Nederland'
+                        };
                     });
             }
 
             function tryZippopotam() {
                 var url = 'https://api.zippopotam.us/NL/' + encodeURIComponent(normalized);
-                return fetch(url).then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+                return fetch(url).then(function(r) {
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
                     .then(function(json) {
                         var place = json.places?.[0];
                         if (!place) return null;
-                        return { straat: '', plaats: place['place name'] || place.city || '', land: json.country || 'Netherlands' };
+                        return {
+                            straat: '',
+                            plaats: place['place name'] || place.city || '',
+                            land: json.country || 'Netherlands'
+                        };
                     });
             }
 
-            return tryPDOK().catch(tryNominatim).catch(tryZippopotam).catch(function() { return null; });
+            return tryPDOK().catch(tryNominatim).catch(tryZippopotam).catch(function() {
+                return null;
+            });
         }
 
         function showAddressError(msg) {
@@ -694,45 +638,45 @@
             errorEl.classList.add('hidden');
 
             fetch('/reserveren', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                    'Accept': 'application/json',
-                },
-                body: formData,
-            })
-            .then(function(r) {
-                if (!r.ok) {
-                    return r.json().then(function(err) {
-                        throw err;
-                    });
-                }
-                return r.json();
-            })
-            .then(function(data) {
-                if (data.success) {
-                    closeReserveerModal();
-                    alert(data.message || 'Reservering succesvol!');
-                    form.reset();
-                }
-            })
-            .catch(function(err) {
-                var msg = 'Er is een fout opgetreden. Probeer opnieuw.';
-                if (err.errors) {
-                    var firstKey = Object.keys(err.errors)[0];
-                    if (firstKey) {
-                        msg = err.errors[firstKey][0];
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                })
+                .then(function(r) {
+                    if (!r.ok) {
+                        return r.json().then(function(err) {
+                            throw err;
+                        });
                     }
-                } else if (err.message) {
-                    msg = err.message;
-                }
-                errorEl.textContent = msg;
-                errorEl.classList.remove('hidden');
-            })
-            .finally(function() {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Reservering Bevestigen';
-            });
+                    return r.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        closeReserveerModal();
+                        alert(data.message || 'Reservering succesvol!');
+                        form.reset();
+                    }
+                })
+                .catch(function(err) {
+                    var msg = 'Er is een fout opgetreden. Probeer opnieuw.';
+                    if (err.errors) {
+                        var firstKey = Object.keys(err.errors)[0];
+                        if (firstKey) {
+                            msg = err.errors[firstKey][0];
+                        }
+                    } else if (err.message) {
+                        msg = err.message;
+                    }
+                    errorEl.textContent = msg;
+                    errorEl.classList.remove('hidden');
+                })
+                .finally(function() {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Reservering Bevestigen';
+                });
         });
     </script>
 @endsection
