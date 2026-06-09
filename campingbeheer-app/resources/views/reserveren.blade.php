@@ -251,8 +251,8 @@
                     }).addTo(map);
 
                     marker.bindTooltip(
-                        '<strong>' + esc(transField(acc, 'titel')) + '</strong><br>' +
-                        esc(transField(acc, 'type')) + ' &middot; ' +
+                        '<strong>' + esc(acc.titel) + '</strong><br>' +
+                        esc(acc.type) + ' &middot; ' +
                         (acc.prijs_per_nacht > 0 ? '&euro;' + parseFloat(acc.prijs_per_nacht)
                             .toFixed(2) + window.__('reserve.per_night') : '') +
                         '<br><span style="color:' + statusColor(acc) + ';font-weight:500">' +
@@ -367,12 +367,12 @@
                 function showDetail(acc) {
                     var free = isAvailable(acc);
                     var price = '&euro;' + parseFloat(acc.prijs_per_nacht).toFixed(2);
-                    var accType = transField(acc, 'type');
+                    var accType = acc.type;
                     var typeColor = typeColors[acc.type] || '#647069';
                     var statusLabel = free ? 'Beschikbaar' : 'Niet beschikbaar';
                     var statusColorVal = free ? '#2A6A4E' : '#BD4C4C';
-                    var accTitle = transField(acc, 'titel');
-                    var accDesc = transField(acc, 'beschrijving');
+                    var accTitle = acc.titel;
+                    var accDesc = acc.beschrijving;
 
                     // Build image HTML with fallback
                     var imgHtml = '';
