@@ -10,8 +10,11 @@ class Accommodatie extends Model
 {
     protected $fillable = [
         'titel',
+        'titel_en', 'titel_de', 'titel_fy',
         'type',
+        'type_en', 'type_de', 'type_fy',
         'beschrijving',
+        'beschrijving_en', 'beschrijving_de', 'beschrijving_fy',
         'min_personen',
         'max_personen',
         'prijs_per_nacht',
@@ -32,5 +35,23 @@ class Accommodatie extends Model
     public function kenmerken(): BelongsToMany
     {
         return $this->belongsToMany(Kenmerk::class, 'accommodatie_kenmerk', 'accommodatie_id', 'kenmerk_id');
+    }
+
+    public function vertaaldeTitel(string $locale): string
+    {
+        $col = 'titel_' . $locale;
+        return $this->$col ?: $this->titel;
+    }
+
+    public function vertaaldeBeschrijving(string $locale): string
+    {
+        $col = 'beschrijving_' . $locale;
+        return $this->$col ?: $this->beschrijving;
+    }
+
+    public function vertaaldType(string $locale): string
+    {
+        $col = 'type_' . $locale;
+        return $this->$col ?: $this->type;
     }
 }

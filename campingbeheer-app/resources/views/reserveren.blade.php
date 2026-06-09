@@ -44,6 +44,7 @@
     @include('partials.banner', [
         'title' => 'Reserveren',
         'image' => 'https://www.torentjeshoek.nl/images/dummy/E-veld_Torentjeshoek.JPG',
+        'i18nKey' => 'reserve.title',
     ])
 
     <section class="flex flex-col lg:flex-row gap-8">
@@ -60,17 +61,18 @@
                 <fieldset>
                     <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide">Type</legend>
                     <div class="space-y-2" id="type-filters">
-                        @foreach ([
-            'Chalet' => 'Chalets',
-            'Blokhut' => 'Blokhutten',
-            'Safaritent' => 'Safaritenten',
-            'Vakantiehuis' => 'Vakantiehuisjes',
-            'Camping' => 'Campings',
-        ] as $value => $label)
+                        @php
+                            $resTypes = \App\Models\Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+                                ->distinct('type')
+                                ->get()
+                                ->keyBy('type');
+                        @endphp
+                        @foreach ($resTypes as $typeKey => $typeRow)
+                            @php $typeLabel = $typeRow->{'type_' . $locale} ?: $typeKey; @endphp
                             <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
-                                <input type="checkbox" value="{{ $value }}" checked
+                                <input type="checkbox" value="{{ $typeKey }}" checked
                                     class="filter-type w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
-                                {{ $label }}
+                                {{ $typeLabel }}
                             </label>
                         @endforeach
                     </div>
@@ -84,13 +86,13 @@
                             <input type="checkbox" value="beschikbaar" checked id="filter-beschikbaar"
                                 class="filter-status w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
                             <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#2A6A4E]"></span>
-                            Beschikbaar
+                            <span data-i18n="reserve.available">Beschikbaar</span>
                         </label>
                         <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
                             <input type="checkbox" value="niet_beschikbaar" checked id="filter-niet-beschikbaar"
                                 class="filter-status w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
                             <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#BD4C4C]"></span>
-                            Niet beschikbaar
+                            <span data-i18n="reserve.not_available">Niet beschikbaar</span>
                         </label>
                     </div>
                 </fieldset>
@@ -99,6 +101,19 @@
     </section>
 
     {{-- Legenda --}}
+    @php
+        $legendTypes = \App\Models\Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+            ->distinct('type')
+            ->get()
+            ->keyBy('type');
+        $legendColors = [
+            'Chalet' => '#2A6A4E',
+            'Blokhut' => '#8B4513',
+            'Safaritent' => '#D97706',
+            'Vakantiehuis' => '#7C3AED',
+            'Camping' => '#2563EB',
+        ];
+    @endphp
     <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
         <span class="font-medium text-primary">Legenda</span>
         <span class="inline-flex items-center gap-1.5">
@@ -236,10 +251,10 @@
                     }).addTo(map);
 
                     marker.bindTooltip(
-                        '<strong>' + esc(acc.titel) + '</strong><br>' +
-                        esc(acc.type) + ' &middot; ' +
+                        '<strong>' + esc(transField(acc, 'titel')) + '</strong><br>' +
+                        esc(transField(acc, 'type')) + ' &middot; ' +
                         (acc.prijs_per_nacht > 0 ? '&euro;' + parseFloat(acc.prijs_per_nacht)
-                            .toFixed(2) + '/nacht' : '') +
+                            .toFixed(2) + window.__('reserve.per_night') : '') +
                         '<br><span style="color:' + statusColor(acc) + ';font-weight:500">' +
                         (isAvailable(acc) ? 'Beschikbaar' : 'Niet beschikbaar') + '</span>', {
                             direction: 'top',
@@ -352,20 +367,23 @@
                 function showDetail(acc) {
                     var free = isAvailable(acc);
                     var price = '&euro;' + parseFloat(acc.prijs_per_nacht).toFixed(2);
+                    var accType = transField(acc, 'type');
                     var typeColor = typeColors[acc.type] || '#647069';
                     var statusLabel = free ? 'Beschikbaar' : 'Niet beschikbaar';
                     var statusColorVal = free ? '#2A6A4E' : '#BD4C4C';
+                    var accTitle = transField(acc, 'titel');
+                    var accDesc = transField(acc, 'beschrijving');
 
                     // Build image HTML with fallback
                     var imgHtml = '';
                     if (acc.afbeelding) {
-                        imgHtml = '<img src="' + esc('/images/' + acc.afbeelding) + '" alt="' + esc(acc.titel) +
+                        imgHtml = '<img src="' + esc('/images/' + acc.afbeelding) + '" alt="' + esc(accTitle) +
                             '" class="w-full h-full object-cover" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"><div class="hidden w-full h-full items-center justify-center bg-secondary text-muted text-sm font-medium" style="display:none">' +
-                            esc(acc.type) + '</div>';
+                            esc(accType) + '</div>';
                     } else {
                         imgHtml =
                             '<div class="w-full h-full flex items-center justify-center bg-secondary text-muted text-sm font-medium">' +
-                            esc(acc.type) + '</div>';
+                            esc(accType) + '</div>';
                     }
 
                     detailCard.innerHTML = [
@@ -378,7 +396,7 @@
                         '<h3 class="font-semibold text-primary text-xl">' + esc(acc.titel) + '</h3>',
                         '<button id="detail-close" class="bg-transparent border-0 cursor-pointer text-muted hover:text-primary transition text-xl leading-none shrink-0" aria-label="Sluiten">&times;</button>',
                         '</div>',
-                        acc.type ?
+                        accType ?
                         '<span class="inline-block self-start px-2.5 py-0.5 rounded-full text-xs font-medium" style="background:' +
                         typeColor + '15;color:' + typeColor + ';text-transform:capitalize">' + esc(acc
                             .type) + '</span>' : '',
@@ -387,7 +405,7 @@
                         '<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">',
                         '<span>' + acc.min_personen + '-' + acc.max_personen + ' personen</span>',
                         acc.prijs_per_nacht > 0 ? '<span class="font-semibold" style="color:' + typeColor +
-                        '">' + price + ' / nacht</span>' : '',
+                        '">' + price + ' ' + window.__('reserve.per_night') + '</span>' : '',
                         '<span class="inline-flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:' +
                         statusColorVal + '"></span>' + statusLabel + '</span>',
                         '</div>',
@@ -434,7 +452,7 @@
         // --- Reserveer Modal ---
         function openReserveerModal(id, titel) {
             document.getElementById('modal-accommodatie-id').value = id;
-            document.getElementById('modal-title').textContent = 'Reserveren: ' + titel;
+            document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', titel);
             document.getElementById('reserveer-modal').classList.remove('hidden');
             document.getElementById('reserveer-modal').classList.add('flex');
             document.body.style.overflow = 'hidden';
@@ -489,7 +507,7 @@
 
             var btn = this;
             btn.disabled = true;
-            btn.textContent = 'Zoeken...';
+            btn.textContent = window.__('reserve.form.searching');
 
             fetchAddressByPostcode(postcode, huisnummer)
                 .then(function(data) {
@@ -505,15 +523,15 @@
                         }
                         document.getElementById('reserveer-error').classList.add('hidden');
                     } else {
-                        showAddressError('Adres niet gevonden voor deze postcode.');
+                        showAddressError(window.__('reserve.form.address_not_found'));
                     }
                 })
                 .catch(function() {
-                    showAddressError('Kon adres niet ophalen. Vul handmatig in.');
+                    showAddressError(window.__('reserve.form.address_fetch_error'));
                 })
                 .finally(function() {
                     btn.disabled = false;
-                    btn.textContent = 'Zoeken';
+                    btn.textContent = window.__('reserve.form.search');
                 });
         });
 
@@ -634,7 +652,7 @@
             var errorEl = document.getElementById('reserveer-error');
 
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Bezig...';
+            submitBtn.textContent = window.__('reserve.form.confirming');
             errorEl.classList.add('hidden');
 
             fetch('/reserveren', {
