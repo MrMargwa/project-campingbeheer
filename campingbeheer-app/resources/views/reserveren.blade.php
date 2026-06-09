@@ -44,6 +44,7 @@
     @include('partials.banner', [
         'title' => 'Reserveren',
         'image' => 'https://www.torentjeshoek.nl/images/dummy/E-veld_Torentjeshoek.JPG',
+        'i18nKey' => 'reserve.title',
     ])
 
     <section class="flex flex-col lg:flex-row gap-8">
@@ -54,23 +55,24 @@
 
         <aside class="w-full lg:w-72 shrink-0" style="height: 600px">
             <div class="h-full bg-surface border border-border rounded-xl shadow-sm p-5 flex flex-col gap-5 overflow-y-auto">
-                <h2 class="font-semibold text-primary text-sm uppercase tracking-wide">Filters</h2>
+                <h2 class="font-semibold text-primary text-sm uppercase tracking-wide" data-i18n="reserve.filters">Filters</h2>
 
                 {{-- Type filters --}}
                 <fieldset>
-                    <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide">Type</legend>
+                    <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide" data-i18n="reserve.type">Type</legend>
                     <div class="space-y-2" id="type-filters">
-                        @foreach ([
-            'Chalet' => 'Chalets',
-            'Blokhut' => 'Blokhutten',
-            'Safaritent' => 'Safaritenten',
-            'Vakantiehuis' => 'Vakantiehuisjes',
-            'Camping' => 'Campings',
-        ] as $value => $label)
+                        @php
+                            $resTypes = \App\Models\Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+                                ->distinct('type')
+                                ->get()
+                                ->keyBy('type');
+                        @endphp
+                        @foreach ($resTypes as $typeKey => $typeRow)
+                            @php $typeLabel = $typeRow->{'type_' . $locale} ?: $typeKey; @endphp
                             <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
-                                <input type="checkbox" value="{{ $value }}" checked
+                                <input type="checkbox" value="{{ $typeKey }}" checked
                                     class="filter-type w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
-                                {{ $label }}
+                                {{ $typeLabel }}
                             </label>
                         @endforeach
                     </div>
@@ -78,19 +80,19 @@
 
                 {{-- Status filters --}}
                 <fieldset>
-                    <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide">Status</legend>
+                    <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide" data-i18n="reserve.status">Status</legend>
                     <div class="space-y-2">
                         <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
                             <input type="checkbox" value="beschikbaar" checked id="filter-beschikbaar"
                                 class="filter-status w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
                             <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#2A6A4E]"></span>
-                            Beschikbaar
+                            <span data-i18n="reserve.available">Beschikbaar</span>
                         </label>
                         <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
                             <input type="checkbox" value="niet_beschikbaar" checked id="filter-niet-beschikbaar"
                                 class="filter-status w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
                             <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#BD4C4C]"></span>
-                            Niet beschikbaar
+                            <span data-i18n="reserve.not_available">Niet beschikbaar</span>
                         </label>
                     </div>
                 </fieldset>
@@ -99,25 +101,29 @@
     </section>
 
     {{-- Legenda --}}
+    @php
+        $legendTypes = \App\Models\Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+            ->distinct('type')
+            ->get()
+            ->keyBy('type');
+        $legendColors = [
+            'Chalet' => '#2A6A4E',
+            'Blokhut' => '#8B4513',
+            'Safaritent' => '#D97706',
+            'Vakantiehuis' => '#7C3AED',
+            'Camping' => '#2563EB',
+        ];
+    @endphp
     <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
-        <span class="font-medium text-primary">Legenda</span>
+        <span class="font-medium text-primary" data-i18n="reserve.legend">Legenda</span>
+        @foreach ($legendTypes as $typeKey => $typeRow)
+            @php $legLabel = $typeRow->{'type_' . $locale} ?: $typeKey; @endphp
+            <span class="inline-flex items-center gap-1.5">
+                <span class="inline-block w-3 h-3 rounded-sm" style="background:{{ $legendColors[$typeKey] ?? '#647069' }}"></span> {{ $legLabel }}
+            </span>
+        @endforeach
         <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#2A6A4E"></span> Chalets
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#8B4513"></span> Blokhutten
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#D97706"></span> Safaritenten
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#7C3AED"></span> Vakantiehuisjes
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#2563EB"></span> Campings
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#6B7280"></span> Parkeerplaats
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#6B7280"></span> <span data-i18n="reserve.parking">Parkeerplaats</span>
         </span>
     </div>
 
@@ -128,26 +134,26 @@
     <div id="reserveer-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center bg-black/60 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
             <div class="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
-                <h3 class="text-lg font-semibold text-primary" id="modal-title">Reserveren</h3>
+                <h3 class="text-lg font-semibold text-primary" id="modal-title" data-i18n="reserve.modal_title">Reserveren</h3>
                 <button type="button" onclick="closeReserveerModal()" class="text-muted hover:text-primary text-2xl leading-none bg-transparent border-0 cursor-pointer">&times;</button>
             </div>
             <form id="reserveer-form" class="p-6 space-y-4">
                 <input type="hidden" name="accommodatie_id" id="modal-accommodatie-id">
 
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Volledige naam</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.name">Volledige naam</label>
                     <input type="text" name="naam" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Email</label>
+                        <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.email">Email</label>
                         <input type="email" name="email" required
                             class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Telefoonnummer</label>
+                        <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.phone">Telefoonnummer</label>
                         <input type="tel" name="telefoon" required
                             class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                     </div>
@@ -155,51 +161,51 @@
 
                 <div class="grid grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Postcode</label>
+                        <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.postcode">Postcode</label>
                         <input type="text" name="postcode" id="postcode-input" maxlength="7" required
                             class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none uppercase"
                             placeholder="1234 AB">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Huisnummer</label>
+                        <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.house_number">Huisnummer</label>
                         <input type="text" name="huisnummer" id="huisnummer-input" required
                             class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                     </div>
                     <div class="flex items-end">
                         <button type="button" id="postcode-zoeken" disabled
-                            class="w-full bg-secondary text-primary font-medium px-3 py-2 rounded-lg text-sm border border-border cursor-not-allowed opacity-50">
+                            class="w-full bg-secondary text-primary font-medium px-3 py-2 rounded-lg text-sm border border-border cursor-not-allowed opacity-50" data-i18n="reserve.form.search">
                             Zoeken
                         </button>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Straatnaam</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.street">Straatnaam</label>
                     <input type="text" name="straat" id="straat-input" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Plaatsnaam</label>
+                        <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.city">Plaatsnaam</label>
                         <input type="text" name="plaats" id="plaats-input" required
                             class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-primary mb-1">Land</label>
+                        <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.country">Land</label>
                         <input type="text" name="land" value="Nederland" required
                             class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Aantal personen</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.persons_count">Aantal personen</label>
                     <input type="number" name="aantal_personen" min="1" max="99" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Opmerking</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.remarks">Opmerking</label>
                     <textarea name="opmerking" rows="3"
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none resize-none"></textarea>
                 </div>
@@ -207,7 +213,7 @@
                 <div id="reserveer-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
 
                 <button type="submit" id="reserveer-submit"
-                    class="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">
+                    class="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg transition text-sm border-0 cursor-pointer" data-i18n="reserve.form.confirm">
                     Reservering Bevestigen
                 </button>
             </form>
@@ -217,11 +223,20 @@
 
 @section('scripts')
     <script>
+        document.addEventListener('locale-changed', function() { location.reload(); });
+
         var POSTCODE_API_KEY = '{{ $postcodeApiKey }}';
 
         document.addEventListener('DOMContentLoaded', function() {
             (function() {
                 'use strict';
+
+                // --- Locale ---
+                const pageLocale = '{{ $locale }}';
+                function transField(obj, base) {
+                    var val = obj[base + '_' + pageLocale];
+                    return val ? val : obj[base];
+                }
 
                 // --- Data ---
                 const accommodations = @json($accommodaties);
@@ -322,12 +337,12 @@
                     }).addTo(map);
 
                     marker.bindTooltip(
-                        '<strong>' + esc(acc.titel) + '</strong><br>' +
-                        esc(acc.type) + ' &middot; ' +
+                        '<strong>' + esc(transField(acc, 'titel')) + '</strong><br>' +
+                        esc(transField(acc, 'type')) + ' &middot; ' +
                         (acc.prijs_per_nacht > 0 ? '&euro;' + parseFloat(acc.prijs_per_nacht)
-                            .toFixed(2) + '/nacht' : '') +
+                            .toFixed(2) + window.__('reserve.per_night') : '') +
                         '<br><span style="color:' + statusColor(acc) + ';font-weight:500">' +
-                        (isAvailable(acc) ? 'Beschikbaar' : 'Niet beschikbaar') + '</span>', {
+                        (isAvailable(acc) ? window.__('reserve.available') : window.__('reserve.not_available')) + '</span>', {
                             direction: 'top',
                             offset: [0, -10]
                         }
@@ -425,33 +440,44 @@
                 }
 
                 // --- Detail card ---
-                var typeColors = {
-                    'Chalet': '#2A6A4E',
-                    'Blokhut': '#8B4513',
-                    'Camperplaats': '#2563EB',
-                    'Camping': '#2563EB',
-                    'Safaritent': '#D97706',
-                    'Vakantiehuis': '#7C3AED',
-                    'Vakantiewoning': '#7C3AED',
-                };
+                var typeColors = {};
+
+                @php
+                    $typeColors = [
+                        'Chalet' => '#2A6A4E',
+                        'Blokhut' => '#8B4513',
+                        'Camperplaats' => '#2563EB',
+                        'Camping' => '#2563EB',
+                        'Safaritent' => '#D97706',
+                        'Vakantiehuis' => '#7C3AED',
+                        'Vakantiewoning' => '#7C3AED',
+                    ];
+                @endphp
+
+                @foreach ($typeColors as $tcKey => $tcValue)
+                typeColors['{{ $tcKey }}'] = '{{ $tcValue }}';
+                @endforeach
 
                 function showDetail(acc) {
                     var free = isAvailable(acc);
                     var price = '&euro;' + parseFloat(acc.prijs_per_nacht).toFixed(2);
+                    var accType = transField(acc, 'type');
                     var typeColor = typeColors[acc.type] || '#647069';
-                    var statusLabel = free ? 'Beschikbaar' : 'Niet beschikbaar';
+                    var statusLabel = free ? window.__('reserve.available') : window.__('reserve.not_available');
                     var statusColorVal = free ? '#2A6A4E' : '#BD4C4C';
+                    var accTitle = transField(acc, 'titel');
+                    var accDesc = transField(acc, 'beschrijving');
 
                     // Build image HTML with fallback
                     var imgHtml = '';
                     if (acc.afbeelding) {
-                        imgHtml = '<img src="' + esc('/images/' + acc.afbeelding) + '" alt="' + esc(acc.titel) +
+                        imgHtml = '<img src="' + esc('/images/' + acc.afbeelding) + '" alt="' + esc(accTitle) +
                             '" class="w-full h-full object-cover" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"><div class="hidden w-full h-full items-center justify-center bg-secondary text-muted text-sm font-medium" style="display:none">' +
-                            esc(acc.type) + '</div>';
+                            esc(accType) + '</div>';
                     } else {
                         imgHtml =
                             '<div class="w-full h-full flex items-center justify-center bg-secondary text-muted text-sm font-medium">' +
-                            esc(acc.type) + '</div>';
+                            esc(accType) + '</div>';
                     }
 
                     detailCard.innerHTML = [
@@ -461,26 +487,24 @@
                         '</div>',
                         '<div class="flex-1 p-6 flex flex-col gap-3">',
                         '<div class="flex items-start justify-between gap-3">',
-                        '<h3 class="font-semibold text-primary text-xl">' + esc(acc.titel) + '</h3>',
-                        '<button id="detail-close" class="bg-transparent border-0 cursor-pointer text-muted hover:text-primary transition text-xl leading-none shrink-0" aria-label="Sluiten">&times;</button>',
+                        '<h3 class="font-semibold text-primary text-xl">' + esc(accTitle) + '</h3>',
+                        '<button id="detail-close" class="bg-transparent border-0 cursor-pointer text-muted hover:text-primary transition text-xl leading-none shrink-0" aria-label="' + window.__('reserve.close') + '">&times;</button>',
                         '</div>',
-                        acc.type ?
+                        accType ?
                         '<span class="inline-block self-start px-2.5 py-0.5 rounded-full text-xs font-medium" style="background:' +
-                        typeColor + '15;color:' + typeColor + ';text-transform:capitalize">' + esc(acc
-                            .type) + '</span>' : '',
-                        acc.beschrijving ? '<p class="text-sm text-muted leading-relaxed">' + esc(acc
-                            .beschrijving) + '</p>' : '',
+                        typeColor + '15;color:' + typeColor + ';text-transform:capitalize">' + esc(accType) + '</span>' : '',
+                        accDesc ? '<p class="text-sm text-muted leading-relaxed">' + esc(accDesc) + '</p>' : '',
                         '<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">',
-                        '<span>' + acc.min_personen + '-' + acc.max_personen + ' personen</span>',
+                        '<span>' + acc.min_personen + '-' + acc.max_personen + ' ' + window.__('reserve.persons') + '</span>',
                         acc.prijs_per_nacht > 0 ? '<span class="font-semibold" style="color:' + typeColor +
-                        '">' + price + ' / nacht</span>' : '',
+                        '">' + price + ' ' + window.__('reserve.per_night') + '</span>' : '',
                         '<span class="inline-flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:' +
                         statusColorVal + '"></span>' + statusLabel + '</span>',
                         '</div>',
                         '<div class="mt-auto pt-3 border-t border-border flex justify-end">',
                         (free && acc.id) ? '<button type="button" data-id="' + acc.id +
-'" data-titel="' + esc(acc.titel) + '" class="reserveer-btn bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">Reserveer Nu</button>' :
-                        '<span class="text-sm text-muted italic">Deze accommodatie is momenteel niet beschikbaar voor reservering.</span>',
+'" data-titel="' + esc(acc.titel) + '" class="reserveer-btn bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">' + window.__('reserve.book_button') + '</button>' :
+                        '<span class="text-sm text-muted italic">' + window.__('reserve.not_available_text') + '</span>',
                         '</div>',
                         '</div>',
                         '</div>',
@@ -519,7 +543,7 @@
         // --- Reserveer Modal ---
         function openReserveerModal(id, titel) {
             document.getElementById('modal-accommodatie-id').value = id;
-            document.getElementById('modal-title').textContent = 'Reserveren: ' + titel;
+            document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', titel);
             document.getElementById('reserveer-modal').classList.remove('hidden');
             document.getElementById('reserveer-modal').classList.add('flex');
             document.body.style.overflow = 'hidden';
@@ -574,7 +598,7 @@
 
             var btn = this;
             btn.disabled = true;
-            btn.textContent = 'Zoeken...';
+            btn.textContent = window.__('reserve.form.searching');
 
             fetchAddressByPostcode(postcode, huisnummer)
                 .then(function(data) {
@@ -590,15 +614,15 @@
                         }
                         document.getElementById('reserveer-error').classList.add('hidden');
                     } else {
-                        showAddressError('Adres niet gevonden voor deze postcode.');
+                        showAddressError(window.__('reserve.form.address_not_found'));
                     }
                 })
                 .catch(function() {
-                    showAddressError('Kon adres niet ophalen. Vul handmatig in.');
+                    showAddressError(window.__('reserve.form.address_fetch_error'));
                 })
                 .finally(function() {
                     btn.disabled = false;
-                    btn.textContent = 'Zoeken';
+                    btn.textContent = window.__('reserve.form.search');
                 });
         });
 
@@ -690,7 +714,7 @@
             var errorEl = document.getElementById('reserveer-error');
 
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Bezig...';
+            submitBtn.textContent = window.__('reserve.form.confirming');
             errorEl.classList.add('hidden');
 
             fetch('/reserveren', {
@@ -712,12 +736,12 @@
             .then(function(data) {
                 if (data.success) {
                     closeReserveerModal();
-                    alert(data.message || 'Reservering succesvol!');
+                    alert(data.message || window.__('reserve.form.success'));
                     form.reset();
                 }
             })
             .catch(function(err) {
-                var msg = 'Er is een fout opgetreden. Probeer opnieuw.';
+                var msg = window.__('reserve.form.generic_error');
                 if (err.errors) {
                     var firstKey = Object.keys(err.errors)[0];
                     if (firstKey) {
@@ -731,7 +755,7 @@
             })
             .finally(function() {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Reservering Bevestigen';
+                submitBtn.textContent = window.__('reserve.form.confirm');
             });
         });
     </script>

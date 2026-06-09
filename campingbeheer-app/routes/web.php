@@ -8,13 +8,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+function getLocale(): string
+{
+    $supported = ['nl', 'en', 'de', 'fy'];
+    $locale = request()->cookie('locale', 'nl');
+    if (!in_array($locale, $supported, true)) {
+        $locale = 'nl';
+    }
+    return $locale;
+}
+
 // Home Route
 Route::get('/', function () {
+    $locale = getLocale();
     $accommodaties = Accommodatie::with('kenmerken')->get();
-    $types = Accommodatie::select('type')->distinct()->pluck('type');
+    $types = Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+        ->distinct('type')
+        ->get()
+        ->keyBy('type');
     $kenmerken = Kenmerk::all();
 
-    return view('home', compact('accommodaties', 'types', 'kenmerken'));
+    return view('home', compact('accommodaties', 'types', 'kenmerken', 'locale'));
 })->name('home');
 
 // Reserveren Routes

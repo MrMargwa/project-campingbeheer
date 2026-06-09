@@ -11,6 +11,7 @@ class Kenmerk extends Model
 
     protected $fillable = [
         'naam',
+        'naam_en', 'naam_de', 'naam_fy',
     ];
 
     public const CREATED_AT = 'aangemaakt_op';
@@ -19,5 +20,11 @@ class Kenmerk extends Model
     public function verblijven(): BelongsToMany
     {
         return $this->belongsToMany(Accommodatie::class, 'accommodatie_kenmerk', 'kenmerk_id', 'accommodatie_id');
+    }
+
+    public function vertaaldeNaam(string $locale): string
+    {
+        $col = 'naam_' . $locale;
+        return $this->$col ?: $this->naam;
     }
 }
