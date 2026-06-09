@@ -92,5 +92,30 @@
     "admin.edit.title": "{name} bewerken",
     "admin.edit.map_hint": "Pas de gegevens aan of klik op de kaart om de locatie te wijzigen.",
     "admin.edit.submit": "Wijzigingen opslaan",
-    "admin.edit.cancel": "Annuleren"
+    "admin.edit.cancel": "Annuleren",
+
+    "admin.dashboard.page_title": "Admin Dashboard",
+    "admin.index.page_title": "Accommodatie beheer",
+    "admin.create.page_title": "Accommodatie aanmaken",
+    "admin.edit.page_title": "Accommodatie bewerken",
+
+    "planbord.page_title": "Planbord",
+    "planbord.all_types": "Alle Verblijven",
+    "planbord.this_week": "Deze week",
+    "planbord.accommodation": "Accommodatie",
+    "planbord.empty": "Geen accommodaties gevonden.",
+    "planbord.legend.available_all_day": "Hele dag beschikbaar",
+    "planbord.legend.occupied_all_day": "Hele dag bezet",
+    "planbord.legend.checkin": "Check-in (ochtend vrij, middag bezet)",
+    "planbord.legend.checkout": "Check-out (ochtend bezet, middag vrij)",
+    "planbord.legend.changeover": "Wisseldag (uit + in)",
+    "planbord.available": "Beschikbaar",
+
+    "auth.title": "Login Dashboard",
+    "auth.heading": "Inloggen",
+    "auth.email_label": "E-mail",
+    "auth.password_label": "Wachtwoord",
+    "auth.login_button": "Inloggen",
+    "auth.error_empty_fields": "Vul zowel e-mail als wachtwoord in.",
+    "auth.logging_in": "Inloggen..."
 }

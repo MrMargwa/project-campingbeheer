@@ -92,5 +92,30 @@
     "admin.edit.title": "Edit {name}",
     "admin.edit.map_hint": "Edit the details or click on the map to change the location.",
     "admin.edit.submit": "Save changes",
-    "admin.edit.cancel": "Cancel"
+    "admin.edit.cancel": "Cancel",
+
+    "admin.dashboard.page_title": "Admin Dashboard",
+    "admin.index.page_title": "Accommodation Management",
+    "admin.create.page_title": "Create Accommodation",
+    "admin.edit.page_title": "Edit Accommodation",
+
+    "planbord.page_title": "Planning Board",
+    "planbord.all_types": "All Accommodations",
+    "planbord.this_week": "This week",
+    "planbord.accommodation": "Accommodation",
+    "planbord.empty": "No accommodations found.",
+    "planbord.legend.available_all_day": "All day available",
+    "planbord.legend.occupied_all_day": "All day occupied",
+    "planbord.legend.checkin": "Check-in (morning free, afternoon occupied)",
+    "planbord.legend.checkout": "Check-out (morning occupied, afternoon free)",
+    "planbord.legend.changeover": "Changeover day (out + in)",
+    "planbord.available": "Available",
+
+    "auth.title": "Login Dashboard",
+    "auth.heading": "Login",
+    "auth.email_label": "Email",
+    "auth.password_label": "Password",
+    "auth.login_button": "Login",
+    "auth.error_empty_fields": "Please enter both email and password.",
+    "auth.logging_in": "Logging in..."
 }

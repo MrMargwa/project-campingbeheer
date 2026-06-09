@@ -44,6 +44,11 @@ function translatePage() {
     const key = el.dataset.i18nPlaceholder;
     el.placeholder = t(key);
   });
+
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.dataset.i18nTitle;
+    el.title = t(key);
+  });
 }
 
 function setLocale(locale) {
