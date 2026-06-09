@@ -55,15 +55,29 @@
             initGastSearch();
         });
 
-        function openReserveerModal(id, titel) {
-            document.getElementById('modal-accommodatie-id').value = id;
-            document.getElementById('modal-title').textContent = 'Reserveren: ' + titel;
-            document.getElementById('reserveer-modal').classList.remove('hidden');
-            document.getElementById('reserveer-modal').classList.add('flex');
-            document.body.style.overflow = 'hidden';
-            document.getElementById('reserveer-error').classList.add('hidden');
-            document.getElementById('reserveer-error').textContent = '';
+    function openReserveerModal(id, titel) {
+        document.getElementById('modal-accommodatie-id').value = id;
+        document.getElementById('modal-title').textContent = 'Reserveren: ' + titel;
+        document.getElementById('reserveer-modal').classList.remove('hidden');
+        document.getElementById('reserveer-modal').classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('reserveer-error').classList.add('hidden');
+        document.getElementById('reserveer-error').textContent = '';
+
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        var dayAfter = new Date();
+        dayAfter.setDate(dayAfter.getDate() + 2);
+
+        var aankomstInput = document.getElementById('aankomst-datum');
+        var vertrekInput = document.getElementById('vertrek-datum');
+        if (aankomstInput && !aankomstInput.value) {
+            aankomstInput.value = tomorrow.toISOString().split('T')[0];
         }
+        if (vertrekInput && !vertrekInput.value) {
+            vertrekInput.value = dayAfter.toISOString().split('T')[0];
+        }
+    }
 
         function closeReserveerModal() {
             document.getElementById('reserveer-modal').classList.add('hidden');

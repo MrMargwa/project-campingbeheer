@@ -23,14 +23,23 @@ class BoekingController extends Controller
             'land' => 'required|string|max:255',
             'aantal_personen' => 'required|integer|min:1',
             'opmerking' => 'nullable|string|max:1000',
+            'aankomst_datum' => 'nullable|date',
+            'vertrek_datum' => 'nullable|date',
+            'aankomst_tijd' => 'nullable|in:ochtend,middag',
+            'vertrek_tijd' => 'nullable|in:ochtend,middag',
         ]);
 
         $accommodatie = Accommodatie::findOrFail($validated['accommodatie_id']);
 
+        if (empty($validated['aankomst_datum'])) {
+            $validated['aankomst_datum'] = now()->addDay()->toDateString();
+        }
+        if (empty($validated['vertrek_datum'])) {
+            $validated['vertrek_datum'] = now()->addDays(2)->toDateString();
+        }
+
         $validated['status'] = 'in_afwachting';
         $validated['totaal_prijs'] = $accommodatie->prijs_per_nacht;
-        $validated['aankomst_datum'] = now()->addDay()->toDateString();
-        $validated['vertrek_datum'] = now()->addDays(2)->toDateString();
 
         $boeking = Boeking::create($validated);
 

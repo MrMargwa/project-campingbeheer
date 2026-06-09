@@ -18,7 +18,8 @@ class AccommodatieController extends Controller
 
     public function create(): View
     {
-        return view('admin.accommodatie.create');
+        $accommodaties = Accommodatie::whereNotNull('latitude')->whereNotNull('longitude')->get();
+        return view('admin.accommodatie.create', compact('accommodaties'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -53,7 +54,8 @@ class AccommodatieController extends Controller
 
     public function edit(Accommodatie $accommodatie): View
     {
-        return view('admin.accommodatie.edit', compact('accommodatie'));
+        $accommodaties = Accommodatie::whereNotNull('latitude')->whereNotNull('longitude')->get();
+        return view('admin.accommodatie.edit', compact('accommodatie', 'accommodaties'));
     }
 
     public function update(Request $request, Accommodatie $accommodatie): RedirectResponse

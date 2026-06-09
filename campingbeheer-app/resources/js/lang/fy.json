@@ -92,5 +92,30 @@
     "admin.edit.title": "{name} bewurkje",
     "admin.edit.map_hint": "Pas de gegevens oan of klik op de kaart om de lokaasje te feroarjen.",
     "admin.edit.submit": "Wizigingen bewarje",
-    "admin.edit.cancel": "Annulearje"
+    "admin.edit.cancel": "Annulearje",
+
+    "admin.dashboard.page_title": "Admin Dashboard",
+    "admin.index.page_title": "Akommodaasjebehear",
+    "admin.create.page_title": "Nije akkommodaasje oanmeitsje",
+    "admin.edit.page_title": "Akommodaasje bewurkje",
+
+    "planbord.page_title": "Planboerd",
+    "planbord.all_types": "Alle Ferbliuwen",
+    "planbord.this_week": "Dizze wike",
+    "planbord.accommodation": "Akommodaasje",
+    "planbord.empty": "Gjin akkommodaasjes fûn.",
+    "planbord.legend.available_all_day": "Hiele dei beskikber",
+    "planbord.legend.occupied_all_day": "Hiele dei beset",
+    "planbord.legend.checkin": "Check-in (moarns frij, middeis beset)",
+    "planbord.legend.checkout": "Check-out (moarns beset, middeis frij)",
+    "planbord.legend.changeover": "Wikseldei (út + yn)",
+    "planbord.available": "Beskikber",
+
+    "auth.title": "Oanmeldersdashboard",
+    "auth.heading": "Oanmelde",
+    "auth.email_label": "E-mail",
+    "auth.password_label": "Wachtwurd",
+    "auth.login_button": "Oanmelde",
+    "auth.error_empty_fields": "Folje asjebleaft sawol e-mail as wachtwurd yn.",
+    "auth.logging_in": "Oanmelde..."
 }

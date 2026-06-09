@@ -7,17 +7,19 @@
 #map-form {
     border-radius: 0.75rem;
 }
-#map-form .leaflet-div-icon {
-    background: none !important;
-    border: none !important;
-}
 .pin-marker {
-    width: 24px;
-    height: 24px;
-    background: #2A6A4E;
-    border: 3px solid #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    width: 36px;
+    height: 36px;
+    background: #dc2626;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #fff;
 }
 </style>
 @endpush
@@ -56,43 +58,13 @@
                 </div>
             </div>
 
-            {{-- Translated titles --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label for="titel_en" class="block text-sm font-medium text-primary mb-1">Titel (EN) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="titel_en" id="titel_en" value="{{ old('titel_en', $accommodatie->titel_en) }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-                <div>
-                    <label for="titel_de" class="block text-sm font-medium text-primary mb-1">Titel (DE) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="titel_de" id="titel_de" value="{{ old('titel_de', $accommodatie->titel_de) }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-                <div>
-                    <label for="titel_fy" class="block text-sm font-medium text-primary mb-1">Titel (FY) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="titel_fy" id="titel_fy" value="{{ old('titel_fy', $accommodatie->titel_fy) }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-            </div>
+            <input type="hidden" name="titel_en" id="titel_en" value="{{ old('titel_en', $accommodatie->titel_en) }}">
+            <input type="hidden" name="titel_de" id="titel_de" value="{{ old('titel_de', $accommodatie->titel_de) }}">
+            <input type="hidden" name="titel_fy" id="titel_fy" value="{{ old('titel_fy', $accommodatie->titel_fy) }}">
 
-            {{-- Translated types --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label for="type_en" class="block text-sm font-medium text-primary mb-1">Type (EN) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="type_en" id="type_en" value="{{ old('type_en', $accommodatie->type_en) }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-                <div>
-                    <label for="type_de" class="block text-sm font-medium text-primary mb-1">Type (DE) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="type_de" id="type_de" value="{{ old('type_de', $accommodatie->type_de) }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-                <div>
-                    <label for="type_fy" class="block text-sm font-medium text-primary mb-1">Type (FY) <span class="text-xs text-muted">automatisch</span></label>
-                    <input type="text" name="type_fy" id="type_fy" value="{{ old('type_fy', $accommodatie->type_fy) }}" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">
-                </div>
-            </div>
+            <input type="hidden" name="type_en" id="type_en" value="{{ old('type_en', $accommodatie->type_en) }}">
+            <input type="hidden" name="type_de" id="type_de" value="{{ old('type_de', $accommodatie->type_de) }}">
+            <input type="hidden" name="type_fy" id="type_fy" value="{{ old('type_fy', $accommodatie->type_fy) }}">
 
             {{-- Description --}}
             <div>
@@ -102,24 +74,9 @@
                 @error('beschrijving') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Translated descriptions --}}
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label for="beschrijving_en" class="block text-sm font-medium text-primary mb-1">Beschrijving (EN) <span class="text-xs text-muted">automatisch</span></label>
-                    <textarea name="beschrijving_en" id="beschrijving_en" rows="2" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">{{ old('beschrijving_en', $accommodatie->beschrijving_en) }}</textarea>
-                </div>
-                <div>
-                    <label for="beschrijving_de" class="block text-sm font-medium text-primary mb-1">Beschrijving (DE) <span class="text-xs text-muted">automatisch</span></label>
-                    <textarea name="beschrijving_de" id="beschrijving_de" rows="2" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">{{ old('beschrijving_de', $accommodatie->beschrijving_de) }}</textarea>
-                </div>
-                <div>
-                    <label for="beschrijving_fy" class="block text-sm font-medium text-primary mb-1">Beschrijving (FY) <span class="text-xs text-muted">automatisch</span></label>
-                    <textarea name="beschrijving_fy" id="beschrijving_fy" rows="2" readonly
-                        class="w-full rounded-lg border border-border bg-primary/50 px-3.5 py-2.5 text-sm text-muted focus:outline-none cursor-default transition">{{ old('beschrijving_fy', $accommodatie->beschrijving_fy) }}</textarea>
-                </div>
-            </div>
+            <input type="hidden" name="beschrijving_en" id="beschrijving_en" value="{{ old('beschrijving_en', $accommodatie->beschrijving_en) }}">
+            <input type="hidden" name="beschrijving_de" id="beschrijving_de" value="{{ old('beschrijving_de', $accommodatie->beschrijving_de) }}">
+            <input type="hidden" name="beschrijving_fy" id="beschrijving_fy" value="{{ old('beschrijving_fy', $accommodatie->beschrijving_fy) }}">
 
             {{-- Persons + Price --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -266,6 +223,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }).addTo(map);
 
     var marker = null;
+    var areaColors = {
+        'Chalets': '#2A6A4E', 'Blokhutten': '#8B4513', 'Safaritenten': '#D97706',
+        'Vakantiehuisjes': '#7C3AED', 'Campings': '#2563EB', 'Parkeerplaats': '#6B7280',
+    };
+
+    fetch('/data.geojson')
+        .then(function (r) { return r.json(); })
+        .then(function (geojson) {
+            L.geoJSON(geojson, {
+                filter: function (f) { return f.geometry.type === 'Polygon'; },
+                style: function (f) {
+                    var c = areaColors[f.properties.name] || '#647069';
+                    return { color: c, weight: 2, opacity: 0.8, fillColor: c, fillOpacity: 0.12 };
+                }
+            }).addTo(map);
+        });
+
+    var bestaande = @json($accommodaties);
+    var huidigId = {{ $accommodatie->id }};
+    bestaande.forEach(function (acc) {
+        if (acc.id === huidigId) return;
+        if (acc.latitude && acc.longitude) {
+            L.circleMarker([acc.latitude, acc.longitude], {
+                radius: 5, color: '#647069', fillColor: '#647069',
+                fillOpacity: 0.5, weight: 2, opacity: 0.7,
+            }).addTo(map)
+            .bindTooltip(acc.titel, { direction: 'top', offset: [0, -6] });
+        }
+    });
 
     function placeMarker(lat, lng) {
         if (marker) {
@@ -274,9 +260,9 @@ document.addEventListener('DOMContentLoaded', function () {
             marker = L.marker([lat, lng], {
                 icon: L.divIcon({
                     className: '',
-                    html: '<div class="pin-marker"></div>',
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12],
+                    html: '<div class="pin-marker">+</div>',
+                    iconSize: [36, 36],
+                    iconAnchor: [18, 18],
                 })
             }).addTo(map);
         }

@@ -92,5 +92,30 @@
     "admin.edit.title": "{name} bearbeiten",
     "admin.edit.map_hint": "Bearbeiten Sie die Daten oder klicken Sie auf die Karte, um den Standort zu ändern.",
     "admin.edit.submit": "Änderungen speichern",
-    "admin.edit.cancel": "Abbrechen"
+    "admin.edit.cancel": "Abbrechen",
+
+    "admin.dashboard.page_title": "Admin-Dashboard",
+    "admin.index.page_title": "Unterkunftsverwaltung",
+    "admin.create.page_title": "Unterkunft anlegen",
+    "admin.edit.page_title": "Unterkunft bearbeiten",
+
+    "planbord.page_title": "Planungstafel",
+    "planbord.all_types": "Alle Unterkünfte",
+    "planbord.this_week": "Diese Woche",
+    "planbord.accommodation": "Unterkunft",
+    "planbord.empty": "Keine Unterkünfte gefunden.",
+    "planbord.legend.available_all_day": "Den ganzen Tag verfügbar",
+    "planbord.legend.occupied_all_day": "Den ganzen Tag belegt",
+    "planbord.legend.checkin": "Check-in (morgens frei, nachmittags belegt)",
+    "planbord.legend.checkout": "Check-out (morgens belegt, nachmittags frei)",
+    "planbord.legend.changeover": "Wechseltag (aus + ein)",
+    "planbord.available": "Verfügbar",
+
+    "auth.title": "Anmelde-Dashboard",
+    "auth.heading": "Anmelden",
+    "auth.email_label": "E-Mail",
+    "auth.password_label": "Passwort",
+    "auth.login_button": "Anmelden",
+    "auth.error_empty_fields": "Bitte geben Sie sowohl E-Mail als auch Passwort ein.",
+    "auth.logging_in": "Anmelden..."
 }
