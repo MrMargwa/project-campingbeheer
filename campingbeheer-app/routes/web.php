@@ -6,6 +6,7 @@ use App\Models\Accommodatie;
 use App\Models\Kenmerk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 
 function getLocale(): string
@@ -40,8 +41,11 @@ Route::get('/admin', function () {
 	return redirect()->route('login');
 })->name('admin');
 
-Route::view('/admin/dashboard', 'admin/dashboard')
-	->middleware(['auth', 'admin'])
+Route::get('/admin/dashboard', function () {
+	$accommodaties = Accommodatie::all();
+	$postcodeApiKey = Config::get('services.postcode.api_key');
+	return view('admin.dashboard', compact('accommodaties', 'postcodeApiKey'));
+})->middleware(['auth', 'admin'])
 	->name('admin.dashboard');
 
 Route::get('/login', function () {
@@ -58,6 +62,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('/accommodatie/{accommodatie}', 'destroy')->name('destroy');
     });
 });
+
+Route::get('/admin/zoek-gasten', [BoekingController::class, 'searchGasten'])
+	->middleware(['auth', 'admin'])
+	->name('admin.zoek.gasten');
 
 Route::get('/admin/planbord', function (Request $request) {
 	$types = Accommodatie::select('type')->distinct()->pluck('type');

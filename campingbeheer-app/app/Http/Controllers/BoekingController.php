@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Accommodatie;
 use App\Models\Boeking;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class BoekingController extends Controller
@@ -38,5 +39,26 @@ class BoekingController extends Controller
             'message' => 'Reservering succesvol aangemaakt!',
             'boeking' => $boeking,
         ]);
+    }
+
+    public function searchGasten(Request $request): JsonResponse
+    {
+        $query = $request->get('q');
+
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $gasten = Boeking::select('naam', 'email', 'telefoon', 'postcode', 'huisnummer', 'straat', 'plaats', 'land')
+            ->where('naam', 'like', '%' . $query . '%')
+            ->orderBy('aangemaakt_op', 'desc')
+            ->get()
+            ->unique(function ($item) {
+                return strtolower($item->email ?: $item->naam);
+            })
+            ->take(10)
+            ->values();
+
+        return response()->json($gasten);
     }
 }
