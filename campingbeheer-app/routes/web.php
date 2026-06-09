@@ -44,7 +44,29 @@ Route::get('/admin', function () {
 Route::get('/admin/dashboard', function () {
 	$accommodaties = Accommodatie::all();
 	$postcodeApiKey = Config::get('services.postcode.api_key');
-	return view('admin.dashboard', compact('accommodaties', 'postcodeApiKey'));
+	$today = now()->toDateString();
+
+	$boekingen = \App\Models\Boeking::with('accommodatie')
+		->where('status', 'in_afwachting')
+		->orderBy('aangemaakt_op', 'desc')
+		->paginate(10);
+
+	$vandaagAankomst = \App\Models\Boeking::with('accommodatie')
+		->where('aankomst_datum', $today)
+		->whereIn('status', ['goedgekeurd', 'gereed'])
+		->orderBy('aankomst_tijd', 'desc')
+		->get();
+
+	$vandaagVertrek = \App\Models\Boeking::with('accommodatie')
+		->where('vertrek_datum', $today)
+		->whereIn('status', ['goedgekeurd', 'gereed'])
+		->orderBy('vertrek_tijd', 'desc')
+		->get();
+
+	return view('admin.dashboard', compact(
+		'accommodaties', 'postcodeApiKey', 'boekingen',
+		'vandaagAankomst', 'vandaagVertrek'
+	));
 })->middleware(['auth', 'admin'])
 	->name('admin.dashboard');
 
@@ -61,6 +83,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::put('/accommodatie/{accommodatie}', 'update')->name('update');
         Route::delete('/accommodatie/{accommodatie}', 'destroy')->name('destroy');
     });
+
+    Route::post('/admin/reserveringen/{boeking}/goedkeuren', [\App\Http\Controllers\BoekingController::class, 'approve'])->name('admin.reserveringen.approve');
+    Route::post('/admin/reserveringen/{boeking}/afkeuren', [\App\Http\Controllers\BoekingController::class, 'reject'])->name('admin.reserveringen.reject');
 });
 
 Route::get('/admin/zoek-gasten', [BoekingController::class, 'searchGasten'])
@@ -100,6 +125,7 @@ Route::get('/admin/planbord', function (Request $request) {
 		->where('aankomst_datum', '<', $endOfWeek->format('Y-m-d'))
 		->where('vertrek_datum', '>', $startOfWeek->format('Y-m-d'))
 		->whereIn('accommodatie_id', $accommodaties->pluck('id'))
+		->whereIn('status', ['goedgekeurd', 'gereed'])
 		->get()
 		->groupBy('accommodatie_id');
 
