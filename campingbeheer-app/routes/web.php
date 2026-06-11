@@ -26,8 +26,9 @@ Route::get('/', function () {
         ->distinct('type')
         ->get()
         ->keyBy('type');
+    $postcodeApiKey = Config::get('services.postcode.api_key');
 
-    return view('home', compact('accommodaties', 'types', 'locale'));
+    return view('home', compact('accommodaties', 'types', 'locale', 'postcodeApiKey'));
 })->name('home');
 
 // Reserveren Routes

@@ -435,6 +435,163 @@
             document.body.style.overflow = '';
         }
 
+        // Postcode auto-fill — event delegation
+        var POSTCODE_API_KEY = '{{ $postcodeApiKey }}';
+
+        function handlePostcodeInput() {
+            var btn = document.getElementById('postcode-zoeken');
+            if (!btn) return;
+            var val = (document.getElementById('postcode-input')?.value || '').replace(/\s+/g, '');
+            btn.disabled = val.length < 4;
+            if (val.length >= 4) {
+                btn.classList.remove('cursor-not-allowed', 'opacity-50');
+            } else {
+                btn.classList.add('cursor-not-allowed', 'opacity-50');
+            }
+        }
+
+        function handlePostcodeSearch() {
+            var postcode = document.getElementById('postcode-input')?.value.trim();
+            var huisnummer = document.getElementById('huisnummer-input')?.value.trim();
+            if (!postcode) return;
+
+            var btn = document.getElementById('postcode-zoeken');
+            if (!btn) return;
+            btn.disabled = true;
+            btn.textContent = 'Zoeken...';
+
+            fetchAddressByPostcode(postcode, huisnummer)
+                .then(function(data) {
+                    if (data) {
+                        if (data.straat) document.getElementById('straat-input').value = data.straat;
+                        if (data.plaats) document.getElementById('plaats-input').value = data.plaats;
+                        if (data.land) document.querySelector('input[name="land"]').value = data.land;
+                        document.getElementById('reserveer-error')?.classList.add('hidden');
+                    } else {
+                        showAddressError('Adres niet gevonden');
+                    }
+                })
+                .catch(function() {
+                    showAddressError('Fout bij ophalen adres');
+                })
+                .finally(function() {
+                    btn.disabled = false;
+                    btn.textContent = 'Zoeken';
+                });
+        }
+
+        var postcodeInput = document.getElementById('postcode-input');
+        var postcodeBtn = document.getElementById('postcode-zoeken');
+        if (postcodeInput) postcodeInput.oninput = handlePostcodeInput;
+        if (postcodeBtn) postcodeBtn.onclick = handlePostcodeSearch;
+
+        function fetchAddressByPostcode(postcode, huisnummer) {
+            var normalized = postcode.replace(/\s+/g, '').toUpperCase();
+
+            if (!POSTCODE_API_KEY) {
+                return fallbackFetchAddress(normalized, huisnummer);
+            }
+
+            var url = 'https://postcode.tech/api/v1/postcode' +
+                '?postcode=' + encodeURIComponent(normalized) +
+                '&number=' + encodeURIComponent(huisnummer || '');
+
+            return fetch(url, {
+                    headers: {
+                        'Authorization': 'Bearer ' + POSTCODE_API_KEY
+                    }
+                })
+                .then(function(r) {
+                    if (!r.ok) throw new Error();
+                    return r.json();
+                })
+                .then(function(json) {
+                    return {
+                        straat: json.street || json.straatnaam || '',
+                        plaats: json.city || json.woonplaats || '',
+                        land: 'Nederland'
+                    };
+                })
+                .catch(function() {
+                    return fallbackFetchAddress(normalized, huisnummer);
+                });
+        }
+
+        function fallbackFetchAddress(normalized, huisnummer) {
+            function tryPDOK() {
+                var fqParts = ['postcode:' + encodeURIComponent(normalized)];
+                if (huisnummer) fqParts.push('huisnummer:' + encodeURIComponent(huisnummer));
+                var url = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free' +
+                    '?q=*:*&rows=1&fq=' + fqParts.join('&fq=');
+                return fetch(url).then(function(r) {
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
+                    .then(function(json) {
+                        var doc = json.response?.docs?.[0];
+                        if (!doc) throw new Error();
+                        return {
+                            straat: doc.straatnaam || '',
+                            plaats: doc.woonplaatsnaam || doc.city || '',
+                            land: 'Nederland'
+                        };
+                    });
+            }
+
+            function tryNominatim() {
+                var query = normalized;
+                if (huisnummer) query += '+' + huisnummer;
+                var url = 'https://nominatim.openstreetmap.org/search' +
+                    '?q=' + encodeURIComponent(query) +
+                    '&format=json&addressdetails=1&countrycodes=nl&limit=1';
+                return fetch(url, {
+                        headers: {
+                            'User-Agent': 'Campingbeheer-App/1.0'
+                        }
+                    })
+                    .then(function(r) {
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
+                    .then(function(json) {
+                        if (!json || json.length === 0) throw new Error();
+                        var addr = json[0].address || {};
+                        return {
+                            straat: addr.road || addr.street || '',
+                            plaats: addr.city || addr.town || addr.village || addr.place || '',
+                            land: addr.country || 'Nederland'
+                        };
+                    });
+            }
+
+            function tryZippopotam() {
+                var url = 'https://api.zippopotam.us/NL/' + encodeURIComponent(normalized);
+                return fetch(url).then(function(r) {
+                        if (!r.ok) throw new Error();
+                        return r.json();
+                    })
+                    .then(function(json) {
+                        var place = json.places?.[0];
+                        if (!place) return null;
+                        return {
+                            straat: '',
+                            plaats: place['place name'] || place.city || '',
+                            land: json.country || 'Netherlands'
+                        };
+                    });
+            }
+
+            return tryPDOK().catch(tryNominatim).catch(tryZippopotam).catch(function() {
+                return null;
+            });
+        }
+
+        function showAddressError(msg) {
+            var el = document.getElementById('reserveer-error');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+
         document.addEventListener('click', function(e) {
             var btn = e.target.closest('.reserveer-btn');
             if (btn) {
@@ -452,6 +609,61 @@
             if (e.key === 'Escape') {
                 closeReserveerModal();
             }
+        });
+
+        // Form submission via API
+        document.getElementById('reserveer-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var form = this;
+            var formData = new FormData(form);
+            var submitBtn = document.getElementById('reserveer-submit');
+            var errorEl = document.getElementById('reserveer-error');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Bevestigen...';
+            errorEl.classList.add('hidden');
+
+            fetch('/reserveren', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                })
+                .then(function(r) {
+                    if (!r.ok) {
+                        return r.json().then(function(err) {
+                            throw err;
+                        });
+                    }
+                    return r.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        closeReserveerModal();
+                        alert(data.message || 'Reservering succesvol!');
+                        form.reset();
+                    }
+                })
+                .catch(function(err) {
+                    var msg = 'Er is een fout opgetreden. Probeer opnieuw.';
+                    if (err.errors) {
+                        var firstKey = Object.keys(err.errors)[0];
+                        if (firstKey) {
+                            msg = err.errors[firstKey][0];
+                        }
+                    } else if (err.message) {
+                        msg = err.message;
+                    }
+                    errorEl.textContent = msg;
+                    errorEl.classList.remove('hidden');
+                })
+                .finally(function() {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Reservering Bevestigen';
+                });
         });
     </script>
 @endsection
