@@ -91,7 +91,11 @@
                                             $cellBookings[] = [
                                                 'naam' => $gast,
                                                 'aankomst' => \Carbon\Carbon::parse($boeking->aankomst_datum)->format('d-m-Y'),
+                                                'aankomst_tijd' => $boeking->aankomst_tijd,
+                                                'is_aankomst_op_dag' => $date === $aankomst,
                                                 'vertrek' => \Carbon\Carbon::parse($boeking->vertrek_datum)->format('d-m-Y'),
+                                                'vertrek_tijd' => $boeking->vertrek_tijd,
+                                                'is_vertrek_op_dag' => $date === $vertrek,
                                                 'personen' => $boeking->aantal_personen,
                                                 'opmerking' => $boeking->opmerking,
                                             ];
@@ -118,6 +122,7 @@
                                 <td class="planbord-cell border-r border-border px-0.5 py-5.5 text-center align-middle last:border-r-0 {{ $cellClass }} {{ count($cellBookings) > 0 ? 'cursor-pointer' : '' }}"
                                     @if(count($cellBookings) > 0) data-tooltip="{{ json_encode([
                                         'verblijf' => $accommodatie->titel,
+                                        'wisseldag' => $hasCheckin && $hasCheckout,
                                         'boekingen' => $cellBookings,
                                     ]) }}" @endif>
                                     <span>{{ $label }}</span>
@@ -224,12 +229,10 @@
                         }
                         html += '<div><span class="font-semibold text-gray-400">Naam:</span> ' + escHtml(b.naam) + '</div>';
                         html += '<div><span class="font-semibold text-gray-400">Verblijf:</span> ' + escHtml(data.verblijf) + '</div>';
-                        html += '<div><span class="font-semibold text-gray-400">Aankomst:</span> ' + escHtml(b.aankomst) + '</div>';
-                        html += '<div><span class="font-semibold text-gray-400">Vertrek:</span> ' + escHtml(b.vertrek) + '</div>';
+                        html += '<div><span class="font-semibold text-gray-400">Aankomst:</span> ' + escHtml(formatDagdeel(b.aankomst, b.aankomst_tijd, data.wisseldag && b.is_aankomst_op_dag)) + '</div>';
+                        html += '<div><span class="font-semibold text-gray-400">Vertrek:</span> ' + escHtml(formatDagdeel(b.vertrek, b.vertrek_tijd, data.wisseldag && b.is_vertrek_op_dag)) + '</div>';
                         html += '<div><span class="font-semibold text-gray-400">Personen:</span> ' + escHtml(b.personen) + '</div>';
-                        if (b.opmerking) {
-                            html += '<div><span class="font-semibold text-gray-400">Opmerking:</span> ' + escHtml(b.opmerking) + '</div>';
-                        }
+                        html += '<div><span class="font-semibold text-gray-400">Opmerking:</span> ' + escHtml(b.opmerking ? b.opmerking : 'geen opmerking') + '</div>';
                     }
                     html += '<div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>';
 
@@ -267,6 +270,19 @@
                 var div = document.createElement('div');
                 div.appendChild(document.createTextNode(str));
                 return div.innerHTML;
+            }
+
+            function formatDagdeel(datum, tijd, toonDagdeel) {
+                if (!toonDagdeel || !tijd) return datum;
+
+                var label = tijd;
+                if (tijd === 'ochtend') {
+                    label = "'s ochtends";
+                } else if (tijd === 'middag') {
+                    label = "'s middags";
+                }
+
+                return datum + ' (' + label + ')';
             }
         });
     </script>
