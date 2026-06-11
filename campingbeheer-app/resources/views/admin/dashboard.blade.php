@@ -30,8 +30,8 @@
                     <tbody>
                         @forelse ($vandaagAankomst as $boeking)
                             <tr>
-                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#E9ECEB">{{ $boeking->naam }}</td>
-                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#E9ECEB">
+                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $boeking->naam }}</td>
+                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">
                                     @if ($boeking->accommodatie)
                                         {{ $boeking->accommodatie->titel }}
                                     @else
@@ -59,8 +59,8 @@
                     <tbody>
                         @forelse ($vandaagVertrek as $boeking)
                             <tr>
-                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#E9ECEB">{{ $boeking->naam }}</td>
-                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#E9ECEB">
+                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $boeking->naam }}</td>
+                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">
                                     @if ($boeking->accommodatie)
                                         {{ $boeking->accommodatie->titel }}
                                     @else
