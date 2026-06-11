@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Accommodatie extends Model
@@ -14,6 +13,7 @@ class Accommodatie extends Model
         'beschrijving',
         'min_personen',
         'max_personen',
+        'huisdieren_toegestaan',
         'prijs_per_nacht',
         'afbeelding',
         'latitude',
@@ -21,17 +21,19 @@ class Accommodatie extends Model
         'status',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'huisdieren_toegestaan' => 'boolean',
+        ];
+    }
+
     public const CREATED_AT = 'aangemaakt_op';
     public const UPDATED_AT = 'bewerkt_op';
 
     public function boekingen(): HasMany
     {
         return $this->hasMany(Boeking::class, 'accommodatie_id');
-    }
-
-    public function kenmerken(): BelongsToMany
-    {
-        return $this->belongsToMany(Kenmerk::class, 'accommodatie_kenmerk', 'accommodatie_id', 'kenmerk_id');
     }
 
     public function vertaaldeTitel(string $locale): string

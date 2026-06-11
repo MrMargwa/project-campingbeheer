@@ -110,14 +110,12 @@
                         </div>
 
                         <div>
-                            <label for="filter-kenmerken"
-                                class="mb-1 block text-xs font-medium text-primary" data-i18n="home.filter.features">Kenmerken</label>
-                            <select id="filter-kenmerken"
+                            <label for="filter-huisdieren"
+                                class="mb-1 block text-xs font-medium text-primary" data-i18n="home.filter.pets_label">Huisdieren</label>
+                            <select id="filter-huisdieren"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
                                 <option value="" data-i18n="home.filter.none_selected">Niets geselecteerd</option>
-                                @foreach ($kenmerken as $kenmerk)
-                                    <option value="{{ $kenmerk->naam }}">{{ $kenmerk->vertaaldeNaam($locale) }}</option>
-                                @endforeach
+                                <option value="true" data-i18n="home.filter.pets_allowed">Huisdieren toegestaan</option>
                             </select>
                         </div>
                     </div>
@@ -131,7 +129,7 @@
 
         <div id="filter-message" class="rounded-3xl border border-border bg-surface p-5 shadow-sm sm:p-6">
             <p class="text-sm font-medium text-muted" data-i18n="home.filter.please_filter">U moet eerst nog filteren.</p>
-            <p class="mt-2 text-lg font-semibold text-primary" data-i18n="home.filter.choose_criteria">Kies reisgezelschap, soort verblijf of kenmerken om de
+            <p class="mt-2 text-lg font-semibold text-primary" data-i18n="home.filter.choose_criteria">Kies reisgezelschap, soort verblijf of huisdieren om de
                 verblijven te zien.</p>
         </div>
 
@@ -150,8 +148,7 @@
                     <article class="accommodatie-card overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
                         data-type="{{ $accommodatie->type }}" data-persons="{{ $accommodatie->min_personen }}"
                         data-max-persons="{{ $accommodatie->max_personen }}"
-                        data-features="{{ $accommodatie->kenmerken->pluck('naam')->implode(' ') }}"
-                        data-features-translated="{{ $accommodatie->kenmerken->map(fn($k) => $k->vertaaldeNaam($locale))->implode(' ') }}"
+                        data-pets="{{ $accommodatie->huisdieren_toegestaan ? 'true' : 'false' }}"
                         data-id="{{ $accommodatie->id }}">
                         <div class="grid lg:grid-cols-2">
                             <div class="relative min-h-64 bg-secondary sm:min-h-72 lg:min-h-full">
@@ -171,10 +168,8 @@
                                     <p class="text-sm text-muted">{{ $accommodatie->vertaaldeBeschrijving($locale) }}</p>
                                     <ul class="space-y-2 text-sm text-muted">
                                         <li>{{ $accommodatie->min_personen }} - {{ $accommodatie->max_personen }} <span data-i18n="reserve.persons">personen</span></li>
-                                        @if ($accommodatie->kenmerken->isNotEmpty())
-                                            @foreach ($accommodatie->kenmerken as $kenmerk)
-                                                <li>{{ $kenmerk->vertaaldeNaam($locale) }}</li>
-                                            @endforeach
+                                        @if ($accommodatie->huisdieren_toegestaan)
+                                            <li data-i18n="home.filter.pets_allowed">Huisdieren toegestaan</li>
                                         @endif
                                     </ul>
                                 </div>
@@ -207,7 +202,7 @@
         (function () {
             const personenSelect = document.getElementById('filter-personen');
             const typeSelect = document.getElementById('filter-type');
-            const kenmerkenSelect = document.getElementById('filter-kenmerken');
+            const huisdierSelect = document.getElementById('filter-huisdieren');
             const aankomstInput = document.getElementById('filter-aankomst');
             const vertrekInput = document.getElementById('filter-vertrek');
             const dateError = document.getElementById('date-error');
@@ -327,7 +322,7 @@
 
                 const selectedPersons = parseInt(personenSelect.value, 10) || 0;
                 const selectedType = typeSelect.value;
-                const selectedFeature = kenmerkenSelect.value;
+                const selectedPets = huisdierSelect.value;
 
                 let visibleCount = 0;
 
@@ -335,8 +330,8 @@
                     const minPersons = parseInt(card.dataset.persons || '0', 10);
                     const matchPersons = !selectedPersons || selectedPersons >= minPersons;
                     const matchType = !selectedType || card.dataset.type === selectedType;
-                    const matchFeature = !selectedFeature || (card.dataset.features || '').toLowerCase().includes(selectedFeature.toLowerCase());
-                    const showCard = matchPersons && matchType && matchFeature;
+                    const matchPets = !selectedPets || card.dataset.pets === selectedPets;
+                    const showCard = matchPersons && matchType && matchPets;
 
                     card.classList.toggle('hidden', !showCard);
                     if (showCard) visibleCount++;
@@ -383,7 +378,7 @@
                 });
             });
 
-            [typeSelect, kenmerkenSelect, aankomstInput, vertrekInput].forEach(el => {
+            [typeSelect, huisdierSelect, aankomstInput, vertrekInput].forEach(el => {
                 if (!el) return;
                 el.addEventListener('change', applyFilters);
             });
