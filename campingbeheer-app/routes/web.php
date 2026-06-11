@@ -3,7 +3,6 @@
 use App\Http\Controllers\BoekingController;
 use App\Http\Controllers\ReserverenController;
 use App\Models\Accommodatie;
-use App\Models\Kenmerk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -22,14 +21,13 @@ function getLocale(): string
 // Home Route
 Route::get('/', function () {
     $locale = getLocale();
-    $accommodaties = Accommodatie::with('kenmerken')->get();
+    $accommodaties = Accommodatie::all();
     $types = Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
         ->distinct('type')
         ->get()
         ->keyBy('type');
-    $kenmerken = Kenmerk::all();
 
-    return view('home', compact('accommodaties', 'types', 'kenmerken', 'locale'));
+    return view('home', compact('accommodaties', 'types', 'locale'));
 })->name('home');
 
 // Reserveren Routes
