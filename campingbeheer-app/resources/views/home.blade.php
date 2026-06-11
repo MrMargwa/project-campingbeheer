@@ -170,6 +170,8 @@
                                         <li>{{ $accommodatie->min_personen }} - {{ $accommodatie->max_personen }} <span data-i18n="reserve.persons">personen</span></li>
                                         @if ($accommodatie->huisdieren_toegestaan)
                                             <li data-i18n="home.filter.pets_allowed">Huisdieren toegestaan</li>
+                                        @else
+                                            <li data-i18n="home.filter.pets_not_allowed">Huisdieren niet toegestaan</li>
                                         @endif
                                     </ul>
                                 </div>
