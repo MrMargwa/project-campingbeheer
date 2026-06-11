@@ -180,10 +180,11 @@
                                             class="text-lg font-semibold text-accent">&euro;{{ number_format($accommodatie->prijs_per_nacht, 2, ',', '.') }}</span>
                                         <span class="text-sm text-muted" data-i18n="home.accommodations.per_night">/ nacht</span>
                                     </div>
-                                    <a href="{{ route('reserveren') }}"
+                                    <button type="button"
+                                        onclick='openReserveerModal({{ $accommodatie->id }}, {!! json_encode($accommodatie->vertaaldeTitel($locale)) !!})'
                                         class="inline-flex items-center justify-center rounded-lg border border-border bg-white px-5 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent"
                                         data-i18n="home.accommodations.book">Reserveer
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -192,6 +193,8 @@
             </div>
         </section>
     </section>
+
+    @include('partials.reserveer-modal')
 @endsection
 
 @section('scripts')
@@ -387,5 +390,66 @@
             updatePersonenSummary();
             applyFilters();
         })();
+
+        // --- Reserveer Modal ---
+        function openReserveerModal(id, titel) {
+            document.getElementById('modal-accommodatie-id').value = id;
+            document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', titel);
+            document.getElementById('reserveer-modal').classList.remove('hidden');
+            document.getElementById('reserveer-modal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('reserveer-error').classList.add('hidden');
+            document.getElementById('reserveer-error').textContent = '';
+
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            var dayAfter = new Date(today);
+            dayAfter.setDate(dayAfter.getDate() + 2);
+
+            var modalAank = document.getElementById('aankomst-datum');
+            var modalVert = document.getElementById('vertrek-datum');
+            modalAank.min = tomorrow.toISOString().split('T')[0];
+            modalVert.min = dayAfter.toISOString().split('T')[0];
+
+            var filterAank = document.getElementById('filter-aankomst');
+            var filterVert = document.getElementById('filter-vertrek');
+            var filterAankVal = filterAank ? filterAank.value : '';
+            var filterVertVal = filterVert ? filterVert.value : '';
+
+            if (filterAankVal && filterVertVal) {
+                modalAank.value = filterAankVal;
+                modalVert.value = filterVertVal;
+            } else {
+                if (!modalAank.value) modalAank.value = tomorrow.toISOString().split('T')[0];
+                if (!modalVert.value) modalVert.value = dayAfter.toISOString().split('T')[0];
+            }
+        }
+
+        function closeReserveerModal() {
+            document.getElementById('reserveer-modal').classList.add('hidden');
+            document.getElementById('reserveer-modal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('.reserveer-btn');
+            if (btn) {
+                openReserveerModal(btn.getAttribute('data-id'), btn.getAttribute('data-titel'));
+            }
+        });
+
+        document.getElementById('reserveer-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeReserveerModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeReserveerModal();
+            }
+        });
     </script>
 @endsection
