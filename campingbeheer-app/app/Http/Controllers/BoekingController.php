@@ -34,9 +34,9 @@ class BoekingController extends Controller
 
         $accommodatie = Accommodatie::findOrFail($validated['accommodatie_id']);
 
-        // Controleer of er al een goedgekeurde boeking is die overlapt met gevraagde periode
+        // Controleer of er al een actieve boeking (goedgekeurd of in afwachting) is die overlapt met gevraagde periode
         $conflictExists = Boeking::where('accommodatie_id', $validated['accommodatie_id'])
-            ->where('status', 'goedgekeurd')
+            ->whereIn('status', ['goedgekeurd', 'in_afwachting'])
             ->where('vertrek_datum', '>=', $validated['aankomst_datum'])
             ->where('aankomst_datum', '<=', $validated['vertrek_datum'])
             ->exists();
@@ -75,9 +75,10 @@ class BoekingController extends Controller
 
     public function approve(Boeking $boeking)
     {
-        // Controleer op overlap met reeds goedgekeurde boekingen
+        // Controleer op overlap met andere actieve boekingen (in afwachting of goedgekeurd)
         $conflict = Boeking::where('accommodatie_id', $boeking->accommodatie_id)
-            ->where('status', 'goedgekeurd')
+            ->where('status', '!=', 'geannuleerd')
+            ->where('id', '!=', $boeking->id)
             ->where('vertrek_datum', '>=', $boeking->aankomst_datum)
             ->where('aankomst_datum', '<=', $boeking->vertrek_datum)
             ->exists();
