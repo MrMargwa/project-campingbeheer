@@ -12,10 +12,10 @@
         <form id="reserveer-form" class="p-6 space-y-4">
             @if ($showSearch)
             <div>
-                <label class="block text-sm font-medium text-primary mb-1">Accommodatie</label>
+                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.accommodation">Accommodatie</label>
                 <select name="accommodatie_id" id="modal-accommodatie-select" required
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                    <option value="">Selecteer accommodatie...</option>
+                    <option value="" data-i18n="admin.dashboard.select_accommodation">Selecteer accommodatie...</option>
                     @foreach ($accommodaties as $acc)
                         <option value="{{ $acc->id }}">{{ $acc->titel }}</option>
                     @endforeach
@@ -27,27 +27,27 @@
 
             @if ($showSearch)
             <div>
-                <label class="block text-sm font-medium text-primary mb-1">Zoek gast op naam</label>
-                <input type="text" id="gast-search" autocomplete="off" placeholder="Typ een naam om te zoeken..."
+                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.search_guest">Zoek gast op naam</label>
+                <input type="text" id="gast-search" autocomplete="off" data-i18n-placeholder="reserve.form.search_guest_placeholder" placeholder="Typ een naam om te zoeken..."
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 <div id="gast-search-results" class="hidden mt-1 rounded-lg border border-border bg-white shadow-lg max-h-48 overflow-y-auto text-sm"></div>
             </div>
             @endif
 
             <div>
-                <label class="block text-sm font-medium text-primary mb-1">Volledige naam *</label>
+                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.name">Volledige naam *</label>
                 <input type="text" name="naam" required
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Email *</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.email">Email *</label>
                     <input type="email" name="email" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Telefoonnummer *</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.phone">Telefoonnummer *</label>
                     <input type="tel" name="telefoon" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
@@ -55,13 +55,13 @@
 
             <div class="grid grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Postcode *</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.postcode">Postcode *</label>
                     <input type="text" name="postcode" id="postcode-input" maxlength="7" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none uppercase"
                         placeholder="1234 AB">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Huisnummer *</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.house_number">Huisnummer *</label>
                     <input type="text" name="huisnummer" id="huisnummer-input" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
@@ -74,19 +74,19 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-primary mb-1">Straatnaam</label>
+                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.street">Straatnaam</label>
                 <input type="text" name="straat" id="straat-input" required
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Plaatsnaam *</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.city">Plaatsnaam *</label>
                     <input type="text" name="plaats" id="plaats-input" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Land *</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.country">Land *</label>
                     <input type="text" name="land" value="Nederland" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
@@ -96,25 +96,25 @@
             <input type="hidden" name="vertrek_tijd" value="ochtend">
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Aankomstdatum *</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.arrival_date">Aankomstdatum *</label>
                     <input type="date" name="aankomst_datum" id="aankomst-datum" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1">Vertrekdatum *</label>
+                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.departure_date">Vertrekdatum *</label>
                     <input type="date" name="vertrek_datum" id="vertrek-datum" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-primary mb-1">Aantal personen *</label>
+                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.persons_count">Aantal personen *</label>
                 <input type="number" name="aantal_personen" min="1" max="99" required
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-primary mb-1">Opmerking</label>
+                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.remarks">Opmerking</label>
                 <textarea name="opmerking" rows="3"
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none resize-none"></textarea>
             </div>
@@ -122,7 +122,8 @@
             <div id="reserveer-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
 
             <button type="submit" id="reserveer-submit"
-                class="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">
+                class="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-lg transition text-sm border-0 cursor-pointer"
+                data-i18n="reserve.form.confirm">
                 Reservering Bevestigen
             </button>
         </form>

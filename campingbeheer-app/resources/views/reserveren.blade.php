@@ -692,12 +692,12 @@
                 .then(function(data) {
                     if (data.success) {
                         closeReserveerModal();
-                        alert(data.message || 'Reservering succesvol!');
+                        alert(data.message || window.__('reserve.form.success'));
                         form.reset();
                     }
                 })
                 .catch(function(err) {
-                    var msg = 'Er is een fout opgetreden. Probeer opnieuw.';
+                    var msg = window.__('reserve.form.generic_error');
                     if (err.errors) {
                         var firstKey = Object.keys(err.errors)[0];
                         if (firstKey) {
@@ -711,7 +711,7 @@
                 })
                 .finally(function() {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Reservering Bevestigen';
+                    submitBtn.textContent = window.__('reserve.form.confirm');
                 });
         });
     </script>

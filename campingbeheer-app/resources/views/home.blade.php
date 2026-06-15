@@ -204,196 +204,10 @@
         document.addEventListener('locale-changed', function() { location.reload(); });
     </script>
     <script>
-        (function () {
-            const personenSelect = document.getElementById('filter-personen');
-            const typeSelect = document.getElementById('filter-type');
-            const huisdierSelect = document.getElementById('filter-huisdieren');
-            const aankomstInput = document.getElementById('filter-aankomst');
-            const vertrekInput = document.getElementById('filter-vertrek');
-            const dateError = document.getElementById('date-error');
-            const filterMessage = document.getElementById('filter-message');
-            const resultsWrapper = document.getElementById('results-wrapper');
-            const resultsCount = document.getElementById('results-count');
-            const noResults = document.getElementById('no-results');
-            const cards = document.querySelectorAll('.accommodatie-card');
-            const personenControl = document.getElementById('personen-control');
-            const personenPanel = document.getElementById('personen-panel');
-            const personenChevron = document.getElementById('personen-chevron');
-            const personenSummary = document.getElementById('personen-summary');
-            const personenClose = document.getElementById('personen-close');
+        // ===================== GLOBALE FUNCTIES (geen DOM/window.__ nodig) =====================
 
-            const counts = {
-                adults: 0,
-                children: 0,
-                babies: 0,
-            };
+        var POSTCODE_API_KEY = '{{ $postcodeApiKey }}';
 
-            function toDateValue(date) {
-                return new Date(date + 'T00:00:00');
-            }
-
-            function formatDate(date) {
-                return date.toISOString().slice(0, 10);
-            }
-
-            function addOneDay(dateValue) {
-                const nextDay = new Date(dateValue.getTime());
-                nextDay.setDate(nextDay.getDate() + 1);
-                return nextDay;
-            }
-
-            function subtractOneDay(dateValue) {
-                const previousDay = new Date(dateValue.getTime());
-                previousDay.setDate(previousDay.getDate() - 1);
-                return previousDay;
-            }
-
-            function syncDateLimits() {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                aankomstInput.min = formatDate(today);
-                aankomstInput.max = '';
-                vertrekInput.min = formatDate(addOneDay(today));
-                vertrekInput.max = '';
-
-                if (aankomstInput.value) {
-                    const arrivalDate = toDateValue(aankomstInput.value);
-                    const nextDay = addOneDay(arrivalDate);
-                    vertrekInput.min = formatDate(nextDay);
-
-                    if (vertrekInput.value && toDateValue(vertrekInput.value) <= arrivalDate) {
-                        vertrekInput.value = '';
-                    }
-                } else {
-                    vertrekInput.min = formatDate(addOneDay(today));
-                }
-
-                if (vertrekInput.value) {
-                    const departureDate = toDateValue(vertrekInput.value);
-                    const lastArrivalDay = subtractOneDay(departureDate);
-                    aankomstInput.max = formatDate(lastArrivalDay);
-
-                    if (aankomstInput.value && toDateValue(aankomstInput.value) >= departureDate) {
-                        aankomstInput.value = '';
-                    }
-                }
-            }
-
-            function validateDates() {
-                syncDateLimits();
-
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const arrivalValue = aankomstInput.value ? toDateValue(aankomstInput.value) : null;
-                const departureValue = vertrekInput.value ? toDateValue(vertrekInput.value) : null;
-
-                let hasError = false;
-
-                if (arrivalValue && arrivalValue < today) {
-                    hasError = true;
-                }
-
-                if (departureValue && departureValue <= today) {
-                    hasError = true;
-                }
-
-                if (arrivalValue && departureValue && departureValue <= arrivalValue) {
-                    hasError = true;
-                }
-
-                dateError.classList.toggle('hidden', !hasError);
-
-                return !hasError;
-            }
-
-            function getTotalPersons() {
-                return counts.adults + counts.children + counts.babies;
-            }
-
-            function updatePersonenSummary() {
-                const total = getTotalPersons();
-                personenSelect.value = total;
-                personenSummary.textContent = window.__('home.persons_' + (total === 1 ? 'one' : 'other'), { count: total });
-            }
-
-            function togglePanel(open) {
-                personenPanel.classList.toggle('hidden', !open);
-                personenChevron.classList.toggle('rotate-180', open);
-            }
-
-            function applyFilters() {
-                if (!validateDates()) return;
-
-                const selectedPersons = parseInt(personenSelect.value, 10) || 0;
-                const selectedType = typeSelect.value;
-                const selectedPets = huisdierSelect.value;
-
-                let visibleCount = 0;
-
-                cards.forEach((card) => {
-                    const minPersons = parseInt(card.dataset.persons || '0', 10);
-                    const matchPersons = !selectedPersons || selectedPersons >= minPersons;
-                    const matchType = !selectedType || card.dataset.type === selectedType;
-                    const matchPets = !selectedPets || card.dataset.pets === selectedPets;
-                    const showCard = matchPersons && matchType && matchPets;
-
-                    card.classList.toggle('hidden', !showCard);
-                    if (showCard) visibleCount++;
-                });
-
-                filterMessage.classList.add('hidden');
-                resultsWrapper.classList.remove('hidden');
-                resultsCount.textContent = window.__('home.results_' + (visibleCount === 1 ? 'one' : 'other'), { count: visibleCount });
-                noResults.classList.toggle('hidden', visibleCount > 0);
-                noResults.textContent = visibleCount > 0 ? '' : window.__('home.no_results');
-            }
-
-            personenControl.addEventListener('click', function (e) {
-                e.stopPropagation();
-                togglePanel(personenPanel.classList.contains('hidden'));
-            });
-
-            personenClose.addEventListener('click', function () {
-                togglePanel(false);
-            });
-
-            document.addEventListener('click', function (e) {
-                if (!personenControl.contains(e.target) && !personenPanel.contains(e.target)) {
-                    togglePanel(false);
-                }
-            });
-
-            document.querySelectorAll('.personen-btn').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    const key = btn.dataset.key;
-                    const isInc = btn.classList.contains('personen-increment');
-                    const el = document.getElementById('count-' + key);
-
-                    if (isInc) {
-                        counts[key]++;
-                    } else {
-                        if (counts[key] <= 0) return;
-                        counts[key]--;
-                    }
-
-                    el.textContent = counts[key];
-                    updatePersonenSummary();
-                    applyFilters();
-                });
-            });
-
-            [typeSelect, huisdierSelect, aankomstInput, vertrekInput].forEach(el => {
-                if (!el) return;
-                el.addEventListener('change', applyFilters);
-            });
-
-            syncDateLimits();
-            updatePersonenSummary();
-            applyFilters();
-        })();
-
-        // --- Reserveer Modal ---
         function openReserveerModal(id, titel) {
             document.getElementById('modal-accommodatie-id').value = id;
             document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', titel);
@@ -435,9 +249,6 @@
             document.body.style.overflow = '';
         }
 
-        // Postcode auto-fill — event delegation
-        var POSTCODE_API_KEY = '{{ $postcodeApiKey }}';
-
         function handlePostcodeInput() {
             var btn = document.getElementById('postcode-zoeken');
             if (!btn) return;
@@ -458,7 +269,7 @@
             var btn = document.getElementById('postcode-zoeken');
             if (!btn) return;
             btn.disabled = true;
-            btn.textContent = 'Zoeken...';
+            btn.textContent = window.__('reserve.form.searching');
 
             fetchAddressByPostcode(postcode, huisnummer)
                 .then(function(data) {
@@ -468,22 +279,17 @@
                         if (data.land) document.querySelector('input[name="land"]').value = data.land;
                         document.getElementById('reserveer-error')?.classList.add('hidden');
                     } else {
-                        showAddressError('Adres niet gevonden');
+                        showAddressError(window.__('reserve.form.address_not_found'));
                     }
                 })
                 .catch(function() {
-                    showAddressError('Fout bij ophalen adres');
+                    showAddressError(window.__('reserve.form.address_fetch_error'));
                 })
                 .finally(function() {
                     btn.disabled = false;
-                    btn.textContent = 'Zoeken';
+                    btn.textContent = window.__('reserve.form.search');
                 });
         }
-
-        var postcodeInput = document.getElementById('postcode-input');
-        var postcodeBtn = document.getElementById('postcode-zoeken');
-        if (postcodeInput) postcodeInput.oninput = handlePostcodeInput;
-        if (postcodeBtn) postcodeBtn.onclick = handlePostcodeSearch;
 
         function fetchAddressByPostcode(postcode, huisnummer) {
             var normalized = postcode.replace(/\s+/g, '').toUpperCase();
@@ -592,78 +398,276 @@
             el.classList.remove('hidden');
         }
 
-        document.addEventListener('click', function(e) {
-            var btn = e.target.closest('.reserveer-btn');
-            if (btn) {
-                openReserveerModal(btn.getAttribute('data-id'), btn.getAttribute('data-titel'));
-            }
-        });
+        // ===================== UITVOERENDE CODE (moet na DOMContentLoaded) =====================
 
-        document.getElementById('reserveer-modal')?.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeReserveerModal();
-            }
-        });
+        document.addEventListener('DOMContentLoaded', function() {
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeReserveerModal();
-            }
-        });
+            // --- Filters ---
+            (function () {
+                const personenSelect = document.getElementById('filter-personen');
+                const typeSelect = document.getElementById('filter-type');
+                const huisdierSelect = document.getElementById('filter-huisdieren');
+                const aankomstInput = document.getElementById('filter-aankomst');
+                const vertrekInput = document.getElementById('filter-vertrek');
+                const dateError = document.getElementById('date-error');
+                const filterMessage = document.getElementById('filter-message');
+                const resultsWrapper = document.getElementById('results-wrapper');
+                const resultsCount = document.getElementById('results-count');
+                const noResults = document.getElementById('no-results');
+                const cards = document.querySelectorAll('.accommodatie-card');
+                const personenControl = document.getElementById('personen-control');
+                const personenPanel = document.getElementById('personen-panel');
+                const personenChevron = document.getElementById('personen-chevron');
+                const personenSummary = document.getElementById('personen-summary');
+                const personenClose = document.getElementById('personen-close');
 
-        // Form submission via API
-        document.getElementById('reserveer-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
+                const counts = {
+                    adults: 0,
+                    children: 0,
+                    babies: 0,
+                };
 
-            var form = this;
-            var formData = new FormData(form);
-            var submitBtn = document.getElementById('reserveer-submit');
-            var errorEl = document.getElementById('reserveer-error');
+                function toDateValue(date) {
+                    return new Date(date + 'T00:00:00');
+                }
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Bevestigen...';
-            errorEl.classList.add('hidden');
+                function formatDate(date) {
+                    return date.toISOString().slice(0, 10);
+                }
 
-            fetch('/reserveren', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                        'Accept': 'application/json',
-                    },
-                    body: formData,
-                })
-                .then(function(r) {
-                    if (!r.ok) {
-                        return r.json().then(function(err) {
-                            throw err;
-                        });
-                    }
-                    return r.json();
-                })
-                .then(function(data) {
-                    if (data.success) {
-                        closeReserveerModal();
-                        alert(data.message || 'Reservering succesvol!');
-                        form.reset();
-                    }
-                })
-                .catch(function(err) {
-                    var msg = 'Er is een fout opgetreden. Probeer opnieuw.';
-                    if (err.errors) {
-                        var firstKey = Object.keys(err.errors)[0];
-                        if (firstKey) {
-                            msg = err.errors[firstKey][0];
+                function addOneDay(dateValue) {
+                    const nextDay = new Date(dateValue.getTime());
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    return nextDay;
+                }
+
+                function subtractOneDay(dateValue) {
+                    const previousDay = new Date(dateValue.getTime());
+                    previousDay.setDate(previousDay.getDate() - 1);
+                    return previousDay;
+                }
+
+                function syncDateLimits() {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    aankomstInput.min = formatDate(today);
+                    aankomstInput.max = '';
+                    vertrekInput.min = formatDate(addOneDay(today));
+                    vertrekInput.max = '';
+
+                    if (aankomstInput.value) {
+                        const arrivalDate = toDateValue(aankomstInput.value);
+                        const nextDay = addOneDay(arrivalDate);
+                        vertrekInput.min = formatDate(nextDay);
+
+                        if (vertrekInput.value && toDateValue(vertrekInput.value) <= arrivalDate) {
+                            vertrekInput.value = '';
                         }
-                    } else if (err.message) {
-                        msg = err.message;
+                    } else {
+                        vertrekInput.min = formatDate(addOneDay(today));
                     }
-                    errorEl.textContent = msg;
-                    errorEl.classList.remove('hidden');
-                })
-                .finally(function() {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Reservering Bevestigen';
+
+                    if (vertrekInput.value) {
+                        const departureDate = toDateValue(vertrekInput.value);
+                        const lastArrivalDay = subtractOneDay(departureDate);
+                        aankomstInput.max = formatDate(lastArrivalDay);
+
+                        if (aankomstInput.value && toDateValue(aankomstInput.value) >= departureDate) {
+                            aankomstInput.value = '';
+                        }
+                    }
+                }
+
+                function validateDates() {
+                    syncDateLimits();
+
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const arrivalValue = aankomstInput.value ? toDateValue(aankomstInput.value) : null;
+                    const departureValue = vertrekInput.value ? toDateValue(vertrekInput.value) : null;
+
+                    let hasError = false;
+
+                    if (arrivalValue && arrivalValue < today) {
+                        hasError = true;
+                    }
+
+                    if (departureValue && departureValue <= today) {
+                        hasError = true;
+                    }
+
+                    if (arrivalValue && departureValue && departureValue <= arrivalValue) {
+                        hasError = true;
+                    }
+
+                    dateError.classList.toggle('hidden', !hasError);
+
+                    return !hasError;
+                }
+
+                function getTotalPersons() {
+                    return counts.adults + counts.children + counts.babies;
+                }
+
+                function updatePersonenSummary() {
+                    const total = getTotalPersons();
+                    personenSelect.value = total;
+                    personenSummary.textContent = window.__('home.persons_' + (total === 1 ? 'one' : 'other'), { count: total });
+                }
+
+                function togglePanel(open) {
+                    personenPanel.classList.toggle('hidden', !open);
+                    personenChevron.classList.toggle('rotate-180', open);
+                }
+
+                function applyFilters() {
+                    if (!validateDates()) return;
+
+                    const selectedPersons = parseInt(personenSelect.value, 10) || 0;
+                    const selectedType = typeSelect.value;
+                    const selectedPets = huisdierSelect.value;
+
+                    let visibleCount = 0;
+
+                    cards.forEach((card) => {
+                        const minPersons = parseInt(card.dataset.persons || '0', 10);
+                        const matchPersons = !selectedPersons || selectedPersons >= minPersons;
+                        const matchType = !selectedType || card.dataset.type === selectedType;
+                        const matchPets = !selectedPets || card.dataset.pets === selectedPets;
+                        const showCard = matchPersons && matchType && matchPets;
+
+                        card.classList.toggle('hidden', !showCard);
+                        if (showCard) visibleCount++;
+                    });
+
+                    filterMessage.classList.add('hidden');
+                    resultsWrapper.classList.remove('hidden');
+                    resultsCount.textContent = window.__('home.results_' + (visibleCount === 1 ? 'one' : 'other'), { count: visibleCount });
+                    noResults.classList.toggle('hidden', visibleCount > 0);
+                    noResults.textContent = visibleCount > 0 ? '' : window.__('home.no_results');
+                }
+
+                personenControl.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    togglePanel(personenPanel.classList.contains('hidden'));
                 });
+
+                personenClose.addEventListener('click', function () {
+                    togglePanel(false);
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!personenControl.contains(e.target) && !personenPanel.contains(e.target)) {
+                        togglePanel(false);
+                    }
+                });
+
+                document.querySelectorAll('.personen-btn').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        const key = btn.dataset.key;
+                        const isInc = btn.classList.contains('personen-increment');
+                        const el = document.getElementById('count-' + key);
+
+                        if (isInc) {
+                            counts[key]++;
+                        } else {
+                            if (counts[key] <= 0) return;
+                            counts[key]--;
+                        }
+
+                        el.textContent = counts[key];
+                        updatePersonenSummary();
+                        applyFilters();
+                    });
+                });
+
+                [typeSelect, huisdierSelect, aankomstInput, vertrekInput].forEach(el => {
+                    if (!el) return;
+                    el.addEventListener('change', applyFilters);
+                });
+
+                syncDateLimits();
+                updatePersonenSummary();
+                applyFilters();
+            })();
+
+            // --- Postcode knoppen koppelen ---
+            var postcodeInput = document.getElementById('postcode-input');
+            var postcodeBtn = document.getElementById('postcode-zoeken');
+            if (postcodeInput) postcodeInput.oninput = handlePostcodeInput;
+            if (postcodeBtn) postcodeBtn.onclick = handlePostcodeSearch;
+
+            // --- Event listeners ---
+            document.addEventListener('click', function(e) {
+                var btn = e.target.closest('.reserveer-btn');
+                if (btn) {
+                    openReserveerModal(btn.getAttribute('data-id'), btn.getAttribute('data-titel'));
+                }
+            });
+
+            document.getElementById('reserveer-modal')?.addEventListener('click', function(e) {
+                if (e.target === this) closeReserveerModal();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeReserveerModal();
+            });
+
+            // --- Form submission via API ---
+            document.getElementById('reserveer-form')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                var form = this;
+                var formData = new FormData(form);
+                var submitBtn = document.getElementById('reserveer-submit');
+                var errorEl = document.getElementById('reserveer-error');
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = window.__('reserve.form.confirming');
+                errorEl.classList.add('hidden');
+
+                fetch('/reserveren', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                            'Accept': 'application/json',
+                        },
+                        body: formData,
+                    })
+                    .then(function(r) {
+                        if (!r.ok) {
+                            return r.json().then(function(err) {
+                                throw err;
+                            });
+                        }
+                        return r.json();
+                    })
+                    .then(function(data) {
+                        if (data.success) {
+                            closeReserveerModal();
+                            alert(data.message || window.__('reserve.form.success'));
+                            form.reset();
+                        }
+                    })
+                    .catch(function(err) {
+                        var msg = window.__('reserve.form.generic_error');
+                        if (err.errors) {
+                            var firstKey = Object.keys(err.errors)[0];
+                            if (firstKey) {
+                                msg = err.errors[firstKey][0];
+                            }
+                        } else if (err.message) {
+                            msg = err.message;
+                        }
+                        errorEl.textContent = msg;
+                        errorEl.classList.remove('hidden');
+                    })
+                    .finally(function() {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = window.__('reserve.form.confirm');
+                    });
+            });
         });
     </script>
 @endsection
