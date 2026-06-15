@@ -328,7 +328,6 @@
 
                 resultsContainer.classList.add('hidden');
                 resultsContainer.innerHTML = '';
-                searchInput.value = '';
             });
 
             document.addEventListener('click', function(e) {

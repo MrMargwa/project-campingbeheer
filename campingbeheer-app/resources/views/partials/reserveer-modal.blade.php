@@ -27,18 +27,18 @@
 
             @if ($showSearch)
             <div>
-                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.search_guest">Zoek gast op naam</label>
-                <input type="text" id="gast-search" autocomplete="off" data-i18n-placeholder="reserve.form.search_guest_placeholder" placeholder="Typ een naam om te zoeken..."
+                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.name">Volledige naam *</label>
+                <input type="text" name="naam" id="gast-search" autocomplete="off" required
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
                 <div id="gast-search-results" class="hidden mt-1 rounded-lg border border-border bg-white shadow-lg max-h-48 overflow-y-auto text-sm"></div>
             </div>
-            @endif
-
+            @else
             <div>
                 <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.name">Volledige naam *</label>
                 <input type="text" name="naam" required
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
             </div>
+            @endif
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
