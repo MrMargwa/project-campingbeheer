@@ -28,12 +28,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($vandaagAankomst as $boeking)
+                        @forelse ($todayArrivals as $booking)
                             <tr>
-                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $boeking->naam }}</td>
+                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $booking->name }}</td>
                                 <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">
-                                    @if ($boeking->accommodatie)
-                                        {{ $boeking->accommodatie->titel }}
+                                    @if ($booking->accommodation)
+                                        {{ $booking->accommodation->title }}
                                     @else
                                         <span data-i18n="admin.dashboard.unknown">Onbekend</span>
                                     @endif
@@ -57,12 +57,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($vandaagVertrek as $boeking)
+                        @forelse ($todayDepartures as $booking)
                             <tr>
-                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $boeking->naam }}</td>
+                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $booking->name }}</td>
                                 <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">
-                                    @if ($boeking->accommodatie)
-                                        {{ $boeking->accommodatie->titel }}
+                                    @if ($booking->accommodation)
+                                        {{ $booking->accommodation->title }}
                                     @else
                                         <span data-i18n="admin.dashboard.unknown">Onbekend</span>
                                     @endif
@@ -96,31 +96,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($boekingen as $boeking)
+                        @forelse ($bookings as $booking)
                             <tr class="border-b border-border last:border-0 bg-surface">
-                                <td class="px-4 py-3 font-medium" style="text-align:center;color:#000;background:#FFF">{{ $boeking->naam }}</td>
+                                <td class="px-4 py-3 font-medium" style="text-align:center;color:#000;background:#FFF">{{ $booking->name }}</td>
                                 <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">
-                                    @if ($boeking->accommodatie)
-                                        {{ $boeking->accommodatie->titel }}
+                                    @if ($booking->accommodation)
+                                        {{ $booking->accommodation->title }}
                                     @else
                                         <span data-i18n="admin.dashboard.unknown">Onbekend</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ \Carbon\Carbon::parse($boeking->aankomst_datum)->format('d-m-Y') }}</td>
-                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ \Carbon\Carbon::parse($boeking->vertrek_datum)->format('d-m-Y') }}</td>
-                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ $boeking->aantal_personen }}</td>
-                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">&euro; {{ number_format($boeking->accommodatie?->prijs_per_nacht ?? $boeking->totaal_prijs, 2, ',', '.') }}</td>
+                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ \Carbon\Carbon::parse($booking->arrival_date)->format('d-m-Y') }}</td>
+                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ \Carbon\Carbon::parse($booking->departure_date)->format('d-m-Y') }}</td>
+                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ $booking->number_of_persons }}</td>
+                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">&euro; {{ number_format($booking->accommodation?->price_per_night ?? $booking->total_price, 2, ',', '.') }}</td>
                                 <td class="px-4 py-3" style="text-align:center;background:#FFF">
-                                    @if ($boeking->status === 'in_afwachting')
+                                    @if ($booking->status === 'pending')
                                         <div class="flex items-center gap-3" style="justify-content:center">
-                                            <form action="{{ route('admin.reserveringen.approve', $boeking) }}" method="POST" class="inline">
+                                            <form action="{{ route('admin.bookings.approve', $booking) }}" method="POST" class="inline">
                                                 @csrf
                                                 <button type="submit"
                                                     class="text-green-600 hover:text-green-800 text-lg leading-none bg-transparent border-0 cursor-pointer p-0"
                                                     title="Goedkeuren" data-i18n-title="admin.reserveringen.approve">&check;</button>
                                             </form>
                                             <button type="button"
-                                                onclick="openRejectModal({{ $boeking->id }}, '{{ addslashes($boeking->naam) }}')"
+                                                onclick="openRejectModal({{ $booking->id }}, '{{ addslashes($booking->name) }}')"
                                                 class="text-red-600 hover:text-red-800 text-lg leading-none bg-transparent border-0 cursor-pointer p-0"
                                                 title="Afkeuren" data-i18n-title="admin.reserveringen.reject">&times;</button>
                                         </div>
@@ -137,19 +137,19 @@
                     </tbody>
                 </table>
             </div>
-            @if ($boekingen->hasPages())
+            @if ($bookings->hasPages())
                 <div class="border-t border-border px-5 py-3">
                     <div class="flex items-center justify-center gap-1">
-                        @if ($boekingen->onFirstPage())
+                        @if ($bookings->onFirstPage())
                             <span class="px-2 py-1 text-xs text-muted">&lsaquo;</span>
                         @else
-                            <a href="{{ $boekingen->previousPageUrl() }}" class="px-2 py-1 text-xs text-primary hover:text-accent">&lsaquo;</a>
+                            <a href="{{ $bookings->previousPageUrl() }}" class="px-2 py-1 text-xs text-primary hover:text-accent">&lsaquo;</a>
                         @endif
-                        @foreach ($boekingen->getUrlRange(1, $boekingen->lastPage()) as $page => $url)
-                            <a href="{{ $url }}" class="px-2 py-1 text-xs rounded {{ $page === $boekingen->currentPage() ? 'bg-accent text-white' : 'text-primary hover:text-accent' }}">{{ $page }}</a>
+                        @foreach ($bookings->getUrlRange(1, $bookings->lastPage()) as $page => $url)
+                            <a href="{{ $url }}" class="px-2 py-1 text-xs rounded {{ $page === $bookings->currentPage() ? 'bg-accent text-white' : 'text-primary hover:text-accent' }}">{{ $page }}</a>
                         @endforeach
-                        @if ($boekingen->hasMorePages())
-                            <a href="{{ $boekingen->nextPageUrl() }}" class="px-2 py-1 text-xs text-primary hover:text-accent">&rsaquo;</a>
+                        @if ($bookings->hasMorePages())
+                            <a href="{{ $bookings->nextPageUrl() }}" class="px-2 py-1 text-xs text-primary hover:text-accent">&rsaquo;</a>
                         @else
                             <span class="px-2 py-1 text-xs text-muted">&rsaquo;</span>
                         @endif
@@ -172,7 +172,7 @@
                 <p class="text-sm text-primary" id="reject-guest-name"></p>
                 <div>
                     <label class="block text-sm font-medium text-primary mb-1" data-i18n="admin.reserveringen.reject_reason">Reden van afkeuring (optioneel)</label>
-                    <textarea name="afkeur_reden" rows="3"
+                    <textarea name="rejection_reason" rows="3"
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none resize-none"></textarea>
                 </div>
                 <div class="flex justify-end gap-3">
@@ -194,22 +194,22 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('admin-reserveer-btn').addEventListener('click', function() {
-                openReserveerModal();
+                openBookingModal();
             });
 
-            initGastSearch();
+            initGuestSearch();
         });
 
-    function openReserveerModal(id, titel) {
-        var modal = document.getElementById('reserveer-modal');
+    function openBookingModal(id, title) {
+        var modal = document.getElementById('booking-modal');
         var titleEl = document.getElementById('modal-title');
-        var accSelect = document.getElementById('modal-accommodatie-select');
-        var accHidden = document.getElementById('modal-accommodatie-id');
+        var accSelect = document.getElementById('modal-accommodation-select');
+        var accHidden = document.getElementById('modal-accommodation-id');
 
         if (id) {
             if (accSelect) accSelect.value = id;
             if (accHidden) accHidden.value = id;
-            titleEl.textContent = window.__('reserve.modal_title', {name: titel});
+            titleEl.textContent = window.__('reserve.modal_title', {name: title});
         } else {
             if (accSelect) accSelect.value = '';
             if (accHidden) accHidden.value = '';
@@ -219,8 +219,8 @@
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
-        document.getElementById('reserveer-error').classList.add('hidden');
-        document.getElementById('reserveer-error').textContent = '';
+        document.getElementById('booking-error').classList.add('hidden');
+        document.getElementById('booking-error').textContent = '';
 
         var today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -229,41 +229,41 @@
         var dayAfter = new Date(today);
         dayAfter.setDate(dayAfter.getDate() + 2);
 
-        var aankomstInput = document.getElementById('aankomst-datum');
-        var vertrekInput = document.getElementById('vertrek-datum');
-        aankomstInput.min = tomorrow.toISOString().split('T')[0];
-        vertrekInput.min = dayAfter.toISOString().split('T')[0];
-        if (aankomstInput && !aankomstInput.value) {
-            aankomstInput.value = tomorrow.toISOString().split('T')[0];
+        var arrivalInput = document.getElementById('arrival-date');
+        var departureInput = document.getElementById('departure-date');
+        arrivalInput.min = tomorrow.toISOString().split('T')[0];
+        departureInput.min = dayAfter.toISOString().split('T')[0];
+        if (arrivalInput && !arrivalInput.value) {
+            arrivalInput.value = tomorrow.toISOString().split('T')[0];
         }
-        if (vertrekInput && !vertrekInput.value) {
-            vertrekInput.value = dayAfter.toISOString().split('T')[0];
+        if (departureInput && !departureInput.value) {
+            departureInput.value = dayAfter.toISOString().split('T')[0];
         }
     }
 
-        function closeReserveerModal() {
-            document.getElementById('reserveer-modal').classList.add('hidden');
-            document.getElementById('reserveer-modal').classList.remove('flex');
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+            document.getElementById('booking-modal').classList.remove('flex');
             document.body.style.overflow = '';
         }
 
         document.addEventListener('click', function(e) {
-            if (e.target === document.getElementById('reserveer-modal')) {
-                closeReserveerModal();
+            if (e.target === document.getElementById('booking-modal')) {
+                closeBookingModal();
             }
         });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeReserveerModal();
+                closeBookingModal();
             }
         });
 
-        function initGastSearch() {
-            var searchInput = document.getElementById('gast-search');
+        function initGuestSearch() {
+            var searchInput = document.getElementById('guest-search');
             if (!searchInput) return;
 
-            var resultsContainer = document.getElementById('gast-search-results');
+            var resultsContainer = document.getElementById('guest-search-results');
             var debounceTimer;
 
             searchInput.addEventListener('input', function() {
@@ -277,7 +277,7 @@
                 }
 
                 debounceTimer = setTimeout(function() {
-                    fetch('/admin/zoek-gasten?q=' + encodeURIComponent(query))
+                    fetch('/admin/search-guests?q=' + encodeURIComponent(query))
                         .then(function(r) {
                             return r.json();
                         })
@@ -290,19 +290,19 @@
                             }
 
                             var html = '';
-                            data.forEach(function(gast) {
+                            data.forEach(function(guest) {
                                 html +=
-                                    '<div class="gast-result px-3 py-2 cursor-pointer hover:bg-secondary border-b border-border last:border-0" data-naam="' +
-                                    esc(gast.naam) + '" data-email="' + esc(gast.email) +
-                                    '" data-telefoon="' + esc(gast.telefoon) +
-                                    '" data-postcode="' + esc(gast.postcode) +
-                                    '" data-huisnummer="' + esc(gast.huisnummer) +
-                                    '" data-straat="' + esc(gast.straat) + '" data-plaats="' +
-                                    esc(gast.plaats) + '" data-land="' + esc(gast.land) + '">';
-                                html += '<div class="font-medium text-primary">' + esc(gast
-                                    .naam) + '</div>';
-                                if (gast.email) {
-                                    html += '<div class="text-xs text-muted">' + esc(gast
+                                    '<div class="guest-result px-3 py-2 cursor-pointer hover:bg-secondary border-b border-border last:border-0" data-name="' +
+                                    esc(guest.name) + '" data-email="' + esc(guest.email) +
+                                    '" data-phone="' + esc(guest.phone) +
+                                    '" data-postal-code="' + esc(guest.postal_code) +
+                                    '" data-house-number="' + esc(guest.house_number) +
+                                    '" data-street="' + esc(guest.street) + '" data-city="' +
+                                    esc(guest.city) + '" data-country="' + esc(guest.country) + '">';
+                                html += '<div class="font-medium text-primary">' + esc(guest
+                                    .name) + '</div>';
+                                if (guest.email) {
+                                    html += '<div class="text-xs text-muted">' + esc(guest
                                         .email) + '</div>';
                                 }
                                 html += '</div>';
@@ -314,17 +314,17 @@
             });
 
             resultsContainer.addEventListener('click', function(e) {
-                var result = e.target.closest('.gast-result');
+                var result = e.target.closest('.guest-result');
                 if (!result) return;
 
-                document.querySelector('input[name="naam"]').value = result.dataset.naam;
+                document.querySelector('input[name="name"]').value = result.dataset.name;
                 document.querySelector('input[name="email"]').value = result.dataset.email || '';
-                document.querySelector('input[name="telefoon"]').value = result.dataset.telefoon || '';
-                document.querySelector('input[name="postcode"]').value = result.dataset.postcode || '';
-                document.querySelector('input[name="huisnummer"]').value = result.dataset.huisnummer || '';
-                document.querySelector('input[name="straat"]').value = result.dataset.straat || '';
-                document.querySelector('input[name="plaats"]').value = result.dataset.plaats || '';
-                document.querySelector('input[name="land"]').value = result.dataset.land || 'Nederland';
+                document.querySelector('input[name="phone"]').value = result.dataset.phone || '';
+                document.querySelector('input[name="postal_code"]').value = result.dataset.postal_code || '';
+                document.querySelector('input[name="house_number"]').value = result.dataset.house_number || '';
+                document.querySelector('input[name="street"]').value = result.dataset.street || '';
+                document.querySelector('input[name="city"]').value = result.dataset.city || '';
+                document.querySelector('input[name="country"]').value = result.dataset.country || 'Nederland';
 
                 resultsContainer.classList.add('hidden');
                 resultsContainer.innerHTML = '';
@@ -332,210 +332,13 @@
             });
 
             document.addEventListener('click', function(e) {
-                if (!e.target.closest('#gast-search, #gast-search-results')) {
+                if (!e.target.closest('#guest-search, #guest-search-results')) {
                     resultsContainer.classList.add('hidden');
                 }
             });
         }
 
-        document.getElementById('postcode-input')?.addEventListener('input', function() {
-            var btn = document.getElementById('postcode-zoeken');
-            var val = this.value.trim().replace(/\s+/g, '');
-            btn.disabled = val.length < 4;
-            if (val.length >= 4) {
-                btn.classList.remove('cursor-not-allowed', 'opacity-50');
-            } else {
-                btn.classList.add('cursor-not-allowed', 'opacity-50');
-            }
-        });
-
-        document.getElementById('postcode-zoeken')?.addEventListener('click', function() {
-            var postcode = document.getElementById('postcode-input').value.trim();
-            var huisnummer = document.getElementById('huisnummer-input').value.trim();
-            if (!postcode) return;
-
-            var btn = this;
-            btn.disabled = true;
-            btn.textContent = window.__('reserve.form.searching');
-
-            fetchAddressByPostcode(postcode, huisnummer)
-                .then(function(data) {
-                    if (data) {
-                        if (data.straat) document.getElementById('straat-input').value = data.straat;
-                        if (data.plaats) document.getElementById('plaats-input').value = data.plaats;
-                        if (data.land) document.querySelector('input[name="land"]').value = data.land;
-                        document.getElementById('reserveer-error').classList.add('hidden');
-                    } else {
-                        showAddressError('Adres niet gevonden voor deze postcode.');
-                    }
-                })
-                .catch(function() {
-                    showAddressError('Kon adres niet ophalen. Vul handmatig in.');
-                })
-                .finally(function() {
-                    btn.disabled = false;
-                    btn.textContent = window.__('reserve.form.search');
-                });
-        });
-
-        function fetchAddressByPostcode(postcode, huisnummer) {
-            var normalized = postcode.replace(/\s+/g, '').toUpperCase();
-
-            if (!POSTCODE_API_KEY) {
-                return fallbackFetchAddress(normalized, huisnummer);
-            }
-
-            var url = 'https://postcode.tech/api/v1/postcode' +
-                '?postcode=' + encodeURIComponent(normalized) +
-                '&number=' + encodeURIComponent(huisnummer || '');
-
-            return fetch(url, {
-                    headers: {
-                        'Authorization': 'Bearer ' + POSTCODE_API_KEY
-                    }
-                })
-                .then(function(r) {
-                    if (!r.ok) throw new Error();
-                    return r.json();
-                })
-                .then(function(json) {
-                    return {
-                        straat: json.street || json.straatnaam || '',
-                        plaats: json.city || json.woonplaats || '',
-                        land: 'Nederland'
-                    };
-                })
-                .catch(function() {
-                    return fallbackFetchAddress(normalized, huisnummer);
-                });
-        }
-
-        function fallbackFetchAddress(normalized, huisnummer) {
-            function tryPDOK() {
-                var fqParts = ['postcode:' + encodeURIComponent(normalized)];
-                if (huisnummer) fqParts.push('huisnummer:' + encodeURIComponent(huisnummer));
-                var url = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free' +
-                    '?q=*:*&rows=1&fq=' + fqParts.join('&fq=');
-                return fetch(url).then(function(r) {
-                        if (!r.ok) throw new Error();
-                        return r.json();
-                    })
-                    .then(function(json) {
-                        var doc = json.response?.docs?.[0];
-                        if (!doc) throw new Error();
-                        return {
-                            straat: doc.straatnaam || '',
-                            plaats: doc.woonplaatsnaam || doc.city || '',
-                            land: 'Nederland'
-                        };
-                    });
-            }
-
-            function tryNominatim() {
-                var query = normalized;
-                if (huisnummer) query += '+' + huisnummer;
-                var url = 'https://nominatim.openstreetmap.org/search' +
-                    '?q=' + encodeURIComponent(query) +
-                    '&format=json&addressdetails=1&countrycodes=nl&limit=1';
-                return fetch(url, {
-                        headers: {
-                            'User-Agent': 'Campingbeheer-App/1.0'
-                        }
-                    })
-                    .then(function(r) {
-                        if (!r.ok) throw new Error();
-                        return r.json();
-                    })
-                    .then(function(json) {
-                        if (!json || json.length === 0) throw new Error();
-                        var addr = json[0].address || {};
-                        return {
-                            straat: addr.road || addr.street || '',
-                            plaats: addr.city || addr.town || addr.village || addr.place || '',
-                            land: addr.country || 'Nederland'
-                        };
-                    });
-            }
-
-            function tryZippopotam() {
-                var url = 'https://api.zippopotam.us/NL/' + encodeURIComponent(normalized);
-                return fetch(url).then(function(r) {
-                        if (!r.ok) throw new Error();
-                        return r.json();
-                    })
-                    .then(function(json) {
-                        var place = json.places?.[0];
-                        if (!place) return null;
-                        return {
-                            straat: '',
-                            plaats: place['place name'] || place.city || '',
-                            land: json.country || 'Netherlands'
-                        };
-                    });
-            }
-
-            return tryPDOK().catch(tryNominatim).catch(tryZippopotam).catch(function() {
-                return null;
-            });
-        }
-
-        function showAddressError(msg) {
-            var el = document.getElementById('reserveer-error');
-            el.textContent = msg;
-            el.classList.remove('hidden');
-        }
-
-        document.getElementById('reserveer-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            var form = this;
-            var formData = new FormData(form);
-            var submitBtn = document.getElementById('reserveer-submit');
-            var errorEl = document.getElementById('reserveer-error');
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = window.__('reserve.form.confirming');
-            errorEl.classList.add('hidden');
-
-            fetch('/reserveren', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                        'Accept': 'application/json',
-                    },
-                    body: formData,
-                })
-                .then(function(r) {
-                    if (!r.ok) {
-                        return r.json().then(function(err) {
-                            throw err;
-                        });
-                    }
-                    return r.json();
-                })
-                .then(function(data) {
-                    if (data.success) {
-                        closeReserveerModal();
-                        alert(data.message || window.__('reserve.form.success'));
-                        form.reset();
-                    }
-                })
-                .catch(function(err) {
-                    var msg = window.__('reserve.form.generic_error');
-                    if (err.errors) {
-                        var firstKey = Object.keys(err.errors)[0];
-                        if (firstKey) msg = err.errors[firstKey][0];
-                    } else if (err.message) {
-                        msg = err.message;
-                    }
-                    errorEl.textContent = msg;
-                    errorEl.classList.remove('hidden');
-                })
-                .finally(function() {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = window.__('reserve.form.confirm');
-                });
-        });
+        // Auto-initialized via address.js module
 
         function esc(str) {
             if (typeof str !== 'string') return '';
@@ -544,9 +347,9 @@
             return d.innerHTML;
         }
 
-        function openRejectModal(id, naam) {
-            document.getElementById('reject-form').action = '/admin/reserveringen/' + id + '/afkeuren';
-            document.getElementById('reject-guest-name').textContent = window.__('admin.dashboard.confirm_reject', {name: naam});
+        function openRejectModal(id, name) {
+            document.getElementById('reject-form').action = '/admin/bookings/' + id + '/reject';
+            document.getElementById('reject-guest-name').textContent = window.__('admin.dashboard.confirm_reject', {name: name});
             document.getElementById('reject-modal').classList.remove('hidden');
             document.getElementById('reject-modal').classList.add('flex');
             document.body.style.overflow = 'hidden';

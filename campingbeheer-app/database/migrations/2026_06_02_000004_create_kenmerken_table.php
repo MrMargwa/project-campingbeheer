@@ -7,15 +7,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('kenmerken', function (Blueprint $table) {
+        Schema::create('features', function (Blueprint $table) {
             $table->id();
-            $table->string('naam');
-            $table->timestamp('aangemaakt_op')->useCurrent();
+            $table->string('name');
+            $table->string('name_en')->nullable();
+            $table->string('name_de')->nullable();
+            $table->string('name_fy')->nullable();
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('kenmerken');
+        Schema::dropIfExists('features');
     }
 };

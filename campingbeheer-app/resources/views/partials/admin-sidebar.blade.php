@@ -12,16 +12,16 @@
             <span data-i18n="admin.sidebar.dashboard">Dashboard</span>
         </a>
 
-        <a href="{{ route('admin.accommodatie.index') }}"
-            class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.accommodatie.*') ? 'bg-accent text-white' : 'text-muted hover:bg-secondary hover:text-primary' }}">
+        <a href="{{ route('admin.accommodation.index') }}"
+            class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.accommodation.*') ? 'bg-accent text-white' : 'text-muted hover:bg-secondary hover:text-primary' }}">
             <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
             </svg>
             <span data-i18n="admin.sidebar.accommodations">Accommodatie</span>
         </a>
 
-        <a href="{{ route('admin.planbord.index') }}"
-            class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.planbord.*') ? 'bg-accent text-white' : 'text-muted hover:bg-secondary hover:text-primary' }}">
+        <a href="{{ route('admin.planning-board.index') }}"
+            class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition {{ request()->routeIs('admin.planning-board.*') ? 'bg-accent text-white' : 'text-muted hover:bg-secondary hover:text-primary' }}">
             <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>

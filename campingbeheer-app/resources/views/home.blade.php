@@ -19,17 +19,17 @@
 
                             <input type="hidden" id="filter-personen" value="0">
 
-                            <button id="personen-control" type="button"
+                            <button id="persons-control" type="button"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-left text-sm text-primary flex items-center justify-between gap-2">
-                                <span id="personen-summary" class="truncate"></span>
-                                <svg id="personen-chevron" class="h-4 w-4 shrink-0 text-primary transition-transform"
+                                <span id="persons-summary" class="truncate"></span>
+                                <svg id="persons-chevron" class="h-4 w-4 shrink-0 text-primary transition-transform"
                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
                                     <polyline points="6 9 12 15 18 9"></polyline>
                                 </svg>
                             </button>
 
-                            <div id="personen-panel"
+                            <div id="persons-panel"
                                 class="absolute left-0 right-0 z-10 mt-2 hidden rounded-lg border border-border bg-white p-4 shadow-lg">
                                 <div class="space-y-3">
                                     <h4 class="text-lg font-semibold text-primary" data-i18n="home.filter.travel_party">Reisgezelschap</h4>
@@ -41,10 +41,10 @@
                                         </div>
                                         <div class="flex items-center gap-2">
                                             <button type="button" data-key="adults"
-                                                class="personen-btn personen-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
+                                                class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
                                             <span id="count-adults" class="w-6 text-center text-sm tabular-nums">0</span>
                                             <button type="button" data-key="adults"
-                                                class="personen-btn personen-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
+                                                class="persons-btn persons-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
 
@@ -55,10 +55,10 @@
                                         </div>
                                         <div class="flex items-center gap-2">
                                             <button type="button" data-key="children"
-                                                class="personen-btn personen-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
+                                                class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
                                             <span id="count-children" class="w-6 text-center text-sm tabular-nums">0</span>
                                             <button type="button" data-key="children"
-                                                class="personen-btn personen-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
+                                                class="persons-btn persons-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
 
@@ -69,15 +69,15 @@
                                         </div>
                                         <div class="flex items-center gap-2">
                                             <button type="button" data-key="babies"
-                                                class="personen-btn personen-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
+                                                class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
                                             <span id="count-babies" class="w-6 text-center text-sm tabular-nums">0</span>
                                             <button type="button" data-key="babies"
-                                                class="personen-btn personen-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
+                                                class="persons-btn persons-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
 
                                     <div class="flex justify-end">
-                                        <button id="personen-close" type="button"
+                                        <button id="persons-close" type="button"
                                             class="rounded-lg bg-surface border border-border px-3 py-1 text-sm" data-i18n="home.filter.done">Gereed</button>
                                     </div>
                                 </div>
@@ -97,26 +97,26 @@
                         </div>
 
                         <div>
-                            <label for="filter-aankomst"
+                            <label for="filter-arrival"
                                 class="mb-1 block text-xs font-medium text-primary" data-i18n="home.filter.arrival">Aankomst</label>
-                            <input id="filter-aankomst" type="date" min="{{ now()->format('Y-m-d') }}"
+                            <input id="filter-arrival" type="date" min="{{ now()->format('Y-m-d') }}"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
                         </div>
 
                         <div>
-                            <label for="filter-vertrek" class="mb-1 block text-xs font-medium text-primary" data-i18n="home.filter.departure">Vertrek</label>
-                            <input id="filter-vertrek" type="date" min="{{ now()->addDay()->format('Y-m-d') }}"
+                            <label for="filter-departure" class="mb-1 block text-xs font-medium text-primary" data-i18n="home.filter.departure">Vertrek</label>
+                            <input id="filter-departure" type="date" min="{{ now()->addDay()->format('Y-m-d') }}"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
                         </div>
 
                         <div>
-                            <label for="filter-kenmerken"
+                            <label for="filter-features"
                                 class="mb-1 block text-xs font-medium text-primary" data-i18n="home.filter.features">Kenmerken</label>
-                            <select id="filter-kenmerken"
+                            <select id="filter-features"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
                                 <option value="" data-i18n="home.filter.none_selected">Niets geselecteerd</option>
-                                @foreach ($kenmerken as $kenmerk)
-                                    <option value="{{ $kenmerk->naam }}">{{ $kenmerk->vertaaldeNaam($locale) }}</option>
+                                @foreach ($features as $feature)
+                                    <option value="{{ $feature->name }}">{{ $feature->translatedName($locale) }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -146,17 +146,17 @@
             </div>
 
             <div id="results-list" class="space-y-6">
-                @foreach ($accommodaties as $accommodatie)
-                    <article class="accommodatie-card overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
-                        data-type="{{ $accommodatie->type }}" data-persons="{{ $accommodatie->min_personen }}"
-                        data-max-persons="{{ $accommodatie->max_personen }}"
-                        data-features="{{ $accommodatie->kenmerken->pluck('naam')->implode(' ') }}"
-                        data-features-translated="{{ $accommodatie->kenmerken->map(fn($k) => $k->vertaaldeNaam($locale))->implode(' ') }}"
-                        data-id="{{ $accommodatie->id }}">
+                @foreach ($accommodations as $accommodation)
+<article class="accommodation-card overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
+    data-type="{{ $accommodation->type }}" data-persons="{{ $accommodation->min_persons }}"
+    data-max-persons="{{ $accommodation->max_persons }}"
+                        data-features="{{ $accommodation->features->pluck('name')->implode(' ') }}"
+                        data-features-translated="{{ $accommodation->features->map(fn($k) => $k->translatedName($locale))->implode(' ') }}"
+                        data-id="{{ $accommodation->id }}">
                         <div class="grid lg:grid-cols-2">
                             <div class="relative min-h-64 bg-secondary sm:min-h-72 lg:min-h-full">
-                                @if ($accommodatie->afbeelding && file_exists(public_path('images/' . $accommodatie->afbeelding)))
-                                    <img src="{{ asset('images/' . $accommodatie->afbeelding) }}" alt="{{ $accommodatie->vertaaldeTitel($locale) }}"
+@if ($accommodation->image && file_exists(public_path('images/' . $accommodation->image)))
+    <img src="{{ asset('images/' . $accommodation->image) }}" alt="{{ $accommodation->translatedTitle($locale) }}"
                                         class="absolute inset-0 w-full h-full object-cover">
                                 @else
                                     <span class="absolute left-4 top-4 h-px w-[85%] rotate-48 origin-top-left bg-primary/80"></span>
@@ -167,13 +167,13 @@
 
                             <div class="flex flex-col justify-between p-6 sm:p-8">
                                 <div class="space-y-4">
-                                    <h3 class="text-2xl font-semibold text-primary">{{ $accommodatie->vertaaldeTitel($locale) }}</h3>
-                                    <p class="text-sm text-muted">{{ $accommodatie->vertaaldeBeschrijving($locale) }}</p>
+                                    <h3 class="text-2xl font-semibold text-primary">{{ $accommodation->translatedTitle($locale) }}</h3>
+                                    <p class="text-sm text-muted">{{ $accommodation->translatedDescription($locale) }}</p>
                                     <ul class="space-y-2 text-sm text-muted">
-                                        <li>{{ $accommodatie->min_personen }} - {{ $accommodatie->max_personen }} <span data-i18n="reserve.persons">personen</span></li>
-                                        @if ($accommodatie->kenmerken->isNotEmpty())
-                                            @foreach ($accommodatie->kenmerken as $kenmerk)
-                                                <li>{{ $kenmerk->vertaaldeNaam($locale) }}</li>
+                                        <li>{{ $accommodation->min_persons }} - {{ $accommodation->max_persons }} <span data-i18n="reserve.persons">personen</span></li>
+                                        @if ($accommodation->features->isNotEmpty())
+                                            @foreach ($accommodation->features as $feature)
+                                                <li>{{ $feature->translatedName($locale) }}</li>
                                             @endforeach
                                         @endif
                                     </ul>
@@ -182,10 +182,10 @@
                                 <div class="mt-6 flex items-center justify-between">
                                     <div>
                                         <span
-                                            class="text-lg font-semibold text-accent">&euro;{{ number_format($accommodatie->prijs_per_nacht, 2, ',', '.') }}</span>
+                                            class="text-lg font-semibold text-accent">&euro;{{ number_format($accommodation->price_per_night, 2, ',', '.') }}</span>
                                         <span class="text-sm text-muted" data-i18n="home.accommodations.per_night">/ nacht</span>
                                     </div>
-                                    <a href="{{ route('reserveren') }}"
+                                    <a href="{{ route('reservation') }}"
                                         class="inline-flex items-center justify-center rounded-lg border border-border bg-white px-5 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent"
                                         data-i18n="home.accommodations.book">Reserveer
                                     </a>
@@ -205,22 +205,22 @@
     </script>
     <script>
         (function () {
-            const personenSelect = document.getElementById('filter-personen');
+            const personsSelect = document.getElementById('filter-personen');
             const typeSelect = document.getElementById('filter-type');
-            const kenmerkenSelect = document.getElementById('filter-kenmerken');
-            const aankomstInput = document.getElementById('filter-aankomst');
-            const vertrekInput = document.getElementById('filter-vertrek');
+            const featuresSelect = document.getElementById('filter-features');
+            const arrivalInput = document.getElementById('filter-arrival');
+            const departureInput = document.getElementById('filter-departure');
             const dateError = document.getElementById('date-error');
             const filterMessage = document.getElementById('filter-message');
             const resultsWrapper = document.getElementById('results-wrapper');
             const resultsCount = document.getElementById('results-count');
             const noResults = document.getElementById('no-results');
-            const cards = document.querySelectorAll('.accommodatie-card');
-            const personenControl = document.getElementById('personen-control');
-            const personenPanel = document.getElementById('personen-panel');
-            const personenChevron = document.getElementById('personen-chevron');
-            const personenSummary = document.getElementById('personen-summary');
-            const personenClose = document.getElementById('personen-close');
+            const cards = document.querySelectorAll('.accommodation-card');
+            const personsControl = document.getElementById('persons-control');
+            const personsPanel = document.getElementById('persons-panel');
+            const personsChevron = document.getElementById('persons-chevron');
+            const personsSummary = document.getElementById('persons-summary');
+            const personsClose = document.getElementById('persons-close');
 
             const counts = {
                 adults: 0,
@@ -252,30 +252,30 @@
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                aankomstInput.min = formatDate(today);
-                aankomstInput.max = '';
-                vertrekInput.min = formatDate(addOneDay(today));
-                vertrekInput.max = '';
+                arrivalInput.min = formatDate(today);
+                arrivalInput.max = '';
+                departureInput.min = formatDate(addOneDay(today));
+                departureInput.max = '';
 
-                if (aankomstInput.value) {
-                    const arrivalDate = toDateValue(aankomstInput.value);
+                if (arrivalInput.value) {
+                    const arrivalDate = toDateValue(arrivalInput.value);
                     const nextDay = addOneDay(arrivalDate);
-                    vertrekInput.min = formatDate(nextDay);
+                    departureInput.min = formatDate(nextDay);
 
-                    if (vertrekInput.value && toDateValue(vertrekInput.value) <= arrivalDate) {
-                        vertrekInput.value = '';
+                    if (departureInput.value && toDateValue(departureInput.value) <= arrivalDate) {
+                        departureInput.value = '';
                     }
                 } else {
-                    vertrekInput.min = formatDate(addOneDay(today));
+                    departureInput.min = formatDate(addOneDay(today));
                 }
 
-                if (vertrekInput.value) {
-                    const departureDate = toDateValue(vertrekInput.value);
+                if (departureInput.value) {
+                    const departureDate = toDateValue(departureInput.value);
                     const lastArrivalDay = subtractOneDay(departureDate);
-                    aankomstInput.max = formatDate(lastArrivalDay);
+                    arrivalInput.max = formatDate(lastArrivalDay);
 
-                    if (aankomstInput.value && toDateValue(aankomstInput.value) >= departureDate) {
-                        aankomstInput.value = '';
+                    if (arrivalInput.value && toDateValue(arrivalInput.value) >= departureDate) {
+                        arrivalInput.value = '';
                     }
                 }
             }
@@ -285,8 +285,8 @@
 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                const arrivalValue = aankomstInput.value ? toDateValue(aankomstInput.value) : null;
-                const departureValue = vertrekInput.value ? toDateValue(vertrekInput.value) : null;
+                const arrivalValue = arrivalInput.value ? toDateValue(arrivalInput.value) : null;
+                const departureValue = departureInput.value ? toDateValue(departureInput.value) : null;
 
                 let hasError = false;
 
@@ -311,23 +311,23 @@
                 return counts.adults + counts.children + counts.babies;
             }
 
-            function updatePersonenSummary() {
+            function updatePersonsSummary() {
                 const total = getTotalPersons();
-                personenSelect.value = total;
-                personenSummary.textContent = window.__('home.persons_' + (total === 1 ? 'one' : 'other'), { count: total });
+                personsSelect.value = total;
+                personsSummary.textContent = window.__('home.persons_' + (total === 1 ? 'one' : 'other'), { count: total });
             }
 
             function togglePanel(open) {
-                personenPanel.classList.toggle('hidden', !open);
-                personenChevron.classList.toggle('rotate-180', open);
+                personsPanel.classList.toggle('hidden', !open);
+                personsChevron.classList.toggle('rotate-180', open);
             }
 
             function applyFilters() {
                 if (!validateDates()) return;
 
-                const selectedPersons = parseInt(personenSelect.value, 10) || 0;
+                const selectedPersons = parseInt(personsSelect.value, 10) || 0;
                 const selectedType = typeSelect.value;
-                const selectedFeature = kenmerkenSelect.value;
+                const selectedFeature = featuresSelect.value;
 
                 let visibleCount = 0;
 
@@ -349,25 +349,25 @@
                 noResults.textContent = visibleCount > 0 ? '' : window.__('home.no_results');
             }
 
-            personenControl.addEventListener('click', function (e) {
+            personsControl.addEventListener('click', function (e) {
                 e.stopPropagation();
-                togglePanel(personenPanel.classList.contains('hidden'));
+                togglePanel(personsPanel.classList.contains('hidden'));
             });
 
-            personenClose.addEventListener('click', function () {
+            personsClose.addEventListener('click', function () {
                 togglePanel(false);
             });
 
             document.addEventListener('click', function (e) {
-                if (!personenControl.contains(e.target) && !personenPanel.contains(e.target)) {
+                if (!personsControl.contains(e.target) && !personsPanel.contains(e.target)) {
                     togglePanel(false);
                 }
             });
 
-            document.querySelectorAll('.personen-btn').forEach(function (btn) {
+            document.querySelectorAll('.persons-btn').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     const key = btn.dataset.key;
-                    const isInc = btn.classList.contains('personen-increment');
+                    const isInc = btn.classList.contains('persons-increment');
                     const el = document.getElementById('count-' + key);
 
                     if (isInc) {
@@ -378,18 +378,18 @@
                     }
 
                     el.textContent = counts[key];
-                    updatePersonenSummary();
+                    updatePersonsSummary();
                     applyFilters();
                 });
             });
 
-            [typeSelect, kenmerkenSelect, aankomstInput, vertrekInput].forEach(el => {
+            [typeSelect, featuresSelect, arrivalInput, departureInput].forEach(el => {
                 if (!el) return;
                 el.addEventListener('change', applyFilters);
             });
 
             syncDateLimits();
-            updatePersonenSummary();
+            updatePersonsSummary();
             applyFilters();
         })();
     </script>

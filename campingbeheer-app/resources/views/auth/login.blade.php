@@ -53,11 +53,11 @@
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 const email = document.getElementById('email').value.trim();
-                const ww = document.getElementById('password').value.trim();
+                const password = document.getElementById('password').value.trim();
 
                 msg.classList.remove('text-danger', 'text-success', 'hidden');
 
-                if (!email || !ww) {
+                if (!email || !password) {
                     msg.textContent = window.__('auth.error_empty_fields');
                     msg.classList.add('text-danger');
                     return;

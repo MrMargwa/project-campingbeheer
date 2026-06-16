@@ -12,12 +12,11 @@ return new class extends Migration {
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('naam');
+            $table->string('name');
             $table->string('email')->unique();
-            $table->string('wachtwoord');
-            $table->enum('rol', ['admin', 'gast']);
-            $table->timestamp('aangemaakt_op')->useCurrent();
-            $table->timestamp('bewerkt_op')->nullable();
+            $table->string('password');
+            $table->enum('role', ['admin', 'guest']);
+            $table->timestamps();
         });
     }
 

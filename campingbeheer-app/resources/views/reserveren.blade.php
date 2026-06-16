@@ -9,17 +9,17 @@
             border: none !important;
         }
 
-        .accommodatie-marker {
+        .accommodation-marker {
             transition: transform 0.15s ease, box-shadow 0.15s ease;
             cursor: pointer;
         }
 
-        .accommodatie-marker:hover {
+        .accommodation-marker:hover {
             transform: scale(1.3);
             z-index: 1000 !important;
         }
 
-        .accommodatie-marker.selected {
+        .accommodation-marker.selected {
             transform: scale(1.3);
             z-index: 1000 !important;
         }
@@ -62,7 +62,7 @@
                     <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide">Type</legend>
                     <div class="space-y-2" id="type-filters">
                         @php
-                            $resTypes = \App\Models\Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+                            $resTypes = \App\Models\Accommodation::select('type', 'type_en', 'type_de', 'type_fy')
                                 ->distinct('type')
                                 ->get()
                                 ->keyBy('type');
@@ -83,13 +83,13 @@
                     <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide">Status</legend>
                     <div class="space-y-2">
                         <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
-                            <input type="checkbox" value="beschikbaar" checked id="filter-beschikbaar"
+                            <input type="checkbox" value="available" checked id="filter-available"
                                 class="filter-status w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
                             <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#2A6A4E]"></span>
                             <span data-i18n="reserve.available">Beschikbaar</span>
                         </label>
                         <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
-                            <input type="checkbox" value="niet_beschikbaar" checked id="filter-niet-beschikbaar"
+                            <input type="checkbox" value="unavailable" checked id="filter-unavailable"
                                 class="filter-status w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
                             <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#BD4C4C]"></span>
                             <span data-i18n="reserve.not_available">Niet beschikbaar</span>
@@ -102,7 +102,7 @@
 
     {{-- Legenda --}}
     @php
-        $legendTypes = \App\Models\Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+        $legendTypes = \App\Models\Accommodation::select('type', 'type_en', 'type_de', 'type_fy')
             ->distinct('type')
             ->get()
             ->keyBy('type');
@@ -151,7 +151,7 @@
                 'use strict';
 
                 // --- Data ---
-                const accommodations = @json($accommodaties);
+                const accommodations = @json($accommodations);
                 const items = accommodations.filter(function(a) {
                     return a.latitude != null && a.longitude != null;
                 });
@@ -212,7 +212,7 @@
 
                 // --- Helpers ---
                 function isAvailable(acc) {
-                    return acc.status === 'beschikbaar';
+                    return acc.status === 'available';
                 }
 
                 function statusColor(acc) {
@@ -229,7 +229,7 @@
 
                     return L.divIcon({
                         className: '',
-                        html: '<div class="accommodatie-marker' + (selected ? ' selected' : '') +
+                        html: '<div class="accommodation-marker' + (selected ? ' selected' : '') +
                             '" style="' +
                             'width:' + size + 'px;height:' + size + 'px;' +
                             'background:' + color + ';' +
@@ -251,9 +251,9 @@
                     }).addTo(map);
 
                     marker.bindTooltip(
-                        '<strong>' + esc(acc.titel) + '</strong><br>' +
+                        '<strong>' + esc(acc.title) + '</strong><br>' +
                         esc(acc.type) + ' &middot; ' +
-                        (acc.prijs_per_nacht > 0 ? '&euro;' + parseFloat(acc.prijs_per_nacht)
+                        (acc.price_per_night > 0 ? '&euro;' + parseFloat(acc.price_per_night)
                             .toFixed(2) + window.__('reserve.per_night') : '') +
                         '<br><span style="color:' + statusColor(acc) + ';font-weight:500">' +
                         (isAvailable(acc) ? 'Beschikbaar' : 'Niet beschikbaar') + '</span>', {
@@ -303,7 +303,7 @@
                     // Close detail if selected accommodation is now hidden
                     if (selectedId !== null) {
                         var stillVisible = markerDataList.some(function(md) {
-                            return (md.acc.id || md.acc.titel) === selectedId && md.visible;
+                            return (md.acc.id || md.acc.title) === selectedId && md.visible;
                         });
                         if (!stillVisible) {
                             closeDetail();
@@ -321,7 +321,7 @@
                 });
 
                 function selectAccommodation(acc, marker) {
-                    if (selectedId === (acc.id || acc.titel)) return;
+                    if (selectedId === (acc.id || acc.title)) return;
 
                     if (selectedMarkerData != null) {
                         var prev = selectedMarkerData;
@@ -329,7 +329,7 @@
                         prev.marker.setZIndexOffset(0);
                     }
 
-                    selectedId = acc.id || acc.titel;
+                    selectedId = acc.id || acc.title;
                     selectedMarkerData = {
                         marker: marker,
                         acc: acc
@@ -366,18 +366,18 @@
 
                 function showDetail(acc) {
                     var free = isAvailable(acc);
-                    var price = '&euro;' + parseFloat(acc.prijs_per_nacht).toFixed(2);
+                    var price = '&euro;' + parseFloat(acc.price_per_night).toFixed(2);
                     var accType = acc.type;
                     var typeColor = typeColors[acc.type] || '#647069';
                     var statusLabel = free ? 'Beschikbaar' : 'Niet beschikbaar';
                     var statusColorVal = free ? '#2A6A4E' : '#BD4C4C';
-                    var accTitle = acc.titel;
-                    var accDesc = acc.beschrijving;
+                    var accTitle = acc.title;
+                    var accDesc = acc.description;
 
                     // Build image HTML with fallback
                     var imgHtml = '';
-                    if (acc.afbeelding) {
-                        imgHtml = '<img src="' + esc('/images/' + acc.afbeelding) + '" alt="' + esc(accTitle) +
+                    if (acc.image) {
+                        imgHtml = '<img src="' + esc('/images/' + acc.image) + '" alt="' + esc(accTitle) +
                             '" class="w-full h-full object-cover" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"><div class="hidden w-full h-full items-center justify-center bg-secondary text-muted text-sm font-medium" style="display:none">' +
                             esc(accType) + '</div>';
                     } else {
@@ -393,25 +393,25 @@
                         '</div>',
                         '<div class="flex-1 p-6 flex flex-col gap-3">',
                         '<div class="flex items-start justify-between gap-3">',
-                        '<h3 class="font-semibold text-primary text-xl">' + esc(acc.titel) + '</h3>',
+                        '<h3 class="font-semibold text-primary text-xl">' + esc(acc.title) + '</h3>',
                         '<button id="detail-close" class="bg-transparent border-0 cursor-pointer text-muted hover:text-primary transition text-xl leading-none shrink-0" aria-label="Sluiten">&times;</button>',
                         '</div>',
                         accType ?
                         '<span class="inline-block self-start px-2.5 py-0.5 rounded-full text-xs font-medium" style="background:' +
                         typeColor + '15;color:' + typeColor + ';text-transform:capitalize">' + esc(acc
                             .type) + '</span>' : '',
-                        acc.beschrijving ? '<p class="text-sm text-muted leading-relaxed">' + esc(acc
-                            .beschrijving) + '</p>' : '',
+                        acc.description ? '<p class="text-sm text-muted leading-relaxed">' + esc(acc
+                            .description) + '</p>' : '',
                         '<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">',
-                        '<span>' + acc.min_personen + '-' + acc.max_personen + ' personen</span>',
-                        acc.prijs_per_nacht > 0 ? '<span class="font-semibold" style="color:' + typeColor +
+                        '<span>' + acc.min_persons + '-' + acc.max_persons + ' personen</span>',
+                        acc.price_per_night > 0 ? '<span class="font-semibold" style="color:' + typeColor +
                         '">' + price + ' ' + window.__('reserve.per_night') + '</span>' : '',
                         '<span class="inline-flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:' +
                         statusColorVal + '"></span>' + statusLabel + '</span>',
                         '</div>',
                         '<div class="mt-auto pt-3 border-t border-border flex justify-end">',
                         (free && acc.id) ? '<button type="button" data-id="' + acc.id +
-                        '" data-titel="' + esc(acc.titel) +
+                        '" data-title="' + esc(acc.title) +
                         '" class="reserveer-btn bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">Reserveer Nu</button>' :
                         '<span class="text-sm text-muted italic">Deze accommodatie is momenteel niet beschikbaar voor reservering.</span>',
                         '</div>',
@@ -450,14 +450,14 @@
         });
 
         // --- Reserveer Modal ---
-        function openReserveerModal(id, titel) {
-            document.getElementById('modal-accommodatie-id').value = id;
-            document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', titel);
-            document.getElementById('reserveer-modal').classList.remove('hidden');
-            document.getElementById('reserveer-modal').classList.add('flex');
+        function openBookingModal(id, title) {
+            document.getElementById('modal-accommodation-id').value = id;
+            document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', title);
+            document.getElementById('booking-modal').classList.remove('hidden');
+            document.getElementById('booking-modal').classList.add('flex');
             document.body.style.overflow = 'hidden';
-            document.getElementById('reserveer-error').classList.add('hidden');
-            document.getElementById('reserveer-error').textContent = '';
+            document.getElementById('booking-error').classList.add('hidden');
+            document.getElementById('booking-error').textContent = '';
 
             var today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -466,21 +466,21 @@
             var dayAfter = new Date(today);
             dayAfter.setDate(dayAfter.getDate() + 2);
 
-            var aankomstInput = document.getElementById('aankomst-datum');
-            var vertrekInput = document.getElementById('vertrek-datum');
-            aankomstInput.min = tomorrow.toISOString().split('T')[0];
-            vertrekInput.min = dayAfter.toISOString().split('T')[0];
-            if (aankomstInput && !aankomstInput.value) {
-                aankomstInput.value = tomorrow.toISOString().split('T')[0];
+            var arrivalInput = document.getElementById('arrival-date');
+            var departureInput = document.getElementById('departure-date');
+            arrivalInput.min = tomorrow.toISOString().split('T')[0];
+            departureInput.min = dayAfter.toISOString().split('T')[0];
+            if (arrivalInput && !arrivalInput.value) {
+                arrivalInput.value = tomorrow.toISOString().split('T')[0];
             }
-            if (vertrekInput && !vertrekInput.value) {
-                vertrekInput.value = dayAfter.toISOString().split('T')[0];
+            if (departureInput && !departureInput.value) {
+                departureInput.value = dayAfter.toISOString().split('T')[0];
             }
         }
 
-        function closeReserveerModal() {
-            document.getElementById('reserveer-modal').classList.add('hidden');
-            document.getElementById('reserveer-modal').classList.remove('flex');
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+            document.getElementById('booking-modal').classList.remove('flex');
             document.body.style.overflow = '';
         }
 
@@ -488,231 +488,24 @@
         document.addEventListener('click', function(e) {
             var btn = e.target.closest('.reserveer-btn');
             if (btn) {
-                openReserveerModal(btn.getAttribute('data-id'), btn.getAttribute('data-titel'));
+                openBookingModal(btn.getAttribute('data-id'), btn.getAttribute('data-title'));
             }
         });
 
         // Close modal on backdrop click
-        document.getElementById('reserveer-modal')?.addEventListener('click', function(e) {
+        document.getElementById('booking-modal')?.addEventListener('click', function(e) {
             if (e.target === this) {
-                closeReserveerModal();
+                closeBookingModal();
             }
         });
 
         // Close on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeReserveerModal();
+                closeBookingModal();
             }
         });
 
-        // Postcode auto-fill
-        document.getElementById('postcode-input')?.addEventListener('input', function() {
-            var btn = document.getElementById('postcode-zoeken');
-            var val = this.value.trim().replace(/\s+/g, '');
-            btn.disabled = val.length < 4;
-            if (val.length >= 4) {
-                btn.classList.remove('cursor-not-allowed', 'opacity-50');
-            } else {
-                btn.classList.add('cursor-not-allowed', 'opacity-50');
-            }
-        });
-
-        document.getElementById('postcode-zoeken')?.addEventListener('click', function() {
-            var postcode = document.getElementById('postcode-input').value.trim();
-            var huisnummer = document.getElementById('huisnummer-input').value.trim();
-            if (!postcode) return;
-
-            var btn = this;
-            btn.disabled = true;
-            btn.textContent = window.__('reserve.form.searching');
-
-            fetchAddressByPostcode(postcode, huisnummer)
-                .then(function(data) {
-                    if (data) {
-                        if (data.straat) {
-                            document.getElementById('straat-input').value = data.straat;
-                        }
-                        if (data.plaats) {
-                            document.getElementById('plaats-input').value = data.plaats;
-                        }
-                        if (data.land) {
-                            document.querySelector('input[name="land"]').value = data.land;
-                        }
-                        document.getElementById('reserveer-error').classList.add('hidden');
-                    } else {
-                        showAddressError(window.__('reserve.form.address_not_found'));
-                    }
-                })
-                .catch(function() {
-                    showAddressError(window.__('reserve.form.address_fetch_error'));
-                })
-                .finally(function() {
-                    btn.disabled = false;
-                    btn.textContent = window.__('reserve.form.search');
-                });
-        });
-
-        function fetchAddressByPostcode(postcode, huisnummer) {
-            var normalized = postcode.replace(/\s+/g, '').toUpperCase();
-
-            if (!POSTCODE_API_KEY) {
-                return fallbackFetchAddress(normalized, huisnummer);
-            }
-
-            var url = 'https://postcode.tech/api/v1/postcode' +
-                '?postcode=' + encodeURIComponent(normalized) +
-                '&number=' + encodeURIComponent(huisnummer || '');
-
-            return fetch(url, {
-                    headers: {
-                        'Authorization': 'Bearer ' + POSTCODE_API_KEY
-                    }
-                })
-                .then(function(r) {
-                    if (!r.ok) throw new Error();
-                    return r.json();
-                })
-                .then(function(json) {
-                    return {
-                        straat: json.street || json.straatnaam || '',
-                        plaats: json.city || json.woonplaats || '',
-                        land: 'Nederland'
-                    };
-                })
-                .catch(function() {
-                    return fallbackFetchAddress(normalized, huisnummer);
-                });
-        }
-
-        function fallbackFetchAddress(normalized, huisnummer) {
-            function tryPDOK() {
-                var fqParts = ['postcode:' + encodeURIComponent(normalized)];
-                if (huisnummer) fqParts.push('huisnummer:' + encodeURIComponent(huisnummer));
-                var url = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free' +
-                    '?q=*:*&rows=1&fq=' + fqParts.join('&fq=');
-                return fetch(url).then(function(r) {
-                        if (!r.ok) throw new Error();
-                        return r.json();
-                    })
-                    .then(function(json) {
-                        var doc = json.response?.docs?.[0];
-                        if (!doc) throw new Error();
-                        return {
-                            straat: doc.straatnaam || '',
-                            plaats: doc.woonplaatsnaam || doc.city || '',
-                            land: 'Nederland'
-                        };
-                    });
-            }
-
-            function tryNominatim() {
-                var query = normalized;
-                if (huisnummer) query += '+' + huisnummer;
-                var url = 'https://nominatim.openstreetmap.org/search' +
-                    '?q=' + encodeURIComponent(query) +
-                    '&format=json&addressdetails=1&countrycodes=nl&limit=1';
-                return fetch(url, {
-                        headers: {
-                            'User-Agent': 'Campingbeheer-App/1.0'
-                        }
-                    })
-                    .then(function(r) {
-                        if (!r.ok) throw new Error();
-                        return r.json();
-                    })
-                    .then(function(json) {
-                        if (!json || json.length === 0) throw new Error();
-                        var addr = json[0].address || {};
-                        return {
-                            straat: addr.road || addr.street || '',
-                            plaats: addr.city || addr.town || addr.village || addr.place || '',
-                            land: addr.country || 'Nederland'
-                        };
-                    });
-            }
-
-            function tryZippopotam() {
-                var url = 'https://api.zippopotam.us/NL/' + encodeURIComponent(normalized);
-                return fetch(url).then(function(r) {
-                        if (!r.ok) throw new Error();
-                        return r.json();
-                    })
-                    .then(function(json) {
-                        var place = json.places?.[0];
-                        if (!place) return null;
-                        return {
-                            straat: '',
-                            plaats: place['place name'] || place.city || '',
-                            land: json.country || 'Netherlands'
-                        };
-                    });
-            }
-
-            return tryPDOK().catch(tryNominatim).catch(tryZippopotam).catch(function() {
-                return null;
-            });
-        }
-
-        function showAddressError(msg) {
-            var el = document.getElementById('reserveer-error');
-            el.textContent = msg;
-            el.classList.remove('hidden');
-        }
-
-        // Form submission
-        document.getElementById('reserveer-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            var form = this;
-            var formData = new FormData(form);
-            var submitBtn = document.getElementById('reserveer-submit');
-            var errorEl = document.getElementById('reserveer-error');
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = window.__('reserve.form.confirming');
-            errorEl.classList.add('hidden');
-
-            fetch('/reserveren', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                        'Accept': 'application/json',
-                    },
-                    body: formData,
-                })
-                .then(function(r) {
-                    if (!r.ok) {
-                        return r.json().then(function(err) {
-                            throw err;
-                        });
-                    }
-                    return r.json();
-                })
-                .then(function(data) {
-                    if (data.success) {
-                        closeReserveerModal();
-                        alert(data.message || 'Reservering succesvol!');
-                        form.reset();
-                    }
-                })
-                .catch(function(err) {
-                    var msg = 'Er is een fout opgetreden. Probeer opnieuw.';
-                    if (err.errors) {
-                        var firstKey = Object.keys(err.errors)[0];
-                        if (firstKey) {
-                            msg = err.errors[firstKey][0];
-                        }
-                    } else if (err.message) {
-                        msg = err.message;
-                    }
-                    errorEl.textContent = msg;
-                    errorEl.classList.remove('hidden');
-                })
-                .finally(function() {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Reservering Bevestigen';
-                });
-        });
+        // Auto-initialized via address.js module
     </script>
 @endsection

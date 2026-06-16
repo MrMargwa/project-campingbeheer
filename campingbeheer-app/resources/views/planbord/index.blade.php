@@ -14,20 +14,20 @@
         </select>
 
         <div class="flex items-center gap-1">
-            <a href="{{ route('admin.planbord.index', ['type' => $selectedType, 'week' => $weekOffset - 1]) }}"
+            <a href="{{ route('admin.planning-board.index', ['type' => $selectedType, 'week' => $weekOffset - 1]) }}"
                 class="rounded-lg border border-border bg-white px-2 py-1.5 text-xs text-primary transition hover:bg-secondary">
                 &larr;
             </a>
             <span class="min-w-[6rem] text-center text-xs font-medium text-primary">
                 Week {{ $weekNumber }}, {{ $year }}
             </span>
-            <a href="{{ route('admin.planbord.index', ['type' => $selectedType, 'week' => $weekOffset + 1]) }}"
+            <a href="{{ route('admin.planning-board.index', ['type' => $selectedType, 'week' => $weekOffset + 1]) }}"
                 class="rounded-lg border border-border bg-white px-2 py-1.5 text-xs text-primary transition hover:bg-secondary">
                 &rarr;
             </a>
         </div>
 
-        <a href="{{ route('admin.planbord.index', ['type' => $selectedType, 'week' => 0]) }}"
+        <a href="{{ route('admin.planning-board.index', ['type' => $selectedType, 'week' => 0]) }}"
             class="rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-secondary {{ $weekOffset === 0 ? 'ring-2 ring-accent/50' : '' }}">
             Deze week
         </a>
@@ -50,13 +50,13 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($accommodaties as $accommodatie)
+                @forelse($accommodations as $accommodation)
                     @php
-                        $accommodatieBoekingen = $boekingen->get($accommodatie->id, collect());
+                        $accommodationBookings = $bookings->get($accommodation->id, collect());
                     @endphp
                     <tr class="border-b border-border last:border-b-0 hover:bg-black/[0.03]">
                         <td class="sticky left-0 z-10 bg-surface px-2 py-1 font-medium text-primary">
-                            {{ $accommodatie->titel }}
+                            {{ $accommodation->title }}
                         </td>
                         @foreach($days as $day)
                         @php
@@ -68,28 +68,28 @@
                                 $isOccupied = false;
                                 $cellBookings = [];
 
-                                foreach ($accommodatieBoekingen as $boeking) {
-                                    $aankomst = $boeking->aankomst_datum;
-                                    $vertrek = $boeking->vertrek_datum;
-                                    $gast = $boeking->gebruiker?->naam ?? $boeking->naam ?? 'Onbekend';
+                                foreach ($accommodationBookings as $booking) {
+                                    $arrival = $booking->arrival_date;
+                                    $departure = $booking->departure_date;
+                                    $guest = $booking->user?->name ?? $booking->name ?? 'Onbekend';
 
-                                    if ($date === $aankomst) {
+                                    if ($date === $arrival) {
                                         $hasCheckin = true;
                                     }
-                                    if ($date === $vertrek) {
+                                    if ($date === $departure) {
                                         $hasCheckout = true;
                                     }
-                                    if ($date > $aankomst && $date < $vertrek) {
+                                    if ($date > $arrival && $date < $departure) {
                                         $isOccupied = true;
                                     }
 
-                                    if ($date >= $aankomst && $date <= $vertrek) {
+                                    if ($date >= $arrival && $date <= $departure) {
                                         $cellBookings[] = [
-                                            'naam' => $gast,
-                                            'aankomst' => \Carbon\Carbon::parse($boeking->aankomst_datum)->format('d-m-Y'),
-                                            'vertrek' => \Carbon\Carbon::parse($boeking->vertrek_datum)->format('d-m-Y'),
-                                            'personen' => $boeking->aantal_personen,
-                                            'opmerking' => $boeking->opmerking,
+                                            'name' => $guest,
+                                            'arrival' => \Carbon\Carbon::parse($booking->arrival_date)->format('d-m-Y'),
+                                            'departure' => \Carbon\Carbon::parse($booking->departure_date)->format('d-m-Y'),
+                                            'persons' => $booking->number_of_persons,
+                                            'notes' => $booking->notes,
                                         ];
                                     }
                                 }
@@ -113,8 +113,8 @@
                             @endphp
                             <td class="planbord-cell border-r border-border px-0.5 py-0.5 text-center align-middle last:border-r-0 {{ $cellClass }} {{ count($cellBookings) > 0 ? 'cursor-pointer' : '' }}"
                                 @if(count($cellBookings) > 0) data-tooltip="{{ json_encode([
-                                    'verblijf' => $accommodatie->titel,
-                                    'boekingen' => $cellBookings,
+                                    'accommodation' => $accommodation->title,
+                                    'bookings' => $cellBookings,
                                 ]) }}" @endif>
                                 <span>{{ $label }}</span>
                             </td>
@@ -195,18 +195,18 @@
                 tooltipEl.className = 'fixed z-[9999] min-w-[220px] whitespace-nowrap rounded-lg bg-gray-800 px-2.5 py-2 text-left text-xs leading-relaxed text-gray-100 shadow-lg pointer-events-none';
 
                 var html = '';
-                for (var i = 0; i < data.boekingen.length; i++) {
-                    var b = data.boekingen[i];
+                for (var i = 0; i < data.bookings.length; i++) {
+                    var b = data.bookings[i];
                     if (i > 0) {
                         html += '<div class="mt-1.5 border-t border-gray-600 pt-1.5"></div>';
                     }
-                    html += '<div><span class="font-semibold text-gray-400">Naam:</span> ' + escHtml(b.naam) + '</div>';
-                    html += '<div><span class="font-semibold text-gray-400">Verblijf:</span> ' + escHtml(data.verblijf) + '</div>';
-                    html += '<div><span class="font-semibold text-gray-400">Aankomst:</span> ' + escHtml(b.aankomst) + '</div>';
-                    html += '<div><span class="font-semibold text-gray-400">Vertrek:</span> ' + escHtml(b.vertrek) + '</div>';
-                    html += '<div><span class="font-semibold text-gray-400">Personen:</span> ' + escHtml(b.personen) + '</div>';
-                    if (b.opmerking) {
-                        html += '<div><span class="font-semibold text-gray-400">Opmerking:</span> ' + escHtml(b.opmerking) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Naam:</span> ' + escHtml(b.name) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Verblijf:</span> ' + escHtml(data.accommodation) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Aankomst:</span> ' + escHtml(b.arrival) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Vertrek:</span> ' + escHtml(b.departure) + '</div>';
+                    html += '<div><span class="font-semibold text-gray-400">Personen:</span> ' + escHtml(b.persons) + '</div>';
+                    if (b.notes) {
+                        html += '<div><span class="font-semibold text-gray-400">Opmerking:</span> ' + escHtml(b.notes) + '</div>';
                     }
                 }
                 html += '<div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>';

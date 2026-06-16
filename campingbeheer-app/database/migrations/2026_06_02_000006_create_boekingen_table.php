@@ -7,38 +7,37 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('boekingen', function (Blueprint $table) {
+        Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('gebruiker_id')
+            $table->foreignId('user_id')
                 ->nullable()
                 ->constrained('users')
                 ->cascadeOnDelete();
-            $table->string('naam')->nullable();
+            $table->string('name')->nullable();
             $table->string('email')->nullable();
-            $table->string('telefoon')->nullable();
-            $table->string('postcode')->nullable();
-            $table->string('huisnummer')->nullable();
-            $table->string('straat')->nullable();
-            $table->string('plaats')->nullable();
-            $table->string('land')->nullable();
-            $table->foreignId('accommodatie_id')
-                ->constrained('accommodaties')
+            $table->string('phone')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->string('house_number')->nullable();
+            $table->string('street')->nullable();
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
+            $table->foreignId('accommodation_id')
+                ->constrained('accommodations')
                 ->cascadeOnDelete();
-            $table->date('aankomst_datum');
-            $table->string('aankomst_tijd')->nullable();
-            $table->date('vertrek_datum');
-            $table->string('vertrek_tijd')->nullable();
-            $table->integer('aantal_personen');
-            $table->text('opmerking')->nullable();
-            $table->decimal('totaal_prijs', 10, 2);
+            $table->date('arrival_date');
+            $table->string('arrival_time')->nullable();
+            $table->date('departure_date');
+            $table->string('departure_time')->nullable();
+            $table->integer('number_of_persons');
+            $table->text('notes')->nullable();
+            $table->decimal('total_price', 10, 2);
             $table->string('status');
-            $table->timestamp('aangemaakt_op')->useCurrent();
-            $table->timestamp('bewerkt_op')->nullable();
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('boekingen');
+        Schema::dropIfExists('bookings');
     }
 };

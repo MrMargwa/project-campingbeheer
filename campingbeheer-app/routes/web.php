@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\BoekingController;
-use App\Http\Controllers\ReserverenController;
-use App\Models\Accommodatie;
-use App\Models\Kenmerk;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PlanningBoardController;
+use App\Http\Controllers\ReservationController;
+use App\Models\Accommodation;
+use App\Models\Feature;
 use Illuminate\Support\Facades\Route;
 
 function getLocale(): string
@@ -22,132 +22,52 @@ function getLocale(): string
 // Home Route
 Route::get('/', function () {
     $locale = getLocale();
-    $accommodaties = Accommodatie::with('kenmerken')->get();
-    $types = Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+    $accommodations = Accommodation::with('features')->get();
+    $types = Accommodation::select('type', 'type_en', 'type_de', 'type_fy')
         ->distinct('type')
         ->get()
         ->keyBy('type');
-    $kenmerken = Kenmerk::all();
+    $features = Feature::all();
 
-    return view('home', compact('accommodaties', 'types', 'kenmerken', 'locale'));
+    return view('home', compact('accommodations', 'types', 'features', 'locale'));
 })->name('home');
 
-// Reserveren Routes
-Route::get('/reserveren', [ReserverenController::class, 'index'])->name('reserveren');
-Route::post('/reserveren', [BoekingController::class, 'store'])->name('reserveren.store');
+// Reservation Routes
+Route::get('/reserveren', [ReservationController::class, 'index'])->name('reservation');
+Route::post('/reserveren', [BookingController::class, 'store'])->name('reservation.store');
 
-// Admin Route
+// Admin Routes
 Route::get('/admin', function () {
-	return redirect()->route('login');
+    return redirect()->route('login');
 })->name('admin');
 
-Route::get('/admin/dashboard', function () {
-	$accommodaties = Accommodatie::all();
-	$postcodeApiKey = Config::get('services.postcode.api_key');
-	$today = now()->toDateString();
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
+    ->middleware(['auth', 'admin'])
+    ->name('admin.dashboard');
 
-	$boekingen = \App\Models\Boeking::with('accommodatie')
-		->where('status', 'in_afwachting')
-		->orderBy('aangemaakt_op', 'desc')
-		->paginate(10);
+Route::get('/admin/planning-board', [PlanningBoardController::class, 'index'])
+    ->middleware(['auth', 'admin'])
+    ->name('admin.planning-board.index');
 
-	$vandaagAankomst = \App\Models\Boeking::with('accommodatie')
-		->where('aankomst_datum', $today)
-		->whereIn('status', ['goedgekeurd', 'gereed'])
-		->orderBy('aankomst_tijd', 'desc')
-		->get();
+Route::get('/admin/search-guests', [BookingController::class, 'searchGuests'])
+    ->middleware(['auth', 'admin'])
+    ->name('admin.search-guests');
 
-	$vandaagVertrek = \App\Models\Boeking::with('accommodatie')
-		->where('vertrek_datum', $today)
-		->whereIn('status', ['goedgekeurd', 'gereed'])
-		->orderBy('vertrek_tijd', 'desc')
-		->get();
-
-	return view('admin.dashboard', compact(
-		'accommodaties', 'postcodeApiKey', 'boekingen',
-		'vandaagAankomst', 'vandaagVertrek'
-	));
-})->middleware(['auth', 'admin'])
-	->name('admin.dashboard');
-
-Route::get('/login', function () {
-	return view('auth.login');
-})->name('login');
+// Auth Routes
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::prefix('admin')->name('admin.accommodatie.')->controller(\App\Http\Controllers\AccommodatieController::class)->group(function () {
-        Route::get('/accommodatie', 'index')->name('index');
-        Route::get('/accommodatie/aanmaken', 'create')->name('create');
-        Route::post('/accommodatie', 'store')->name('store');
-        Route::get('/accommodatie/{accommodatie}/bewerken', 'edit')->name('edit');
-        Route::put('/accommodatie/{accommodatie}', 'update')->name('update');
-        Route::delete('/accommodatie/{accommodatie}', 'destroy')->name('destroy');
+    Route::prefix('admin')->name('admin.accommodation.')->controller(\App\Http\Controllers\AccommodationController::class)->group(function () {
+        Route::get('/accommodations', 'index')->name('index');
+        Route::get('/accommodations/create', 'create')->name('create');
+        Route::post('/accommodations', 'store')->name('store');
+        Route::get('/accommodations/{accommodation}/edit', 'edit')->name('edit');
+        Route::put('/accommodations/{accommodation}', 'update')->name('update');
+        Route::delete('/accommodations/{accommodation}', 'destroy')->name('destroy');
     });
 
-    Route::post('/admin/reserveringen/{boeking}/goedkeuren', [\App\Http\Controllers\BoekingController::class, 'approve'])->name('admin.reserveringen.approve');
-    Route::post('/admin/reserveringen/{boeking}/afkeuren', [\App\Http\Controllers\BoekingController::class, 'reject'])->name('admin.reserveringen.reject');
-});
-
-Route::get('/admin/zoek-gasten', [BoekingController::class, 'searchGasten'])
-	->middleware(['auth', 'admin'])
-	->name('admin.zoek.gasten');
-
-Route::get('/admin/planbord', function (Request $request) {
-	$types = Accommodatie::select('type')->distinct()->pluck('type');
-
-	$selectedType = $request->input('type');
-	$weekOffset = (int) $request->input('week', 0);
-
-	$startOfWeek = now()->startOfWeek()->addWeeks($weekOffset);
-	$endOfWeek = $startOfWeek->copy()->endOfWeek();
-
-	$weekNumber = $startOfWeek->weekOfYear;
-	$year = $startOfWeek->year;
-
-	$days = [];
-	for ($i = 0; $i < 7; $i++) {
-		$date = $startOfWeek->copy()->addDays($i);
-		$days[] = [
-			'label' => $date->locale('nl')->isoFormat('dd'),
-			'date' => $date->format('Y-m-d'),
-			'day' => $date->format('d-m-Y'),
-			'isToday' => $date->isToday(),
-		];
-	}
-
-	$query = Accommodatie::query();
-	if ($selectedType) {
-		$query->where('type', $selectedType);
-	}
-	$accommodaties = $query->orderBy('titel')->get();
-
-	$boekingen = \App\Models\Boeking::with('gebruiker')
-		->where('aankomst_datum', '<', $endOfWeek->format('Y-m-d'))
-		->where('vertrek_datum', '>', $startOfWeek->format('Y-m-d'))
-		->whereIn('accommodatie_id', $accommodaties->pluck('id'))
-		->whereIn('status', ['goedgekeurd', 'gereed'])
-		->get()
-		->groupBy('accommodatie_id');
-
-	return view('planbord.index', compact(
-		'types', 'selectedType', 'weekOffset', 'weekNumber', 'year',
-		'days', 'accommodaties', 'boekingen'
-	));
-})->middleware(['auth', 'admin'])
-	->name('admin.planbord.index');
-
-Route::post('/login', function (Request $request) {
-	$request->validate([
-		'email' => 'required|email',
-		'password' => 'required|string',
-	]);
-
-	$credentials = ['email' => $request->input('email'), 'password' => $request->input('password')];
-
-	if (Auth::attempt($credentials)) {
-		$request->session()->regenerate();
-		return redirect()->route('admin.dashboard')->with('success', 'Welkom terug!');
-	}
-
-	return back()->withInput($request->only('email'))->with('error', 'E-mailadres of wachtwoord onjuist. Probeer opnieuw.');
+    Route::post('/admin/bookings/{booking}/approve', [\App\Http\Controllers\BookingController::class, 'approve'])->name('admin.bookings.approve');
+    Route::post('/admin/bookings/{booking}/reject', [\App\Http\Controllers\BookingController::class, 'reject'])->name('admin.bookings.reject');
 });
