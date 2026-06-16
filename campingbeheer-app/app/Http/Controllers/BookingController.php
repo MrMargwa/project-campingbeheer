@@ -47,6 +47,22 @@ class BookingController extends Controller
 
         $accommodation = Accommodation::findOrFail($bookingData['accommodation_id']);
 
+        $conflictExists = Booking::where('accommodation_id', $bookingData['accommodation_id'])
+            ->whereIn('status', ['approved', 'pending'])
+            ->where('departure_date', '>=', $bookingData['arrival_date'])
+            ->where('arrival_date', '<=', $bookingData['departure_date'])
+            ->exists();
+
+        if ($conflictExists) {
+            return response()->json([
+                'errors' => [
+                    'period' => [
+                        'Deze accommodatie is al bezet in de gekozen periode.',
+                    ],
+                ],
+            ], 422);
+        }
+
         if ($bookingData['number_of_persons'] < $accommodation->min_persons || $bookingData['number_of_persons'] > $accommodation->max_persons) {
             return response()->json([
                 'errors' => [

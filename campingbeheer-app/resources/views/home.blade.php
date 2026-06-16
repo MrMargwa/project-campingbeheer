@@ -160,7 +160,7 @@
             </div>
 
             <div id="results-list" class="space-y-6">
-                @foreach ($accommodations as $accommodation)
+                @foreach ($accommodaties as $accommodation)
                     <article
                         class="accommodation-card overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
                         data-type="{{ $accommodation->type }}" data-persons="{{ $accommodation->min_persons }}"

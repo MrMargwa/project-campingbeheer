@@ -1,9 +1,12 @@
 <?php
 
-use App\Http\Controllers\BoekingController;
-use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
-use App\Models\Accommodatie;
+use App\Http\Controllers\PlanningBoardController;
+use App\Http\Controllers\ReservationController;
+use App\Models\Accommodation;
+use App\Models\Feature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -22,14 +25,15 @@ function getLocale(): string
 // Home Route
 Route::get('/', function () {
     $locale = getLocale();
-    $accommodaties = Accommodatie::all();
-    $types = Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
+    $accommodaties = Accommodation::all();
+    $types = Accommodation::select('type', 'type_en', 'type_de', 'type_fy')
         ->distinct('type')
         ->get()
         ->keyBy('type');
+    $features = Feature::all();
     $postcodeApiKey = Config::get('services.postcode.api_key');
 
-    return view('home', compact('accommodaties', 'types', 'locale', 'postcodeApiKey'));
+    return view('home', compact('accommodaties', 'types', 'features', 'locale', 'postcodeApiKey'));
 })->name('home');
 
 // Reservation Routes
