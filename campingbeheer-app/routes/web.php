@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\BoekingController;
-use App\Http\Controllers\ReserverenController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\BookingController;
 use App\Models\Accommodatie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
