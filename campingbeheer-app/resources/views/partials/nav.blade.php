@@ -23,7 +23,11 @@
                         class="flex items-center gap-2 border border-border rounded-md px-3 py-2 text-sm text-primary bg-white cursor-pointer hover:bg-gray-50 transition"
                         onclick="toggleLangDropdown(event)">
                         <img src="/images/flags/nl.svg" alt="nl" class="w-5 h-auto rounded-sm">
-                        <svg class="w-4 h-4 text-primary transition-transform" id="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <svg class="w-4 h-4 text-primary transition-transform" id="lang-chevron" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
                     </button>
                     <div id="lang-dropdown-menu"
                         class="absolute right-0 mt-1 min-w-[160px] hidden rounded-lg border border-border bg-white shadow-lg z-50 overflow-hidden">
@@ -35,7 +39,11 @@
                     <option value="de">DE</option>
                     <option value="fy">FY</option>
                 </select>
-                <script>document.addEventListener('DOMContentLoaded', function () { if (window.i18nInitDropdown) window.i18nInitDropdown(); });</script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        if (window.i18nInitDropdown) window.i18nInitDropdown();
+                    });
+                </script>
             </div>
         </div>
     </div>

@@ -25,16 +25,17 @@ class AccommodatieController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $gevalideerd = $request->validate([
-            'title'           => 'required|string|max:255',
-            'type'            => 'required|string|max:255',
-            'description'    => 'nullable|string',
-            'min_persons'    => 'required|integer|min:1',
-            'max_persons'    => 'required|integer|min:1|gte:min_persons',
+            'title' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'min_persons' => 'required|integer|min:1',
+            'max_persons' => 'required|integer|min:1|gte:min_persons',
+            'huisdieren_toegestaan' => 'nullable|boolean',
             'price_per_night' => 'required|numeric|min:0',
-            'image'      => 'nullable|string|max:255',
-            'latitude'        => 'nullable|numeric|between:-90,90',
-            'longitude'       => 'nullable|numeric|between:-180,180',
-            'status'          => 'required|in:available,unavailable',
+            'image' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'status' => 'required|in:available,unavailable',
         ]);
 
         Accommodatie::create($gevalideerd);
@@ -52,16 +53,17 @@ class AccommodatieController extends Controller
     public function update(Request $request, Accommodatie $accommodatie): RedirectResponse
     {
         $gevalideerd = $request->validate([
-            'title'           => 'required|string|max:255',
-            'type'            => 'required|string|max:255',
-            'description'    => 'nullable|string',
-            'min_persons'    => 'required|integer|min:1',
-            'max_persons'    => 'required|integer|min:1|gte:min_persons',
+            'title' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'min_persons' => 'required|integer|min:1',
+            'max_persons' => 'required|integer|min:1|gte:min_persons',
+            'huisdieren_toegestaan' => 'nullable|boolean',
             'price_per_night' => 'required|numeric|min:0',
-            'image'      => 'nullable|string|max:255',
-            'latitude'        => 'nullable|numeric|between:-90,90',
-            'longitude'       => 'nullable|numeric|between:-180,180',
-            'status'          => 'required|in:available,unavailable',
+            'image' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'status' => 'required|in:available,unavailable',
         ]);
 
         $accommodatie->update($gevalideerd);

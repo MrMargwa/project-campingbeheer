@@ -46,7 +46,8 @@
                                         <div class="flex items-center gap-2">
                                             <button type="button" data-key="volwassenen"
                                                 class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
-                                            <span id="count-volwassenen" class="w-6 text-center text-sm tabular-nums">0</span>
+                                            <span id="count-volwassenen"
+                                                class="w-6 text-center text-sm tabular-nums">0</span>
                                             <button type="button" data-key="volwassenen"
                                                 class="persons-btn persons-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
@@ -120,9 +121,9 @@
                         </div>
 
                         <div>
-                            <label for="filter-features" class="mb-1 block text-xs font-medium text-primary"
-                                data-i18n="home.filter.features">Kenmerken</label>
-                            <select id="filter-features"
+                            <label for="filter-pets" class="mb-1 block text-xs font-medium text-primary"
+                                data-i18n="home.filter.pets_label">Huisdieren</label>
+                            <select id="filter-pets"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
                                 <option value="" data-i18n="home.filter.none_selected">Niets geselecteerd</option>
                                 @foreach ($kenmerken as $kenmerk)
@@ -143,7 +144,7 @@
         <div id="filter-message" class="rounded-3xl border border-border bg-surface p-5 shadow-sm sm:p-6">
             <p class="text-sm font-medium text-muted" data-i18n="home.filter.please_filter">U moet eerst nog filteren.</p>
             <p class="mt-2 text-lg font-semibold text-primary" data-i18n="home.filter.choose_criteria">Kies
-                reisgezelschap, soort verblijf of kenmerken om de
+                reisgezelschap, soort verblijf of huisdieren om de
                 verblijven te zien.</p>
         </div>
 
@@ -371,7 +372,8 @@
 
                 filterBericht.classList.add('hidden');
                 resultatenWrapper.classList.remove('hidden');
-                resultatenTelling.textContent = window.__('home.results_' + (zichtbareTelling === 1 ? 'one' : 'other'), {
+                resultatenTelling.textContent = window.__('home.results_' + (zichtbareTelling === 1 ? 'one' :
+                'other'), {
                     count: zichtbareTelling
                 });
                 geenResultaten.classList.toggle('hidden', zichtbareTelling > 0);

@@ -21,7 +21,8 @@ function detecteerTaal() {
   return 'en';
 }
 
-let huidigeTaal = detecteerTaal();
+let currentLocale = detectLocale();
+document.cookie = 'locale=' + currentLocale + ';path=/;SameSite=Lax';
 
 function v(sleutel, params = {}) {
   let tekst = vertalingen[huidigeTaal]?.[sleutel];
@@ -157,6 +158,31 @@ window.i18nInitDropdown = function() {
     });
 };
 
-document.addEventListener('DOMContentLoaded', vertaalPagina);
+document.addEventListener('DOMContentLoaded', function () {
+  translatePage();
+  initDropdown();
+});
+
+function initDropdown() {
+  var sel = document.getElementById('language-select');
+  if (sel) sel.value = currentLocale;
+
+  var btn = document.getElementById('lang-dropdown-btn');
+  if (btn) {
+    btn.innerHTML = '<img src="' + getFlagUrl(currentLocale) + '" alt="' + currentLocale + '" class="w-5 h-auto rounded-sm">' +
+      '<svg class="w-4 h-4 text-primary transition-transform" id="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+  }
+
+  if (typeof window.renderLangMenu === 'function') {
+    window.renderLangMenu(currentLocale);
+  }
+
+  document.addEventListener('click', function(e) {
+    var wrapper = document.getElementById('lang-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+      window.closeLangDropdown();
+    }
+  });
+}
 
 export { v as t, zetTaal as setLocale, huidigeTaal as currentLocale, vertaalPagina as translatePage, krijgVlagIcoon as getFlagIcon, krijgTaalNaam as getLanguageName };
