@@ -267,6 +267,10 @@
             var debounceTimer;
 
             searchInput.addEventListener('input', function() {
+                // Sync guest-search value to hidden name input for new guests
+                var hiddenName = document.querySelector('input[name="name"]');
+                if (hiddenName) hiddenName.value = this.value;
+
                 clearTimeout(debounceTimer);
                 var query = this.value.trim();
 
@@ -317,14 +321,22 @@
                 var result = e.target.closest('.guest-result');
                 if (!result) return;
 
-                document.querySelector('input[name="name"]').value = result.dataset.name;
-                document.querySelector('input[name="email"]').value = result.dataset.email || '';
-                document.querySelector('input[name="phone"]').value = result.dataset.phone || '';
-                document.querySelector('input[name="postal_code"]').value = result.dataset.postal_code || '';
-                document.querySelector('input[name="house_number"]').value = result.dataset.house_number || '';
-                document.querySelector('input[name="street"]').value = result.dataset.street || '';
-                document.querySelector('input[name="city"]').value = result.dataset.city || '';
-                document.querySelector('input[name="country"]').value = result.dataset.country || 'Nederland';
+                var nameInput = document.querySelector('input[name="name"]');
+                if (nameInput) nameInput.value = result.dataset.name;
+                var emailInput = document.querySelector('input[name="email"]');
+                if (emailInput) emailInput.value = result.dataset.email || '';
+                var phoneInput = document.querySelector('input[name="phone"]');
+                if (phoneInput) phoneInput.value = result.dataset.phone || '';
+                var postalInput = document.querySelector('input[name="postal_code"]');
+                if (postalInput) postalInput.value = result.dataset.postal_code || '';
+                var houseInput = document.querySelector('input[name="house_number"]');
+                if (houseInput) houseInput.value = result.dataset.house_number || '';
+                var streetInput = document.querySelector('input[name="street"]');
+                if (streetInput) streetInput.value = result.dataset.street || '';
+                var cityInput = document.querySelector('input[name="city"]');
+                if (cityInput) cityInput.value = result.dataset.city || '';
+                var countryInput = document.querySelector('input[name="country"]');
+                if (countryInput) countryInput.value = result.dataset.country || 'Nederland';
 
                 resultsContainer.classList.add('hidden');
                 resultsContainer.innerHTML = '';

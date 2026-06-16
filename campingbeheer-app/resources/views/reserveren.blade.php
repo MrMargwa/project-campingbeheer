@@ -152,6 +152,7 @@
 
                 // --- Data ---
                 const accommodations = @json($accommodations);
+                window.ACCOMMODATIONS = accommodations;
                 const items = accommodations.filter(function(a) {
                     return a.latitude != null && a.longitude != null;
                 });
@@ -507,5 +508,17 @@
         });
 
         // Postcode search and form submission are handled by address.js (loaded via app.js)
+
+        // Auto-open modal if navigated from home page with accommodation ID
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var accId = params.get('accommodatie');
+            if (accId && window.ACCOMMODATIONS) {
+                var acc = window.ACCOMMODATIONS.find(function(a) { return String(a.id) === accId; });
+                if (acc) {
+                    openBookingModal(acc.id, acc.title);
+                }
+            }
+        })();
     </script>
 @endsection

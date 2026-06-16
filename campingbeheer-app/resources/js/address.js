@@ -168,6 +168,21 @@ function initBookingForm() {
         var submitBtn = document.getElementById('booking-submit');
         var errorEl = document.getElementById('booking-error');
 
+        // Client-side validation: check all required fields
+        var required = ['name', 'email', 'phone', 'postal_code', 'house_number', 'street', 'city', 'country', 'arrival_date', 'departure_date', 'number_of_guests'];
+        var missing = [];
+        required.forEach(function(field) {
+            var val = (formData.get(field) || '').trim();
+            if (!val) missing.push(field);
+        });
+        if (missing.length > 0) {
+            if (errorEl) {
+                errorEl.textContent = 'Vul a.u.b. alle verplichte velden in: ' + missing.join(', ');
+                errorEl.classList.remove('hidden');
+            }
+            return;
+        }
+
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.textContent = window.__('reserve.form.confirming');

@@ -36,6 +36,7 @@
                         class="hidden mt-1 rounded-lg border border-border bg-white shadow-lg max-h-48 overflow-y-auto text-sm">
                     </div>
                 </div>
+                <input type="hidden" name="name">
             @else
                 <div>
                     <label class="block text-sm font-medium text-primary mb-1">Volledige naam *</label>
