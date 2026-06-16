@@ -35,8 +35,4 @@ return [
         ],
     ],
 
-    'postcode' => [
-        'api_key' => env('POSTCODE_API_KEY'),
-    ],
-
 ];

@@ -31,7 +31,6 @@
     --danger-hover: #9E3E3E;
 }
 
-
 @layer utilities {
     .text-primary {
         color: var(--text);

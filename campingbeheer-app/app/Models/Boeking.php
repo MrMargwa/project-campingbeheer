@@ -7,36 +7,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Boeking extends Model
 {
-    protected $table = 'bookings';
-
     protected $fillable = [
-        'user_id',
-        'accommodation_id',
-        'name',
-        'email',
-        'phone',
-        'postal_code',
-        'house_number',
-        'street',
-        'city',
-        'country',
-        'arrival_date',
-        'arrival_time',
-        'departure_date',
-        'departure_time',
-        'number_of_persons',
-        'notes',
-        'total_price',
+        'gebruiker_id',
+        'accommodatie_id',
+        'aankomst_datum',
+        'vertrek_datum',
+        'aantal_personen',
+        'totaal_prijs',
         'status',
     ];
 
-    public function user(): BelongsTo
+    public const CREATED_AT = 'aangemaakt_op';
+    public const UPDATED_AT = 'bewerkt_op';
+
+    public function gebruiker(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'gebruiker_id');
     }
 
-    public function accommodation(): BelongsTo
+    public function accommodatie(): BelongsTo
     {
-        return $this->belongsTo(Accommodatie::class, 'accommodation_id');
+        return $this->belongsTo(Accommodatie::class, 'accommodatie_id');
     }
 }

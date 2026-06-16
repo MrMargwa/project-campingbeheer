@@ -7,21 +7,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Kenmerk extends Model
 {
-    protected $table = 'features';
-
     protected $fillable = [
-        'name',
-        'name_en', 'name_de', 'name_fy',
+        'naam',
     ];
 
-    public function accommodations(): BelongsToMany
-    {
-        return $this->belongsToMany(Accommodatie::class, 'accommodation_feature', 'feature_id', 'accommodation_id');
-    }
+    public const CREATED_AT = 'aangemaakt_op';
+    public const UPDATED_AT = null;
 
-    public function translatedName(string $locale): string
+    public function verblijven(): BelongsToMany
     {
-        $col = 'name_' . $locale;
-        return $this->$col ?: $this->name;
+        return $this->belongsToMany(Accommodatie::class, 'accommodatie_kenmerk', 'kenmerk_id', 'accommodatie_id');
     }
 }

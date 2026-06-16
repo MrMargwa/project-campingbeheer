@@ -14,23 +14,16 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            "name" => "Beheerder 01",
+            "naam" => "Beheerder 01",
             "email" => "beheerder01@campingbeheer.nl",
-            "password" => bcrypt("password123"),
-            "role" => "admin"
+            "wachtwoord" => bcrypt("password123"),
+            "rol" => "admin"
         ]);
         User::create([
-            "name" => "Frans de Boer",
+            "naam" => "Frans de Boer",
             "email" => "frans@campingbeheer.nl",
-            "password" => bcrypt("password123"),
-            "role" => "admin"
+            "wachtwoord" => bcrypt("password123"),
+            "rol" => "admin"
         ]);
-        User::create([
-            "name" => "kijkinteams",
-            "email" => "kijkinteams@gmail.com",
-            "password" => bcrypt("jonge"),
-            "role" => "admin"
-        ]);
-  
     }
 }

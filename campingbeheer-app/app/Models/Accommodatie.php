@@ -8,46 +8,27 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Accommodatie extends Model
 {
-    protected $table = 'accommodations';
-
     protected $fillable = [
-        'title',
+        'titel',
         'type',
-        'description',
-        'min_persons',
-        'max_persons',
-        'price_per_night',
-        'image',
-        'latitude',
-        'longitude',
+        'beschrijving',
+        'min_personen',
+        'max_personen',
+        'prijs_per_nacht',
+        'afbeelding',
         'status',
     ];
 
-    public function bookings(): HasMany
+    public const CREATED_AT = 'aangemaakt_op';
+    public const UPDATED_AT = 'bewerkt_op';
+
+    public function boekingen(): HasMany
     {
-        return $this->hasMany(Boeking::class, 'accommodation_id');
+        return $this->hasMany(Boeking::class, 'ccommodatie_id');
     }
 
-    public function features(): BelongsToMany
+    public function kenmerken(): BelongsToMany
     {
-        return $this->belongsToMany(Kenmerk::class, 'accommodation_feature', 'accommodation_id', 'feature_id');
-    }
-
-    public function translatedTitle(string $locale): string
-    {
-        $col = 'title_' . $locale;
-        return $this->$col ?: $this->title;
-    }
-
-    public function translatedDescription(string $locale): string
-    {
-        $col = 'description_' . $locale;
-        return $this->$col ?: $this->description;
-    }
-
-    public function translatedType(string $locale): string
-    {
-        $col = 'type_' . $locale;
-        return $this->$col ?: $this->type;
+        return $this->belongsToMany(Kenmerk::class, 'accommodatie_kenmerk', 'accommodatie_id', 'kenmerk_id');
     }
 }

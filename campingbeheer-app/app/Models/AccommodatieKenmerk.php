@@ -7,22 +7,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AccommodatieKenmerk extends Model
 {
-    protected $table = 'accommodation_feature';
+    protected $table = 'accommodatie_kenmerk';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'accommodation_id',
-        'feature_id',
+        'accommodatie_id',
+        'kenmerk_id',
     ];
 
-    public function accommodation(): BelongsTo
+    public function accommodatie(): BelongsTo
     {
-        return $this->belongsTo(Accommodatie::class, 'accommodation_id');
+        return $this->belongsTo(Accommodatie::class, 'accommodatie_id');
     }
 
-    public function feature(): BelongsTo
+    public function kenmerk(): BelongsTo
     {
-        return $this->belongsTo(Kenmerk::class, 'feature_id');
+        return $this->belongsTo(Kenmerk::class, 'kenmerk_id');
     }
 }

@@ -2,22 +2,20 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('features', function (Blueprint $table) {
+        Schema::create('kenmerken', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('name_en')->nullable();
-            $table->string('name_de')->nullable();
-            $table->string('name_fy')->nullable();
-            $table->timestamps();
+            $table->string('naam');
+            $table->timestamp('aangemaakt_op')->useCurrent();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('features');
+        Schema::dropIfExists('kenmerken');
     }
 };
