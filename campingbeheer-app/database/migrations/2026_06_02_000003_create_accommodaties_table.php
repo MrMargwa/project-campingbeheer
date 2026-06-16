@@ -7,23 +7,36 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('accommodaties', function (Blueprint $table) {
+        Schema::create('accommodations', function (Blueprint $table) {
             $table->id();
-            $table->string('titel');
+            $table->string('title');
+            $table->string('title_nl')->nullable();
+            $table->string('title_en')->nullable();
+            $table->string('title_de')->nullable();
+            $table->string('title_fy')->nullable();
             $table->string('type');
-            $table->text('beschrijving');
-            $table->bigInteger('min_personen');
-            $table->bigInteger('max_personen');
-            $table->decimal('prijs_per_nacht', 10, 2);
-            $table->string('afbeelding');
-            $table->enum('status', ['beschikbaar', 'niet_beschikbaar']);
-            $table->timestamp('aangemaakt_op')->useCurrent();
-            $table->timestamp('bewerkt_op')->nullable();
+            $table->string('type_nl')->nullable();
+            $table->string('type_en')->nullable();
+            $table->string('type_de')->nullable();
+            $table->string('type_fy')->nullable();
+            $table->text('description');
+            $table->text('description_nl')->nullable();
+            $table->text('description_en')->nullable();
+            $table->text('description_de')->nullable();
+            $table->text('description_fy')->nullable();
+            $table->bigInteger('min_persons');
+            $table->bigInteger('max_persons');
+            $table->decimal('price_per_night', 10, 2);
+            $table->string('image')->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->enum('status', ['available', 'unavailable']);
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('accommodaties');
+        Schema::dropIfExists('accommodations');
     }
 };

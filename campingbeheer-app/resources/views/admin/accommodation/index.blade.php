@@ -32,7 +32,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-border">
-                @forelse ($accommodaties as $acc)
+                @forelse ($accommodations as $acc)
                     <tr class="hover:bg-secondary/50 transition">
                         <td class="px-4 py-3 font-medium text-primary">{{ $acc->translatedTitle($locale ?? 'nl') }}</td>
                         <td class="px-4 py-3 text-muted capitalize">{{ $acc->translatedType($locale ?? 'nl') }}</td>

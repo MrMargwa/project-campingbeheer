@@ -1,18 +1,18 @@
-function haalAdresOpPerPostcode(postcode, huisnummer) {
-    var genormaliseerd = postcode.replace(/\s+/g, '').toUpperCase();
-    var apiSleutel = window.POSTCODE_API_SLEUTEL || '';
+function fetchAddressByPostcode(postalCode, houseNumber) {
+    var normalized = postalCode.replace(/\s+/g, '').toUpperCase();
+    var apiKey = window.POSTCODE_API_KEY || '';
 
-    if (!apiSleutel) {
-        return valTerugAdresOphalen(genormaliseerd, huisnummer);
+    if (!apiKey) {
+        return fallbackFetchAddress(normalized, houseNumber);
     }
 
     var url = 'https://postcode.tech/api/v1/postcode' +
-        '?postcode=' + encodeURIComponent(genormaliseerd) +
-        '&number=' + encodeURIComponent(huisnummer || '');
+        '?postcode=' + encodeURIComponent(normalized) +
+        '&number=' + encodeURIComponent(houseNumber || '');
 
     return fetch(url, {
             headers: {
-                'Authorization': 'Bearer ' + apiSleutel
+                'Authorization': 'Bearer ' + apiKey
             }
         })
         .then(function(r) {
@@ -27,16 +27,16 @@ function haalAdresOpPerPostcode(postcode, huisnummer) {
             };
         })
         .catch(function() {
-            return valTerugAdresOphalen(genormaliseerd, huisnummer);
+            return fallbackFetchAddress(normalized, houseNumber);
         });
 }
 
-function valTerugAdresOphalen(genormaliseerd, huisnummer) {
-    function probeerPDOK() {
-        var fqDelen = ['postcode:' + encodeURIComponent(genormaliseerd)];
-        if (huisnummer) fqDelen.push('huisnummer:' + encodeURIComponent(huisnummer));
+function fallbackFetchAddress(normalized, houseNumber) {
+    function tryPDOK() {
+        var fqParts = ['postcode:' + encodeURIComponent(normalized)];
+        if (houseNumber) fqParts.push('huisnummer:' + encodeURIComponent(houseNumber));
         var url = 'https://geodata.nationaalgeoregister.nl/locatieserver/v3/free' +
-            '?q=*:*&rows=1&fq=' + fqDelen.join('&fq=');
+            '?q=*:*&rows=1&fq=' + fqParts.join('&fq=');
         return fetch(url).then(function(r) {
                 if (!r.ok) throw new Error();
                 return r.json();
@@ -52,11 +52,11 @@ function valTerugAdresOphalen(genormaliseerd, huisnummer) {
             });
     }
 
-    function probeerNominatim() {
-        var zoekopdracht = genormaliseerd;
-        if (huisnummer) zoekopdracht += '+' + huisnummer;
+    function tryNominatim() {
+        var query = normalized;
+        if (houseNumber) query += '+' + houseNumber;
         var url = 'https://nominatim.openstreetmap.org/search' +
-            '?q=' + encodeURIComponent(zoekopdracht) +
+            '?q=' + encodeURIComponent(query) +
             '&format=json&addressdetails=1&countrycodes=nl&limit=1';
         return fetch(url, {
                 headers: {
@@ -69,86 +69,86 @@ function valTerugAdresOphalen(genormaliseerd, huisnummer) {
             })
             .then(function(json) {
                 if (!json || json.length === 0) throw new Error();
-                var adres = json[0].address || {};
+                var addr = json[0].address || {};
                 return {
-                    street: adres.road || adres.street || '',
-                    city: adres.city || adres.town || adres.village || adres.place || '',
-                    land: adres.country || 'Nederland'
+                    street: addr.road || addr.street || '',
+                    city: addr.city || addr.town || addr.village || addr.place || '',
+                    land: addr.country || 'Nederland'
                 };
             });
     }
 
-    function probeerZippopotam() {
-        var url = 'https://api.zippopotam.us/NL/' + encodeURIComponent(genormaliseerd);
+    function tryZippopotam() {
+        var url = 'https://api.zippopotam.us/NL/' + encodeURIComponent(normalized);
         return fetch(url).then(function(r) {
                 if (!r.ok) throw new Error();
                 return r.json();
             })
             .then(function(json) {
-                var plaats = json.places?.[0];
-                if (!plaats) return null;
+                var place = json.places?.[0];
+                if (!place) return null;
                 return {
                     street: '',
-                    city: plaats['place name'] || plaats.city || '',
+                    city: place['place name'] || place.city || '',
                     land: json.country || 'Netherlands'
                 };
             });
     }
 
-    return probeerPDOK().catch(probeerNominatim).catch(probeerZippopotam).catch(function() {
+    return tryPDOK().catch(tryNominatim).catch(tryZippopotam).catch(function() {
         return null;
     });
 }
 
-function toonAdresFout(bericht) {
+function showAddressError(msg) {
     var el = document.getElementById('booking-error');
     if (el) {
-        el.textContent = bericht;
+        el.textContent = msg;
         el.classList.remove('hidden');
     }
 }
 
-function initPostcodeZoek() {
+function initPostcodeSearch() {
     var postcodeInput = document.getElementById('postal-code-input');
-    var zoekBtn = document.getElementById('postal-code-search');
-    if (!postcodeInput || !zoekBtn) return;
+    var searchBtn = document.getElementById('postal-code-search');
+    if (!postcodeInput || !searchBtn) return;
 
     postcodeInput.addEventListener('input', function() {
-        var waarde = this.value.trim().replace(/\s+/g, '');
-        zoekBtn.disabled = waarde.length < 4;
-        if (waarde.length >= 4) {
-            zoekBtn.classList.remove('cursor-not-allowed', 'opacity-50');
+        var val = this.value.trim().replace(/\s+/g, '');
+        searchBtn.disabled = val.length < 4;
+        if (val.length >= 4) {
+            searchBtn.classList.remove('cursor-not-allowed', 'opacity-50');
         } else {
-            zoekBtn.classList.add('cursor-not-allowed', 'opacity-50');
+            searchBtn.classList.add('cursor-not-allowed', 'opacity-50');
         }
     });
 
-    zoekBtn.addEventListener('click', function() {
+    searchBtn.addEventListener('click', function() {
         var postcode = postcodeInput.value.trim();
-        var huisnummer = document.getElementById('house-number-input')?.value.trim();
+        var houseNumber = document.getElementById('house-number-input')?.value.trim();
         if (!postcode) return;
 
         var btn = this;
         btn.disabled = true;
         btn.textContent = window.__('reserve.form.searching');
 
-        haalAdresOpPerPostcode(postcode, huisnummer)
+        fetchAddressByPostcode(postcode, houseNumber)
             .then(function(data) {
                 if (data) {
-                    var straatInput = document.getElementById('street-input');
-                    var plaatsInput = document.getElementById('city-input');
+                    var streetInput = document.getElementById('street-input');
+                    var cityInput = document.getElementById('city-input');
                     var landInput = document.querySelector('input[name="country"]');
-                    if (data.street && straatInput) straatInput.value = data.street;
-                    if (data.city && plaatsInput) plaatsInput.value = data.city;
+                    if (data.street && streetInput) streetInput.value = data.street;
+                    if (data.city && cityInput) cityInput.value = data.city;
                     if (data.land && landInput) landInput.value = data.land;
-                    var foutEl = document.getElementById('booking-error');
-                    if (foutEl) foutEl.classList.add('hidden');
+                    var errorEl = document.getElementById('booking-error');
+                    if (errorEl) errorEl.classList.add('hidden');
                 } else {
-                    toonAdresFout(window.__('reserve.form.address_not_found'));
+                    showAddressError(window.__('reserve.form.address_not_found'));
                 }
             })
             .catch(function() {
-                toonAdresFout(window.__('reserve.form.address_fetch_error'));
+                showAddressError(window.__('reserve.form.address_fetch_error'));
             })
             .finally(function() {
                 btn.disabled = false;
@@ -157,22 +157,37 @@ function initPostcodeZoek() {
     });
 }
 
-function initBoekFormulier() {
-    var formulier = document.getElementById('booking-form');
-    if (!formulier) return;
+function initBookingForm() {
+    var form = document.getElementById('booking-form');
+    if (!form) return;
 
-    formulier.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        var formulierData = new FormData(formulier);
-        var verzendBtn = document.getElementById('booking-submit');
-        var foutEl = document.getElementById('booking-error');
+        var formData = new FormData(form);
+        var submitBtn = document.getElementById('booking-submit');
+        var errorEl = document.getElementById('booking-error');
 
-        if (verzendBtn) {
-            verzendBtn.disabled = true;
-            verzendBtn.textContent = window.__('reserve.form.confirming');
+        // Client-side validation: check all required fields
+        var required = ['name', 'email', 'phone', 'postal_code', 'house_number', 'street', 'city', 'country', 'arrival_date', 'departure_date', 'number_of_guests'];
+        var missing = [];
+        required.forEach(function(field) {
+            var val = (formData.get(field) || '').trim();
+            if (!val) missing.push(field);
+        });
+        if (missing.length > 0) {
+            if (errorEl) {
+                errorEl.textContent = 'Vul a.u.b. alle verplichte velden in: ' + missing.join(', ');
+                errorEl.classList.remove('hidden');
+            }
+            return;
         }
-        if (foutEl) foutEl.classList.add('hidden');
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = window.__('reserve.form.confirming');
+        }
+        if (errorEl) errorEl.classList.add('hidden');
 
         fetch('/reserveren', {
                 method: 'POST',
@@ -180,12 +195,12 @@ function initBoekFormulier() {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
                     'Accept': 'application/json',
                 },
-                body: formulierData,
+                body: formData,
             })
             .then(function(r) {
                 if (!r.ok) {
-                    return r.json().then(function(fout) {
-                        throw fout;
+                    return r.json().then(function(err) {
+                        throw err;
                     });
                 }
                 return r.json();
@@ -196,43 +211,43 @@ function initBoekFormulier() {
                         window.closeBookingModal();
                     }
                     alert(data.message || window.__('reserve.form.success'));
-                    formulier.reset();
+                    form.reset();
                 }
             })
-            .catch(function(fout) {
-                var bericht = window.__('reserve.form.generic_error');
-                if (fout.errors) {
-                    var eersteSleutel = Object.keys(fout.errors)[0];
-                    if (eersteSleutel) bericht = fout.errors[eersteSleutel][0];
-                } else if (fout.message) {
-                    bericht = fout.message;
+            .catch(function(err) {
+                var msg = window.__('reserve.form.generic_error');
+                if (err.errors) {
+                    var firstKey = Object.keys(err.errors)[0];
+                    if (firstKey) msg = err.errors[firstKey][0];
+                } else if (err.message) {
+                    msg = err.message;
                 }
-                if (foutEl) {
-                    foutEl.textContent = bericht;
-                    foutEl.classList.remove('hidden');
+                if (errorEl) {
+                    errorEl.textContent = msg;
+                    errorEl.classList.remove('hidden');
                 }
             })
             .finally(function() {
-                if (verzendBtn) {
-                    verzendBtn.disabled = false;
-                    verzendBtn.textContent = window.__('reserve.form.confirm');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = window.__('reserve.form.confirm');
                 }
             });
     });
 }
 
-window.fetchAddressByPostcode = haalAdresOpPerPostcode;
-window.showAddressError = toonAdresFout;
-window.initPostcodeSearch = initPostcodeZoek;
-window.initBookingForm = initBoekFormulier;
+window.fetchAddressByPostcode = fetchAddressByPostcode;
+window.showAddressError = showAddressError;
+window.initPostcodeSearch = initPostcodeSearch;
+window.initBookingForm = initBookingForm;
 
 // Auto-initialize when module loads (deferred)
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
-        initPostcodeZoek();
-        initBoekFormulier();
+        initPostcodeSearch();
+        initBookingForm();
     });
 } else {
-    initPostcodeZoek();
-    initBoekFormulier();
+    initPostcodeSearch();
+    initBookingForm();
 }

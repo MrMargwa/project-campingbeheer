@@ -11,19 +11,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['naam', 'email', 'wachtwoord', 'telefoonnummer', 'postcode', 'huisnummer', 'straatnaam', 'plaatsnaam', 'land', 'rol'])]
-#[Hidden(['wachtwoord'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
+#[Hidden(['password'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    public const CREATED_AT = 'aangemaakt_op';
-    public const UPDATED_AT = 'bewerkt_op';
-
-    public function boekingen(): HasMany
+    public function bookings(): HasMany
     {
-        return $this->hasMany(Boeking::class, 'gebruiker_id');
+        return $this->hasMany(Booking::class, 'user_id');
     }
 
     /**
@@ -34,12 +31,12 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'wachtwoord' => 'hashed',
+            'password' => 'hashed',
         ];
     }
 
     public function getAuthPassword(): string
     {
-        return $this->wachtwoord;
+        return $this->password;
     }
 }

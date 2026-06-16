@@ -4,20 +4,25 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', config('app.name', 'Campingbeheer'))</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-900">
-    @include('partials.nav')
+@include('partials.nav')
 
-    <main class="mx-auto max-w-6xl px-6 py-10 min-h-screen">
+<body class="min-h-screen bg-primary text-primary">
+
+    <main class="w-full py-10 px-32 xl:px-56 min-h-screen">
         @yield('content')
     </main>
 
-    @include('partials.footer')
+
+    @yield('scripts')
 </body>
+@include('partials.footer')
 
 </html>

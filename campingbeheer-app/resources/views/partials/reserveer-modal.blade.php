@@ -7,23 +7,28 @@
         <div
             class="sticky top-0 bg-white border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
             <h3 class="text-lg font-semibold text-primary" id="modal-title">Reserveren</h3>
-            <button type="button" onclick="sluitBoekModal()"
+            <button type="button" onclick="closeBookingModal()"
                 class="text-muted hover:text-primary text-2xl leading-none bg-transparent border-0 cursor-pointer">&times;</button>
         </div>
         <form id="booking-form" class="p-6 space-y-4">
             @if ($showSearch)
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.accommodation">Accommodatie</label>
+                    <label class="block text-sm font-medium text-primary mb-1">Accommodatie</label>
                     <select name="accommodation_id" id="modal-accommodation-select" required
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-                        <option value="" data-i18n="admin.dashboard.select_accommodation">Selecteer accommodatie...</option>
-                        @foreach ($accommodaties as $acc)
+                        <option value="">Selecteer accommodatie...</option>
+                        @foreach ($accommodations as $acc)
                             <option value="{{ $acc->id }}">{{ $acc->title }}</option>
                         @endforeach
                     </select>
                 </div>
+            @else
+                <input type="hidden" name="accommodation_id" id="modal-accommodation-id">
+            @endif
+
+            @if ($showSearch)
                 <div>
-                    <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.search_guest">Zoek gast op naam</label>
+                    <label class="block text-sm font-medium text-primary mb-1">Zoek gast op naam</label>
                     <input type="text" id="guest-search" autocomplete="off"
                         placeholder="Typ een naam om te zoeken..."
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
@@ -33,14 +38,12 @@
                 </div>
                 <input type="hidden" name="name">
             @else
-                <input type="hidden" name="accommodation_id" id="modal-accommodation-id">
+                <div>
+                    <label class="block text-sm font-medium text-primary mb-1">Volledige naam *</label>
+                    <input type="text" name="name" required
+                        class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
+                </div>
             @endif
-
-            <div>
-                <label class="block text-sm font-medium text-primary mb-1" data-i18n="reserve.form.name">Volledige naam *</label>
-                <input type="text" name="name" required
-                    class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
-            </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>

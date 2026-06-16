@@ -3,16 +3,16 @@ import en from './lang/en.json';
 import de from './lang/de.json';
 import fy from './lang/fy.json';
 
-const vertalingen = { nl, en, de, fy };
+const translations = { nl, en, de, fy };
 
-const ONDERSTEUND = ['nl', 'en', 'de', 'fy'];
+const SUPPORTED = ['nl', 'en', 'de', 'fy'];
 
-function detecteerTaal() {
-  const opgeslagen = localStorage.getItem('locale');
-  if (opgeslagen && ONDERSTEUND.includes(opgeslagen)) return opgeslagen;
+function detectLocale() {
+  const stored = localStorage.getItem('locale');
+  if (stored && SUPPORTED.includes(stored)) return stored;
 
-  const taal = (navigator.language || '').slice(0, 2);
-  if (taal === 'nl' || taal === 'de') return taal;
+  const lang = (navigator.language || '').slice(0, 2);
+  if (lang === 'nl' || lang === 'de') return lang;
 
   const fyMatch = (navigator.language || '').toLowerCase() === 'fy' ||
     ((navigator.languages || []).some(l => l.toLowerCase() === 'fy' || l.toLowerCase() === 'fy-nl'));
@@ -24,92 +24,92 @@ function detecteerTaal() {
 let currentLocale = detectLocale();
 document.cookie = 'locale=' + currentLocale + ';path=/;SameSite=Lax';
 
-function v(sleutel, params = {}) {
-  let tekst = vertalingen[huidigeTaal]?.[sleutel];
-  if (tekst === undefined) {
-    tekst = vertalingen['en']?.[sleutel] ?? sleutel;
+function t(key, params = {}) {
+  let text = translations[currentLocale]?.[key];
+  if (text === undefined) {
+    text = translations['en']?.[key] ?? key;
   }
   for (const [k, v] of Object.entries(params)) {
-    tekst = tekst.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
+    text = text.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
   }
-  return tekst;
+  return text;
 }
 
-function vertaalPagina() {
+function translatePage() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
-    const sleutel = el.dataset.i18n;
-    el.textContent = v(sleutel);
+    const key = el.dataset.i18n;
+    el.textContent = t(key);
   });
 
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const sleutel = el.dataset.i18nPlaceholder;
-    el.placeholder = v(sleutel);
+    const key = el.dataset.i18nPlaceholder;
+    el.placeholder = t(key);
   });
 
   document.querySelectorAll('[data-i18n-title]').forEach(el => {
-    const sleutel = el.dataset.i18nTitle;
-    el.title = v(sleutel);
+    const key = el.dataset.i18nTitle;
+    el.title = t(key);
   });
 }
 
-function zetTaal(taal) {
-  if (!ONDERSTEUND.includes(taal)) return;
-  huidigeTaal = taal;
-  localStorage.setItem('locale', taal);
-  document.cookie = 'locale=' + taal + ';path=/;SameSite=Lax';
-  vertaalPagina();
+function setLocale(locale) {
+  if (!SUPPORTED.includes(locale)) return;
+  currentLocale = locale;
+  localStorage.setItem('locale', locale);
+  document.cookie = 'locale=' + locale + ';path=/;SameSite=Lax';
+  translatePage();
 
   const sel = document.getElementById('language-select');
-  if (sel) sel.value = taal;
+  if (sel) sel.value = locale;
 
   const btn = document.getElementById('lang-dropdown-btn');
   if (btn) {
-    btn.innerHTML = `<img src="${krijgVlagUrl(taal)}" alt="${taal}" class="w-5 h-auto rounded-sm">` +
+    btn.innerHTML = `<img src="${getFlagUrl(locale)}" alt="${locale}" class="w-5 h-auto rounded-sm">` +
       '<svg class="w-4 h-4 text-primary transition-transform" id="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
   }
 
   const menu = document.getElementById('lang-dropdown-menu');
   if (menu && typeof window.renderLangMenu === 'function') {
-    window.renderLangMenu(taal);
+    window.renderLangMenu(locale);
   }
 
-  document.dispatchEvent(new CustomEvent('locale-changed', { detail: taal }));
+  document.dispatchEvent(new CustomEvent('locale-changed', { detail: locale }));
 }
 
-function krijgVlagUrl(taal) {
-  return `/images/flags/${taal}.svg`;
+function getFlagUrl(locale) {
+  return `/images/flags/${locale}.svg`;
 }
 
-function krijgVlagIcoon(taal) {
-  return `<img src="${krijgVlagUrl(taal)}" alt="${taal}" class="w-5 h-auto rounded-sm">`;
+function getFlagIcon(locale) {
+  return `<img src="${getFlagUrl(locale)}" alt="${locale}" class="w-5 h-auto rounded-sm">`;
 }
 
-function krijgTaalNaam(taal) {
-  const namen = { nl: 'Nederlands', en: 'English', de: 'Deutsch', fy: 'Frysk' };
-  return namen[taal] || taal;
+function getLanguageName(locale) {
+  const names = { nl: 'Nederlands', en: 'English', de: 'Deutsch', fy: 'Frysk' };
+  return names[locale] || locale;
 }
 
-window.__ = v;
-window.i18nSetLocale = zetTaal;
-window.i18nFlagUrl = krijgVlagUrl;
+window.__ = t;
+window.i18nSetLocale = setLocale;
+window.i18nFlagUrl = getFlagUrl;
 
-window.renderLangMenu = function(actieveTaal) {
+window.renderLangMenu = function(activeLocale) {
     var menu = document.getElementById('lang-dropdown-menu');
     if (!menu) return;
     var SEL = ['nl', 'en', 'de', 'fy'];
-    var NAMEN = { nl: 'Nederlands', en: 'English', de: 'Deutsch', fy: 'Frysk' };
-    var actief = actieveTaal || huidigeTaal;
+    var NAMES = { nl: 'Nederlands', en: 'English', de: 'Deutsch', fy: 'Frysk' };
+    var active = activeLocale || currentLocale;
     menu.innerHTML = SEL.map(function(code) {
-        var vlag = krijgVlagUrl(code);
-        var vink = code === actief ? '<span class="ml-auto text-accent text-xs">&#10003;</span>' : '';
-        return '<button type="button" class="flex items-center gap-3 w-full px-3 py-2 text-sm text-left text-primary hover:bg-gray-50 transition border-b border-border last:border-b-0" data-lang="' + code + '" onclick="window.i18nSetLocale(\'' + code + '\');window.sluitTaalDropdown()">' +
-            '<img src="' + vlag + '" alt="' + code + '" class="w-5 h-auto rounded-sm">' +
-            '<span>' + NAMEN[code] + '</span>' + vink +
+        var flag = getFlagUrl(code);
+        var check = code === active ? '<span class="ml-auto text-accent text-xs">&#10003;</span>' : '';
+        return '<button type="button" class="flex items-center gap-3 w-full px-3 py-2 text-sm text-left text-primary hover:bg-gray-50 transition border-b border-border last:border-b-0" data-lang="' + code + '" onclick="window.i18nSetLocale(\'' + code + '\');window.closeLangDropdown()">' +
+            '<img src="' + flag + '" alt="' + code + '" class="w-5 h-auto rounded-sm">' +
+            '<span>' + NAMES[code] + '</span>' + check +
         '</button>';
     }).join('');
 };
 
-window.wisselTaalDropdown = function(e) {
+window.toggleLangDropdown = function(e) {
     if (e) e.stopPropagation();
     var menu = document.getElementById('lang-dropdown-menu');
     var ch = document.getElementById('lang-chevron');
@@ -119,7 +119,7 @@ window.wisselTaalDropdown = function(e) {
     if (ch) ch.classList.toggle('rotate-180', !isOpen);
 };
 
-window.sluitTaalDropdown = function() {
+window.closeLangDropdown = function() {
     var menu = document.getElementById('lang-dropdown-menu');
     var ch = document.getElementById('lang-chevron');
     if (menu) menu.classList.add('hidden');
@@ -144,7 +144,7 @@ window.i18nInitDropdown = function() {
 
     var btn = document.getElementById('lang-dropdown-btn');
     if (btn) {
-        btn.innerHTML = '<img src="' + krijgVlagUrl(locale) + '" alt="' + locale + '" class="w-5 h-auto rounded-sm">' +
+        btn.innerHTML = '<img src="' + getFlagUrl(locale) + '" alt="' + locale + '" class="w-5 h-auto rounded-sm">' +
             '<svg class="w-4 h-4 text-primary transition-transform" id="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
     }
 
@@ -153,7 +153,7 @@ window.i18nInitDropdown = function() {
     document.addEventListener('click', function(e) {
         var wrapper = document.getElementById('lang-wrapper');
         if (wrapper && !wrapper.contains(e.target)) {
-            window.sluitTaalDropdown();
+            window.closeLangDropdown();
         }
     });
 };
@@ -185,4 +185,4 @@ function initDropdown() {
   });
 }
 
-export { v as t, zetTaal as setLocale, huidigeTaal as currentLocale, vertaalPagina as translatePage, krijgVlagIcoon as getFlagIcon, krijgTaalNaam as getLanguageName };
+export { t, setLocale, currentLocale, translatePage, getFlagIcon, getLanguageName };

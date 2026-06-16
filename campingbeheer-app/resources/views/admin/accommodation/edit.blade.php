@@ -13,11 +13,11 @@
 @section('content')
 <section class="p-8">
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-primary">{{ $accommodatie->title }} bewerken</h1>
+        <h1 class="text-2xl font-bold text-primary">{{ $accommodation->title }} bewerken</h1>
         <p class="text-sm text-muted mt-1">Pas de gegevens aan of klik op de kaart om de locatie te wijzigen.</p>
     </div>
 
-    <form action="{{ route('admin.accommodation.update', $accommodatie) }}" method="POST" class="max-w-3xl">
+    <form action="{{ route('admin.accommodation.update', $accommodation) }}" method="POST" class="max-w-3xl">
         @csrf
         @method('PUT')
 
@@ -27,7 +27,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="title" class="block text-sm font-medium text-primary mb-1">Titel *</label>
-                    <input type="text" name="title" id="title" value="{{ old('title', $accommodatie->title) }}" required
+                    <input type="text" name="title" id="title" value="{{ old('title', $accommodation->title) }}" required
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                     @error('title') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -37,7 +37,7 @@
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                         <option value="">Kies een type…</option>
                         @foreach (['Blokhut', 'Camping', 'Camperplaats', 'Chalet', 'Safaritent', 'Vakantiehuis', 'Vakantiewoning'] as $opt)
-                            <option value="{{ $opt }}" {{ old('type', $accommodatie->type) === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                            <option value="{{ $opt }}" {{ old('type', $accommodation->type) === $opt ? 'selected' : '' }}>{{ $opt }}</option>
                         @endforeach
                     </select>
                     @error('type') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
@@ -48,7 +48,7 @@
             <div>
                 <label for="description" class="block text-sm font-medium text-primary mb-1">Beschrijving</label>
                 <textarea name="description" id="description" rows="3"
-                    class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">{{ old('description', $accommodatie->description) }}</textarea>
+                    class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">{{ old('description', $accommodation->description) }}</textarea>
                 @error('description') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
             </div>
 
@@ -56,19 +56,19 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label for="min_persons" class="block text-sm font-medium text-primary mb-1">Min. personen *</label>
-                    <input type="number" name="min_persons" id="min_persons" value="{{ old('min_persons', $accommodatie->min_persons) }}" min="1" required
+                    <input type="number" name="min_persons" id="min_persons" value="{{ old('min_persons', $accommodation->min_persons) }}" min="1" required
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                     @error('min_persons') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label for="max_persons" class="block text-sm font-medium text-primary mb-1">Max. personen *</label>
-                    <input type="number" name="max_persons" id="max_persons" value="{{ old('max_persons', $accommodatie->max_persons) }}" min="1" required
+                    <input type="number" name="max_persons" id="max_persons" value="{{ old('max_persons', $accommodation->max_persons) }}" min="1" required
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                     @error('max_persons') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label for="price_per_night" class="block text-sm font-medium text-primary mb-1">Prijs per nacht (&euro;) *</label>
-                    <input type="number" step="0.01" name="price_per_night" id="price_per_night" value="{{ old('price_per_night', $accommodatie->price_per_night) }}" min="0" required
+                    <input type="number" step="0.01" name="price_per_night" id="price_per_night" value="{{ old('price_per_night', $accommodation->price_per_night) }}" min="0" required
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                     @error('price_per_night') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -78,12 +78,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="image" class="block text-sm font-medium text-primary mb-1">Afbeelding (bestandsnaam)</label>
-                    @if ($accommodatie->image)
+                    @if ($accommodation->image)
                         <div class="mb-2">
-                            <img src="{{ asset('images/' . $accommodatie->image) }}" alt="" class="h-24 w-auto rounded-lg object-cover border border-border">
+                            <img src="{{ asset('images/' . $accommodation->image) }}" alt="" class="h-24 w-auto rounded-lg object-cover border border-border">
                         </div>
                     @endif
-                    <input type="text" name="image" id="image" value="{{ old('image', $accommodatie->image) }}" placeholder="bv. blokhut-1.jpg"
+                    <input type="text" name="image" id="image" value="{{ old('image', $accommodation->image) }}" placeholder="bv. blokhut-1.jpg"
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
                     @error('image') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -91,8 +91,8 @@
                     <label for="status" class="block text-sm font-medium text-primary mb-1">Status *</label>
                     <select name="status" id="status" required
                         class="w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent transition">
-                        <option value="available" {{ old('status', $accommodatie->status) === 'available' ? 'selected' : '' }}>Beschikbaar</option>
-                        <option value="unavailable" {{ old('status', $accommodatie->status) === 'unavailable' ? 'selected' : '' }}>Niet beschikbaar</option>
+                        <option value="available" {{ old('status', $accommodation->status) === 'available' ? 'selected' : '' }}>Beschikbaar</option>
+                        <option value="unavailable" {{ old('status', $accommodation->status) === 'unavailable' ? 'selected' : '' }}>Niet beschikbaar</option>
                     </select>
                     @error('status') <p class="text-xs text-danger mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -102,11 +102,11 @@
             <div>
                 <label class="block text-sm font-medium text-primary mb-1.5">Locatie op kaart</label>
                 <div id="map-form" class="w-full" style="height: 380px"></div>
-                <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $accommodatie->latitude) }}">
-                <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $accommodatie->longitude) }}">
+                <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $accommodation->latitude) }}">
+                <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $accommodation->longitude) }}">
                 <p id="coord-display" class="text-xs text-muted mt-1.5">
-                    @if ($accommodatie->latitude && $accommodatie->longitude)
-                        {{ $accommodatie->latitude }}, {{ $accommodatie->longitude }}
+                    @if ($accommodation->latitude && $accommodation->longitude)
+                        {{ $accommodation->latitude }}, {{ $accommodation->longitude }}
                     @else
                         Klik op de kaart om coördinaten in te stellen.
                     @endif
@@ -170,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }).addTo(map);
         });
 
-    var existing = @json($accommodaties);
-    var currentId = {{ $accommodatie->id }};
+    var existing = @json($accommodations);
+    var currentId = {{ $accommodation->id }};
     existing.forEach(function (acc) {
         if (acc.id === currentId) return;
         if (acc.latitude && acc.longitude) {

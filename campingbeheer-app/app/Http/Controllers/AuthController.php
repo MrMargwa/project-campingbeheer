@@ -20,12 +20,12 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $inloggegevens = [
+        $credentials = [
             'email' => $request->input('email'),
             'password' => $request->input('password'),
         ];
 
-        if (Auth::attempt($inloggegevens)) {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('admin.dashboard')->with('success', 'Welkom terug!');
         }

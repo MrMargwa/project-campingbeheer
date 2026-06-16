@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }).addTo(map);
         });
 
-    var existing = @json($accommodaties);
+    var existing = @json($accommodations);
     existing.forEach(function (acc) {
         if (acc.latitude && acc.longitude) {
             L.circleMarker([acc.latitude, acc.longitude], {
