@@ -121,10 +121,10 @@
 
                         <div>
                             <label for="filter-pets" class="mb-1 block text-xs font-medium text-primary"
-                                data-i18n="home.filter.pets_label">Huisdieren</label>
+                                data-i18n="home.filter.features">Kenmerken</label>
                             <select id="filter-pets"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
-                                <option value="" data-i18n="home.filter.all_types">Alle</option>
+                                <option value="">Alle</option>
                                 <option value="true" data-i18n="home.filter.pets_allowed">Huisdieren toegestaan</option>
                                 <option value="false" data-i18n="home.filter.pets_not_allowed">Huisdieren niet toegestaan</option>
                             </select>
@@ -142,7 +142,7 @@
         <div id="filter-message" class="rounded-3xl border border-border bg-surface p-5 shadow-sm sm:p-6">
             <p class="text-sm font-medium text-muted" data-i18n="home.filter.please_filter">U moet eerst nog filteren.</p>
             <p class="mt-2 text-lg font-semibold text-primary" data-i18n="home.filter.choose_criteria">Kies
-                reisgezelschap, soort verblijf of huisdieren om de
+                reisgezelschap, soort verblijf of kenmerken om de
                 verblijven te zien.</p>
         </div>
 
