@@ -208,8 +208,8 @@
                                     </div>
                                     <button type="button"
                                         class="reserveer-btn inline-flex items-center justify-center rounded-lg border border-border bg-white px-5 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent cursor-pointer"
-                                        data-id="{{ $accommodation->id }}"
-                                        data-title="{{ $accommodation->translatedTitle($locale) }}"
+                                        data-id="{{ $accommodatie->id }}"
+                                        data-title="{{ $accommodatie->translatedTitle($locale) }}"
                                         data-i18n="home.accommodations.book">Reserveer
                                     </button>
                                 </div>
