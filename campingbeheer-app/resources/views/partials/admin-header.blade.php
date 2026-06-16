@@ -58,4 +58,4 @@
     </div>
 </div>
 
-<script>window.i18nInitDropdown && window.i18nInitDropdown();</script>
+<script>document.addEventListener('DOMContentLoaded', function(){ window.i18nInitDropdown && window.i18nInitDropdown(); });</script>

@@ -206,10 +206,12 @@
                                         <span class="text-sm text-muted" data-i18n="home.accommodations.per_night">/
                                             nacht</span>
                                     </div>
-                                    <a href="{{ route('reservation') }}"
-                                        class="inline-flex items-center justify-center rounded-lg border border-border bg-white px-5 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent"
+                                    <button type="button"
+                                        class="reserveer-btn inline-flex items-center justify-center rounded-lg border border-border bg-white px-5 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent cursor-pointer"
+                                        data-id="{{ $accommodation->id }}"
+                                        data-title="{{ $accommodation->translatedTitle($locale) }}"
                                         data-i18n="home.accommodations.book">Reserveer
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -226,6 +228,56 @@
     <script>
         document.addEventListener('locale-changed', function() {
             location.reload();
+        });
+    </script>
+    <script>
+        function openBookingModal(id, title) {
+            document.getElementById('modal-accommodation-id').value = id;
+            document.getElementById('modal-title').textContent = window.__('reserve.modal_title') ? window.__('reserve.modal_title').replace('{name}', title) : 'Reserveren - ' + title;
+            document.getElementById('booking-modal').classList.remove('hidden');
+            document.getElementById('booking-modal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            var err = document.getElementById('booking-error');
+            if (err) { err.classList.add('hidden'); err.textContent = ''; }
+
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            var tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            var dayAfter = new Date(today);
+            dayAfter.setDate(dayAfter.getDate() + 2);
+
+            var arrivalInput = document.getElementById('arrival-date');
+            var departureInput = document.getElementById('departure-date');
+            if (arrivalInput) {
+                arrivalInput.min = tomorrow.toISOString().split('T')[0];
+                if (!arrivalInput.value) arrivalInput.value = tomorrow.toISOString().split('T')[0];
+            }
+            if (departureInput) {
+                departureInput.min = dayAfter.toISOString().split('T')[0];
+                if (!departureInput.value) departureInput.value = dayAfter.toISOString().split('T')[0];
+            }
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+            document.getElementById('booking-modal').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('.reserveer-btn');
+            if (btn) {
+                openBookingModal(btn.getAttribute('data-id'), btn.getAttribute('data-title'));
+            }
+        });
+
+        document.getElementById('booking-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeBookingModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeBookingModal();
         });
     </script>
     <script>

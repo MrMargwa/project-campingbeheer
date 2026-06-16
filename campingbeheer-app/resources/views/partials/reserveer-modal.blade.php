@@ -31,6 +31,7 @@
                         class="hidden mt-1 rounded-lg border border-border bg-white shadow-lg max-h-48 overflow-y-auto text-sm">
                     </div>
                 </div>
+                <input type="hidden" name="name">
             @else
                 <input type="hidden" name="accommodation_id" id="modal-accommodation-id">
             @endif
