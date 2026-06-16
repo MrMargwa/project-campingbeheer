@@ -16,6 +16,7 @@ class Accommodation extends Model
         'description',
         'min_persons',
         'max_persons',
+        'huisdieren_toegestaan',
         'price_per_night',
         'image',
         'latitude',

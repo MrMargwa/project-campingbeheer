@@ -14,6 +14,7 @@
     "home.filter.arrival": "Arrival",
     "home.filter.departure": "Departure",
     "home.filter.pets_label": "Pets",
+    "home.filter.features": "Features",
     "home.filter.none_selected": "Nothing selected",
     "home.filter.pets_allowed": "Pets allowed",
     "home.filter.pets_not_allowed": "Pets not allowed",

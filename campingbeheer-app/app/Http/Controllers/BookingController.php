@@ -41,8 +41,8 @@ class BookingController extends Controller
             'notes' => $validated['notes'] ?? '',
             'arrival_date' => $validated['arrival_date'],
             'departure_date' => $validated['departure_date'],
-            'arrival_time' => 'afternoon',
-            'departure_time' => 'morning',
+            'arrival_time' => 'middag',
+            'departure_time' => 'ochtend',
         ];
 
         $accommodation = Accommodation::findOrFail($bookingData['accommodation_id']);

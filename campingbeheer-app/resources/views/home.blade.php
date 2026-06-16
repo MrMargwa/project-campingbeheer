@@ -120,14 +120,13 @@
                         </div>
 
                         <div>
-                            <label for="filter-features" class="mb-1 block text-xs font-medium text-primary"
-                                data-i18n="home.filter.features">Kenmerken</label>
-                            <select id="filter-features"
+                            <label for="filter-pets" class="mb-1 block text-xs font-medium text-primary"
+                                data-i18n="home.filter.pets_label">Huisdieren</label>
+                            <select id="filter-pets"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
-                                <option value="" data-i18n="home.filter.none_selected">Niets geselecteerd</option>
-                                @foreach ($features as $feature)
-                                    <option value="{{ $feature->name }}">{{ $feature->translatedName($locale) }}</option>
-                                @endforeach
+                                <option value="" data-i18n="home.filter.all_types">Alle</option>
+                                <option value="true" data-i18n="home.filter.pets_allowed">Huisdieren toegestaan</option>
+                                <option value="false" data-i18n="home.filter.pets_not_allowed">Huisdieren niet toegestaan</option>
                             </select>
                         </div>
                     </div>
@@ -143,7 +142,7 @@
         <div id="filter-message" class="rounded-3xl border border-border bg-surface p-5 shadow-sm sm:p-6">
             <p class="text-sm font-medium text-muted" data-i18n="home.filter.please_filter">U moet eerst nog filteren.</p>
             <p class="mt-2 text-lg font-semibold text-primary" data-i18n="home.filter.choose_criteria">Kies
-                reisgezelschap, soort verblijf of kenmerken om de
+                reisgezelschap, soort verblijf of huisdieren om de
                 verblijven te zien.</p>
         </div>
 
@@ -165,6 +164,7 @@
                         class="accommodation-card overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
                         data-type="{{ $accommodation->type }}" data-persons="{{ $accommodation->min_persons }}"
                         data-max-persons="{{ $accommodation->max_persons }}"
+                        data-huisdieren="{{ $accommodation->huisdieren_toegestaan ? 'true' : 'false' }}"
                         data-features="{{ $accommodation->features->pluck('name')->implode(' ') }}"
                         data-features-translated="{{ $accommodation->features->map(fn($k) => $k->translatedName($locale))->implode(' ') }}"
                         data-id="{{ $accommodation->id }}">
@@ -231,7 +231,7 @@
         (function() {
             const personsSelect = document.getElementById('filter-personen');
             const typeSelect = document.getElementById('filter-type');
-            const featuresSelect = document.getElementById('filter-features');
+            const petsSelect = document.getElementById('filter-pets');
             const arrivalInput = document.getElementById('filter-arrival');
             const departureInput = document.getElementById('filter-departure');
             const dateError = document.getElementById('date-error');
@@ -353,7 +353,7 @@
 
                 const selectedPersons = parseInt(personsSelect.value, 10) || 0;
                 const selectedType = typeSelect.value;
-                const selectedFeature = featuresSelect.value;
+                const selectedPets = petsSelect.value;
 
                 let visibleCount = 0;
 
@@ -361,9 +361,8 @@
                     const minPersons = parseInt(card.dataset.persons || '0', 10);
                     const matchPersons = !selectedPersons || selectedPersons >= minPersons;
                     const matchType = !selectedType || card.dataset.type === selectedType;
-                    const matchFeature = !selectedFeature || (card.dataset.features || '').toLowerCase()
-                        .includes(selectedFeature.toLowerCase());
-                    const showCard = matchPersons && matchType && matchFeature;
+                    const matchPets = !selectedPets || card.dataset.huisdieren === selectedPets;
+                    const showCard = matchPersons && matchType && matchPets;
 
                     card.classList.toggle('hidden', !showCard);
                     if (showCard) visibleCount++;
@@ -412,7 +411,7 @@
                 });
             });
 
-            [typeSelect, featuresSelect, arrivalInput, departureInput].forEach(el => {
+            [typeSelect, petsSelect, arrivalInput, departureInput].forEach(el => {
                 if (!el) return;
                 el.addEventListener('change', applyFilters);
             });

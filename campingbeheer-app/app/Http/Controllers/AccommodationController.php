@@ -30,6 +30,7 @@ class AccommodationController extends Controller
             'description'    => 'nullable|string',
             'min_persons'    => 'required|integer|min:1',
             'max_persons'    => 'required|integer|min:1|gte:min_persons',
+            'huisdieren_toegestaan' => 'nullable|boolean',
             'price_per_night' => 'required|numeric|min:0',
             'image'      => 'nullable|string|max:255',
             'latitude'        => 'nullable|numeric|between:-90,90',
@@ -37,6 +38,7 @@ class AccommodationController extends Controller
             'status'          => 'required|in:available,unavailable',
         ]);
 
+        $validated['huisdieren_toegestaan'] = $request->boolean('huisdieren_toegestaan');
         Accommodation::create($validated);
 
         return redirect()->route('admin.accommodation.index')
@@ -57,6 +59,7 @@ class AccommodationController extends Controller
             'description'    => 'nullable|string',
             'min_persons'    => 'required|integer|min:1',
             'max_persons'    => 'required|integer|min:1|gte:min_persons',
+            'huisdieren_toegestaan' => 'nullable|boolean',
             'price_per_night' => 'required|numeric|min:0',
             'image'      => 'nullable|string|max:255',
             'latitude'        => 'nullable|numeric|between:-90,90',
@@ -64,6 +67,7 @@ class AccommodationController extends Controller
             'status'          => 'required|in:available,unavailable',
         ]);
 
+        $validated['huisdieren_toegestaan'] = $request->boolean('huisdieren_toegestaan');
         $accommodation->update($validated);
 
         return redirect()->route('admin.accommodation.index')

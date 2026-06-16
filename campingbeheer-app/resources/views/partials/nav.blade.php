@@ -35,7 +35,7 @@
                     <option value="de">DE</option>
                     <option value="fy">FY</option>
                 </select>
-                <script>window.i18nInitDropdown && window.i18nInitDropdown();</script>
+                <script>document.addEventListener('DOMContentLoaded', function(){ window.i18nInitDropdown && window.i18nInitDropdown(); });</script>
             </div>
         </div>
     </div>

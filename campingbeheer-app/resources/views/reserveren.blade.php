@@ -111,7 +111,7 @@
             'Blokhut' => '#8B4513',
             'Safaritent' => '#D97706',
             'Vakantiehuis' => '#7C3AED',
-            'Camping' => '#2563EB',
+            'Camper' => '#2563EB',
         ];
     @endphp
     <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
@@ -129,7 +129,7 @@
             <span class="inline-block w-3 h-3 rounded-sm" style="background:#7C3AED"></span> Vakantiehuisjes
         </span>
         <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#2563EB"></span> Campings
+            <span class="inline-block w-3 h-3 rounded-sm" style="background:#2563EB"></span> Camperplaatsen
         </span>
         <span class="inline-flex items-center gap-1.5">
             <span class="inline-block w-3 h-3 rounded-sm" style="background:#6B7280"></span> Parkeerplaats
@@ -358,7 +358,7 @@
                     'Chalet': '#2A6A4E',
                     'Blokhut': '#8B4513',
                     'Camperplaats': '#2563EB',
-                    'Camping': '#2563EB',
+                    'Camper': '#2563EB',
                     'Safaritent': '#D97706',
                     'Vakantiehuis': '#7C3AED',
                     'Vakantiewoning': '#7C3AED',
