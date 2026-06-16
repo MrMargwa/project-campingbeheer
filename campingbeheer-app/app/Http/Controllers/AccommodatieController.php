@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Accommodation;
+use App\Models\Accommodatie;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class AccommodationController extends Controller
+class AccommodatieController extends Controller
 {
     public function index(): View
     {
-        $accommodations = Accommodation::orderBy('created_at', 'desc')->get();
+        $accommodaties = Accommodatie::orderBy('created_at', 'desc')->get();
 
-        return view('admin.accommodation.index', compact('accommodations'));
+        return view('admin.accommodation.index', compact('accommodaties'));
     }
 
     public function create(): View
     {
-        $accommodations = Accommodation::whereNotNull('latitude')->whereNotNull('longitude')->get();
-        return view('admin.accommodation.create', compact('accommodations'));
+        $accommodaties = Accommodatie::whereNotNull('latitude')->whereNotNull('longitude')->get();
+        return view('admin.accommodation.create', compact('accommodaties'));
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $gevalideerd = $request->validate([
             'title'           => 'required|string|max:255',
             'type'            => 'required|string|max:255',
             'description'    => 'nullable|string',
@@ -37,21 +37,21 @@ class AccommodationController extends Controller
             'status'          => 'required|in:available,unavailable',
         ]);
 
-        Accommodation::create($validated);
+        Accommodatie::create($gevalideerd);
 
         return redirect()->route('admin.accommodation.index')
             ->with('success', 'Accommodation toegevoegd.');
     }
 
-    public function edit(Accommodation $accommodation): View
+    public function edit(Accommodatie $accommodatie): View
     {
-        $accommodations = Accommodation::whereNotNull('latitude')->whereNotNull('longitude')->get();
-        return view('admin.accommodation.edit', compact('accommodation', 'accommodations'));
+        $accommodaties = Accommodatie::whereNotNull('latitude')->whereNotNull('longitude')->get();
+        return view('admin.accommodation.edit', compact('accommodatie', 'accommodaties'));
     }
 
-    public function update(Request $request, Accommodation $accommodation): RedirectResponse
+    public function update(Request $request, Accommodatie $accommodatie): RedirectResponse
     {
-        $validated = $request->validate([
+        $gevalideerd = $request->validate([
             'title'           => 'required|string|max:255',
             'type'            => 'required|string|max:255',
             'description'    => 'nullable|string',
@@ -64,15 +64,15 @@ class AccommodationController extends Controller
             'status'          => 'required|in:available,unavailable',
         ]);
 
-        $accommodation->update($validated);
+        $accommodatie->update($gevalideerd);
 
         return redirect()->route('admin.accommodation.index')
             ->with('success', 'Accommodation bijgewerkt.');
     }
 
-    public function destroy(Accommodation $accommodation): RedirectResponse
+    public function destroy(Accommodatie $accommodatie): RedirectResponse
     {
-        $accommodation->delete();
+        $accommodatie->delete();
 
         return redirect()->route('admin.accommodation.index')
             ->with('success', 'Accommodation verwijderd.');

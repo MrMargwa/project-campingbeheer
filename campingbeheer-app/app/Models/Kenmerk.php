@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Feature extends Model
+class Kenmerk extends Model
 {
     protected $table = 'features';
 
@@ -16,7 +16,7 @@ class Feature extends Model
 
     public function accommodations(): BelongsToMany
     {
-        return $this->belongsToMany(Accommodation::class, 'accommodation_feature', 'feature_id', 'accommodation_id');
+        return $this->belongsToMany(Accommodatie::class, 'accommodation_feature', 'feature_id', 'accommodation_id');
     }
 
     public function translatedName(string $locale): string

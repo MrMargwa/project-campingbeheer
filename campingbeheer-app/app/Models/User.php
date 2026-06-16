@@ -20,7 +20,7 @@ class User extends Authenticatable
 
     public function bookings(): HasMany
     {
-        return $this->hasMany(Booking::class, 'user_id');
+        return $this->hasMany(Boeking::class, 'user_id');
     }
 
     /**

@@ -3,52 +3,49 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Accommodatie extends Model
 {
+    protected $table = 'accommodations';
+
     protected $fillable = [
-        'titel',
+        'title',
         'type',
-        'beschrijving',
-        'min_personen',
-        'max_personen',
-        'huisdieren_toegestaan',
-        'prijs_per_nacht',
-        'afbeelding',
+        'description',
+        'min_persons',
+        'max_persons',
+        'price_per_night',
+        'image',
         'latitude',
         'longitude',
         'status',
     ];
 
-    protected function casts(): array
+    public function bookings(): HasMany
     {
-        return [
-            'huisdieren_toegestaan' => 'boolean',
-        ];
+        return $this->hasMany(Boeking::class, 'accommodation_id');
     }
 
-    public const CREATED_AT = 'aangemaakt_op';
-    public const UPDATED_AT = 'bewerkt_op';
-
-    public function boekingen(): HasMany
+    public function features(): BelongsToMany
     {
-        return $this->hasMany(Boeking::class, 'accommodatie_id');
+        return $this->belongsToMany(Kenmerk::class, 'accommodation_feature', 'accommodation_id', 'feature_id');
     }
 
-    public function vertaaldeTitel(string $locale): string
+    public function translatedTitle(string $locale): string
     {
-        $col = 'titel_' . $locale;
-        return $this->$col ?: $this->titel;
+        $col = 'title_' . $locale;
+        return $this->$col ?: $this->title;
     }
 
-    public function vertaaldeBeschrijving(string $locale): string
+    public function translatedDescription(string $locale): string
     {
-        $col = 'beschrijving_' . $locale;
-        return $this->$col ?: $this->beschrijving;
+        $col = 'description_' . $locale;
+        return $this->$col ?: $this->description;
     }
 
-    public function vertaaldType(string $locale): string
+    public function translatedType(string $locale): string
     {
         $col = 'type_' . $locale;
         return $this->$col ?: $this->type;

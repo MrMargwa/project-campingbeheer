@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
-use App\Models\Accommodation;
+use App\Models\Boeking;
+use App\Models\Accommodatie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
@@ -12,30 +12,30 @@ class AdminDashboardController extends Controller
 {
     public function index(): View
     {
-        $accommodations = Accommodation::all();
-        $postcodeApiKey = Config::get('services.postcode.api_key');
-        $today = now()->toDateString();
+        $accommodaties = Accommodatie::all();
+        $postcodeApiSleutel = Config::get('services.postcode.api_key');
+        $vandaag = now()->toDateString();
 
-        $bookings = Booking::with('accommodation')
+        $boekingen = Boeking::with('accommodation')
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        $todayArrivals = Booking::with('accommodation')
-            ->where('arrival_date', $today)
+        $vandaagAankomsten = Boeking::with('accommodation')
+            ->where('arrival_date', $vandaag)
             ->whereIn('status', ['approved', 'completed'])
             ->orderBy('arrival_time', 'desc')
             ->get();
 
-        $todayDepartures = Booking::with('accommodation')
-            ->where('departure_date', $today)
+        $vandaagVertrekken = Boeking::with('accommodation')
+            ->where('departure_date', $vandaag)
             ->whereIn('status', ['approved', 'completed'])
             ->orderBy('departure_time', 'desc')
             ->get();
 
         return view('admin.dashboard', compact(
-            'accommodations', 'postcodeApiKey', 'bookings',
-            'todayArrivals', 'todayDepartures'
+            'accommodaties', 'postcodeApiSleutel', 'boekingen',
+            'vandaagAankomsten', 'vandaagVertrekken'
         ));
     }
 }

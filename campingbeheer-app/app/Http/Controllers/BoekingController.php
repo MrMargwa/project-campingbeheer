@@ -4,129 +4,145 @@ namespace App\Http\Controllers;
 
 use App\Models\Accommodatie;
 use App\Models\Boeking;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 
 class BoekingController extends Controller
 {
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'accommodatie_id' => 'required|exists:accommodaties,id',
-            'naam' => 'required|string|max:255',
+        $gevalideerd = $request->validate([
+            'accommodation_id' => 'required|exists:accommodations,id',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'telefoon' => 'required|string|max:20',
-            'postcode' => 'required|string|max:10',
-            'huisnummer' => 'required|string|max:10',
-            'straat' => 'required|string|max:255',
-            'plaats' => 'required|string|max:255',
-            'land' => 'required|string|max:255',
-            'aantal_personen' => 'required|integer|min:1',
-            'opmerking' => 'nullable|string|max:1000',
-            'aankomst_datum' => 'required|date|after_or_equal:today',
-            'vertrek_datum' => 'required|date|after:aankomst_datum',
+            'phone' => 'required|string|max:20',
+            'postal_code' => 'required|string|max:10',
+            'house_number' => 'required|string|max:10',
+            'street' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'number_of_guests' => 'required|integer|min:1',
+            'notes' => 'nullable|string|max:1000',
+            'arrival_date' => 'required|date|after_or_equal:today',
+            'departure_date' => 'required|date|after:arrival_date',
         ]);
 
-        $validated['aankomst_tijd'] = 'middag';
-        $validated['vertrek_tijd'] = 'ochtend';
+        $boekData = [
+            'accommodation_id' => $gevalideerd['accommodation_id'],
+            'name' => $gevalideerd['name'],
+            'email' => $gevalideerd['email'],
+            'phone' => $gevalideerd['phone'],
+            'postal_code' => $gevalideerd['postal_code'],
+            'house_number' => $gevalideerd['house_number'],
+            'street' => $gevalideerd['street'],
+            'city' => $gevalideerd['city'],
+            'country' => $gevalideerd['country'],
+            'number_of_persons' => $gevalideerd['number_of_guests'],
+            'notes' => $gevalideerd['notes'] ?? '',
+            'arrival_date' => $gevalideerd['arrival_date'],
+            'departure_date' => $gevalideerd['departure_date'],
+            'arrival_time' => 'afternoon',
+            'departure_time' => 'morning',
+        ];
 
-        $accommodatie = Accommodatie::findOrFail($validated['accommodatie_id']);
+        $accommodatie = Accommodatie::findOrFail($boekData['accommodation_id']);
 
-        // Controleer of er al een actieve boeking (goedgekeurd of in afwachting) is die overlapt met gevraagde periode
-        $conflictExists = Boeking::where('accommodatie_id', $validated['accommodatie_id'])
-            ->whereIn('status', ['goedgekeurd', 'in_afwachting'])
-            ->where('vertrek_datum', '>=', $validated['aankomst_datum'])
-            ->where('aankomst_datum', '<=', $validated['vertrek_datum'])
+        $conflictBestaat = Boeking::where('accommodation_id', $boekData['accommodation_id'])
+            ->whereIn('status', ['approved', 'pending'])
+            ->where('departure_date', '>=', $boekData['arrival_date'])
+            ->where('arrival_date', '<=', $boekData['departure_date'])
             ->exists();
 
-        if ($conflictExists) {
+        if ($conflictBestaat) {
             return response()->json([
                 'errors' => [
-                    'periode' => [
+                    'period' => [
                         'Deze accommodatie is al bezet in de gekozen periode.',
                     ],
                 ],
             ], 422);
         }
 
-        if ($validated['aantal_personen'] < $accommodatie->min_personen || $validated['aantal_personen'] > $accommodatie->max_personen) {
+        if ($boekData['number_of_persons'] < $accommodatie->min_persons || $boekData['number_of_persons'] > $accommodatie->max_persons) {
             return response()->json([
                 'errors' => [
-                    'aantal_personen' => [
-                        'Het aantal personen moet tussen ' . $accommodatie->min_personen . ' en ' . $accommodatie->max_personen . ' liggen.',
+                    'number_of_guests' => [
+                        'Het aantal personen moet tussen ' . $accommodatie->min_persons . ' en ' . $accommodatie->max_persons . ' liggen.',
                     ],
                 ],
             ], 422);
         }
 
-        $validated['status'] = 'in_afwachting';
-        $validated['totaal_prijs'] = $accommodatie->prijs_per_nacht;
+        $nachten = \Carbon\Carbon::parse($boekData['arrival_date'])->diffInDays(\Carbon\Carbon::parse($boekData['departure_date']));
+        $isAdmin = auth()->check() && auth()->user()->role === 'admin';
+        $boekData['status'] = $isAdmin ? 'approved' : 'pending';
+        $boekData['total_price'] = $accommodatie->price_per_night * $nachten;
 
-        $boeking = Boeking::create($validated);
+        $boeking = Boeking::create($boekData);
 
         return response()->json([
             'success' => true,
-            'message' => 'Reservering succesvol aangemaakt! Deze moet nog worden goedgekeurd door de beheerder.',
-            'boeking' => $boeking,
+            'message' => $isAdmin
+                ? 'Reservering succesvol aangemaakt!'
+                : 'Reservering succesvol aangemaakt! Deze moet nog worden goedgekeurd door de beheerder.',
+            'booking' => $boeking,
         ]);
     }
 
     public function approve(Boeking $boeking)
     {
-        // Controleer op overlap met andere actieve boekingen (in afwachting of goedgekeurd)
-        $conflict = Boeking::where('accommodatie_id', $boeking->accommodatie_id)
-            ->where('status', '!=', 'geannuleerd')
-            ->where('id', '!=', $boeking->id)
-            ->where('vertrek_datum', '>=', $boeking->aankomst_datum)
-            ->where('aankomst_datum', '<=', $boeking->vertrek_datum)
-            ->exists();
-
-        if ($conflict) {
-            return redirect()->back()->with('error', 'Kan niet goedkeuren: de accommodatie is al bezet in deze periode.');
-        }
-
-        $boeking->update(['status' => 'goedgekeurd']);
+        $boeking->update(['status' => 'approved']);
 
         return redirect()->route('admin.dashboard')
-            ->with('success', 'Reservering van ' . $boeking->naam . ' is goedgekeurd.');
+            ->with('success', 'Reservering van ' . $boeking->name . ' is goedgekeurd.');
     }
 
     public function reject(Request $request, Boeking $boeking)
     {
         $request->validate([
-            'afkeur_reden' => 'nullable|string|max:1000',
+            'rejection_reason' => 'nullable|string|max:1000',
         ]);
 
         $boeking->update([
-            'status' => 'geannuleerd',
-            'opmerking' => $request->afkeur_reden
-                ? trim($boeking->opmerking . "\nAfgekeurd: " . $request->afkeur_reden)
-                : $boeking->opmerking,
+            'status' => 'cancelled',
+            'notes' => $request->rejection_reason
+                ? trim($boeking->notes . "\nAfgekeurd: " . $request->rejection_reason)
+                : $boeking->notes,
         ]);
 
         return redirect()->route('admin.dashboard')
-            ->with('success', 'Reservering van ' . $boeking->naam . ' is afgekeurd.');
+            ->with('success', 'Reservering van ' . $boeking->name . ' is afgekeurd.');
     }
 
-    public function searchGasten(Request $request): JsonResponse
+    public function searchGuests(Request $request): JsonResponse
     {
-        $query = $request->get('q');
+        $zoekopdracht = $request->get('q');
 
-        if (strlen($query) < 2) {
+        if (strlen($zoekopdracht) < 2) {
             return response()->json([]);
         }
 
-        $gasten = Boeking::select('naam', 'email', 'telefoon', 'postcode', 'huisnummer', 'straat', 'plaats', 'land')
-            ->where('naam', 'like', '%' . $query . '%')
-            ->orderBy('aangemaakt_op', 'desc')
+        $gasten = Boeking::select('name', 'email', 'phone', 'postal_code', 'house_number', 'street', 'city', 'country')
+            ->where('name', 'like', '%' . $zoekopdracht . '%')
+            ->orderBy('created_at', 'desc')
             ->get()
             ->unique(function ($item) {
-                return strtolower($item->email ?: $item->naam);
+                return strtolower($item->email ?: $item->name);
             })
             ->take(10)
-            ->values();
+            ->values()
+            ->map(function ($boeking) {
+                return [
+                    'name' => $boeking->name,
+                    'email' => $boeking->email,
+                    'phone' => $boeking->phone,
+                    'postal_code' => $boeking->postal_code,
+                    'house_number' => $boeking->house_number,
+                    'street' => $boeking->street,
+                    'city' => $boeking->city,
+                    'country' => $boeking->country,
+                ];
+            });
 
         return response()->json($gasten);
     }

@@ -44,10 +44,10 @@
                                                 volwassenen</div>
                                         </div>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" data-key="adults"
+                                            <button type="button" data-key="volwassenen"
                                                 class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
-                                            <span id="count-adults" class="w-6 text-center text-sm tabular-nums">0</span>
-                                            <button type="button" data-key="adults"
+                                            <span id="count-volwassenen" class="w-6 text-center text-sm tabular-nums">0</span>
+                                            <button type="button" data-key="volwassenen"
                                                 class="persons-btn persons-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
@@ -60,10 +60,10 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" data-key="children"
+                                            <button type="button" data-key="kinderen"
                                                 class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
-                                            <span id="count-children" class="w-6 text-center text-sm tabular-nums">0</span>
-                                            <button type="button" data-key="children"
+                                            <span id="count-kinderen" class="w-6 text-center text-sm tabular-nums">0</span>
+                                            <button type="button" data-key="kinderen"
                                                 class="persons-btn persons-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
@@ -74,10 +74,10 @@
                                             <div class="text-xs text-muted" data-i18n="home.filter.babies_desc">Baby's</div>
                                         </div>
                                         <div class="flex items-center gap-2">
-                                            <button type="button" data-key="babies"
+                                            <button type="button" data-key="baby"
                                                 class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
-                                            <span id="count-babies" class="w-6 text-center text-sm tabular-nums">0</span>
-                                            <button type="button" data-key="babies"
+                                            <span id="count-baby" class="w-6 text-center text-sm tabular-nums">0</span>
+                                            <button type="button" data-key="baby"
                                                 class="persons-btn persons-increment rounded-full border border-border px-3 py-1 text-sm leading-none">+</button>
                                         </div>
                                     </div>
@@ -98,8 +98,8 @@
                             <select id="filter-type"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
                                 <option value="" data-i18n="home.filter.all_types">Alle soorten</option>
-                                @foreach ($types as $typeKey => $typeRow)
-                                    <option value="{{ $typeKey }}">{{ $typeRow->{'type_' . $locale} ?: $typeKey }}
+                                @foreach ($types as $typeSleutel => $typeRij)
+                                    <option value="{{ $typeSleutel }}">{{ $typeRij->{'type_' . $taal} ?: $typeSleutel }}
                                     </option>
                                 @endforeach
                             </select>
@@ -125,8 +125,8 @@
                             <select id="filter-features"
                                 class="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-primary">
                                 <option value="" data-i18n="home.filter.none_selected">Niets geselecteerd</option>
-                                @foreach ($features as $feature)
-                                    <option value="{{ $feature->name }}">{{ $feature->translatedName($locale) }}</option>
+                                @foreach ($kenmerken as $kenmerk)
+                                    <option value="{{ $kenmerk->name }}">{{ $kenmerk->translatedName($taal) }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -160,19 +160,19 @@
             </div>
 
             <div id="results-list" class="space-y-6">
-                @foreach ($accommodaties as $accommodation)
+                @foreach ($accommodaties as $accommodatie)
                     <article
                         class="accommodation-card overflow-hidden rounded-3xl border border-border bg-surface shadow-sm"
-                        data-type="{{ $accommodation->type }}" data-persons="{{ $accommodation->min_persons }}"
-                        data-max-persons="{{ $accommodation->max_persons }}"
-                        data-features="{{ $accommodation->features->pluck('name')->implode(' ') }}"
-                        data-features-translated="{{ $accommodation->features->map(fn($k) => $k->translatedName($locale))->implode(' ') }}"
-                        data-id="{{ $accommodation->id }}">
+                        data-type="{{ $accommodatie->type }}" data-persons="{{ $accommodatie->min_persons }}"
+                        data-max-persons="{{ $accommodatie->max_persons }}"
+                        data-features="{{ $accommodatie->features->pluck('name')->implode(' ') }}"
+                        data-features-translated="{{ $accommodatie->features->map(fn($k) => $k->translatedName($taal))->implode(' ') }}"
+                        data-id="{{ $accommodatie->id }}">
                         <div class="grid lg:grid-cols-2">
                             <div class="relative min-h-64 bg-secondary sm:min-h-72 lg:min-h-full">
-                                @if ($accommodation->image && file_exists(public_path('images/' . $accommodation->image)))
-                                    <img src="{{ asset('images/' . $accommodation->image) }}"
-                                        alt="{{ $accommodation->translatedTitle($locale) }}"
+                                @if ($accommodatie->image && file_exists(public_path('images/' . $accommodatie->image)))
+                                    <img src="{{ asset('images/' . $accommodatie->image) }}"
+                                        alt="{{ $accommodatie->translatedTitle($taal) }}"
                                         class="absolute inset-0 w-full h-full object-cover">
                                 @else
                                     <span
@@ -185,14 +185,14 @@
                             <div class="flex flex-col justify-between p-6 sm:p-8">
                                 <div class="space-y-4">
                                     <h3 class="text-2xl font-semibold text-primary">
-                                        {{ $accommodation->translatedTitle($locale) }}</h3>
-                                    <p class="text-sm text-muted">{{ $accommodation->translatedDescription($locale) }}</p>
+                                        {{ $accommodatie->translatedTitle($taal) }}</h3>
+                                    <p class="text-sm text-muted">{{ $accommodatie->translatedDescription($taal) }}</p>
                                     <ul class="space-y-2 text-sm text-muted">
-                                        <li>{{ $accommodation->min_persons }} - {{ $accommodation->max_persons }} <span
+                                        <li>{{ $accommodatie->min_persons }} - {{ $accommodatie->max_persons }} <span
                                                 data-i18n="reserve.persons">personen</span></li>
-                                        @if ($accommodation->features->isNotEmpty())
-                                            @foreach ($accommodation->features as $feature)
-                                                <li>{{ $feature->translatedName($locale) }}</li>
+                                        @if ($accommodatie->features->isNotEmpty())
+                                            @foreach ($accommodatie->features as $kenmerk)
+                                                <li>{{ $kenmerk->translatedName($taal) }}</li>
                                             @endforeach
                                         @endif
                                     </ul>
@@ -201,7 +201,7 @@
                                 <div class="mt-6 flex items-center justify-between">
                                     <div>
                                         <span
-                                            class="text-lg font-semibold text-accent">&euro;{{ number_format($accommodation->price_per_night, 2, ',', '.') }}</span>
+                                            class="text-lg font-semibold text-accent">&euro;{{ number_format($accommodatie->price_per_night, 2, ',', '.') }}</span>
                                         <span class="text-sm text-muted" data-i18n="home.accommodations.per_night">/
                                             nacht</span>
                                     </div>
@@ -229,197 +229,197 @@
     </script>
     <script>
         (function() {
-            const personsSelect = document.getElementById('filter-personen');
+            const personenSelect = document.getElementById('filter-personen');
             const typeSelect = document.getElementById('filter-type');
-            const featuresSelect = document.getElementById('filter-features');
-            const arrivalInput = document.getElementById('filter-arrival');
-            const departureInput = document.getElementById('filter-departure');
-            const dateError = document.getElementById('date-error');
-            const filterMessage = document.getElementById('filter-message');
-            const resultsWrapper = document.getElementById('results-wrapper');
-            const resultsCount = document.getElementById('results-count');
-            const noResults = document.getElementById('no-results');
-            const cards = document.querySelectorAll('.accommodation-card');
-            const personsControl = document.getElementById('persons-control');
-            const personsPanel = document.getElementById('persons-panel');
+            const kenmerkenSelect = document.getElementById('filter-features');
+            const aankomstInput = document.getElementById('filter-arrival');
+            const vertrekInput = document.getElementById('filter-departure');
+            const datumFout = document.getElementById('date-error');
+            const filterBericht = document.getElementById('filter-message');
+            const resultatenWrapper = document.getElementById('results-wrapper');
+            const resultatenTelling = document.getElementById('results-count');
+            const geenResultaten = document.getElementById('no-results');
+            const kaarten = document.querySelectorAll('.accommodation-card');
+            const personenControle = document.getElementById('persons-control');
+            const personenPaneel = document.getElementById('persons-panel');
             const personsChevron = document.getElementById('persons-chevron');
-            const personsSummary = document.getElementById('persons-summary');
-            const personsClose = document.getElementById('persons-close');
+            const personenSamenvatting = document.getElementById('persons-summary');
+            const personenSluit = document.getElementById('persons-close');
 
-            const counts = {
-                adults: 0,
-                children: 0,
-                babies: 0,
+            const tellingen = {
+                volwassenen: 0,
+                kinderen: 0,
+                baby: 0,
             };
 
-            function toDateValue(date) {
+            function naarDatumWaarde(date) {
                 return new Date(date + 'T00:00:00');
             }
 
-            function formatDate(date) {
+            function formatteerDatum(date) {
                 return date.toISOString().slice(0, 10);
             }
 
-            function addOneDay(dateValue) {
-                const nextDay = new Date(dateValue.getTime());
-                nextDay.setDate(nextDay.getDate() + 1);
-                return nextDay;
+            function plusEenDag(datumWaarde) {
+                const volgendeDag = new Date(datumWaarde.getTime());
+                volgendeDag.setDate(volgendeDag.getDate() + 1);
+                return volgendeDag;
             }
 
-            function subtractOneDay(dateValue) {
-                const previousDay = new Date(dateValue.getTime());
-                previousDay.setDate(previousDay.getDate() - 1);
-                return previousDay;
+            function minEenDag(datumWaarde) {
+                const vorigeDag = new Date(datumWaarde.getTime());
+                vorigeDag.setDate(vorigeDag.getDate() - 1);
+                return vorigeDag;
             }
 
-            function syncDateLimits() {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
+            function syncDatumGrenzen() {
+                const vandaag = new Date();
+                vandaag.setHours(0, 0, 0, 0);
 
-                arrivalInput.min = formatDate(today);
-                arrivalInput.max = '';
-                departureInput.min = formatDate(addOneDay(today));
-                departureInput.max = '';
+                aankomstInput.min = formatteerDatum(vandaag);
+                aankomstInput.max = '';
+                vertrekInput.min = formatteerDatum(plusEenDag(vandaag));
+                vertrekInput.max = '';
 
-                if (arrivalInput.value) {
-                    const arrivalDate = toDateValue(arrivalInput.value);
-                    const nextDay = addOneDay(arrivalDate);
-                    departureInput.min = formatDate(nextDay);
+                if (aankomstInput.value) {
+                    const aankomstDatum = naarDatumWaarde(aankomstInput.value);
+                    const volgendeDag = plusEenDag(aankomstDatum);
+                    vertrekInput.min = formatteerDatum(volgendeDag);
 
-                    if (departureInput.value && toDateValue(departureInput.value) <= arrivalDate) {
-                        departureInput.value = '';
+                    if (vertrekInput.value && naarDatumWaarde(vertrekInput.value) <= aankomstDatum) {
+                        vertrekInput.value = '';
                     }
                 } else {
-                    departureInput.min = formatDate(addOneDay(today));
+                    vertrekInput.min = formatteerDatum(plusEenDag(vandaag));
                 }
 
-                if (departureInput.value) {
-                    const departureDate = toDateValue(departureInput.value);
-                    const lastArrivalDay = subtractOneDay(departureDate);
-                    arrivalInput.max = formatDate(lastArrivalDay);
+                if (vertrekInput.value) {
+                    const vertrekDatum = naarDatumWaarde(vertrekInput.value);
+                    const laatsteAankomstDag = minEenDag(vertrekDatum);
+                    aankomstInput.max = formatteerDatum(laatsteAankomstDag);
 
-                    if (arrivalInput.value && toDateValue(arrivalInput.value) >= departureDate) {
-                        arrivalInput.value = '';
+                    if (aankomstInput.value && naarDatumWaarde(aankomstInput.value) >= vertrekDatum) {
+                        aankomstInput.value = '';
                     }
                 }
             }
 
-            function validateDates() {
-                syncDateLimits();
+            function valideerDatums() {
+                syncDatumGrenzen();
 
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const arrivalValue = arrivalInput.value ? toDateValue(arrivalInput.value) : null;
-                const departureValue = departureInput.value ? toDateValue(departureInput.value) : null;
+                const vandaag = new Date();
+                vandaag.setHours(0, 0, 0, 0);
+                const aankomstWaarde = aankomstInput.value ? naarDatumWaarde(aankomstInput.value) : null;
+                const vertrekWaarde = vertrekInput.value ? naarDatumWaarde(vertrekInput.value) : null;
 
-                let hasError = false;
+                let heeftFout = false;
 
-                if (arrivalValue && arrivalValue < today) {
-                    hasError = true;
+                if (aankomstWaarde && aankomstWaarde < vandaag) {
+                    heeftFout = true;
                 }
 
-                if (departureValue && departureValue <= today) {
-                    hasError = true;
+                if (vertrekWaarde && vertrekWaarde <= vandaag) {
+                    heeftFout = true;
                 }
 
-                if (arrivalValue && departureValue && departureValue <= arrivalValue) {
-                    hasError = true;
+                if (aankomstWaarde && vertrekWaarde && vertrekWaarde <= aankomstWaarde) {
+                    heeftFout = true;
                 }
 
-                dateError.classList.toggle('hidden', !hasError);
+                datumFout.classList.toggle('hidden', !heeftFout);
 
-                return !hasError;
+                return !heeftFout;
             }
 
-            function getTotalPersons() {
-                return counts.adults + counts.children + counts.babies;
+            function getTotaalPersonen() {
+                return tellingen.volwassenen + tellingen.kinderen + tellingen.baby;
             }
 
-            function updatePersonsSummary() {
-                const total = getTotalPersons();
-                personsSelect.value = total;
-                personsSummary.textContent = window.__('home.persons_' + (total === 1 ? 'one' : 'other'), {
-                    count: total
+            function updatePersonenSamenvatting() {
+                const totaal = getTotaalPersonen();
+                personenSelect.value = totaal;
+                personenSamenvatting.textContent = window.__('home.persons_' + (totaal === 1 ? 'one' : 'other'), {
+                    count: totaal
                 });
             }
 
-            function togglePanel(open) {
-                personsPanel.classList.toggle('hidden', !open);
+            function wisselPaneel(open) {
+                personenPaneel.classList.toggle('hidden', !open);
                 personsChevron.classList.toggle('rotate-180', open);
             }
 
-            function applyFilters() {
-                if (!validateDates()) return;
+            function pasFiltersToe() {
+                if (!valideerDatums()) return;
 
-                const selectedPersons = parseInt(personsSelect.value, 10) || 0;
-                const selectedType = typeSelect.value;
-                const selectedFeature = featuresSelect.value;
+                const geselecteerdePersonen = parseInt(personenSelect.value, 10) || 0;
+                const geselecteerdType = typeSelect.value;
+                const geselecteerdKenmerk = kenmerkenSelect.value;
 
-                let visibleCount = 0;
+                let zichtbareTelling = 0;
 
-                cards.forEach((card) => {
-                    const minPersons = parseInt(card.dataset.persons || '0', 10);
-                    const matchPersons = !selectedPersons || selectedPersons >= minPersons;
-                    const matchType = !selectedType || card.dataset.type === selectedType;
-                    const matchFeature = !selectedFeature || (card.dataset.features || '').toLowerCase()
-                        .includes(selectedFeature.toLowerCase());
-                    const showCard = matchPersons && matchType && matchFeature;
+                kaarten.forEach((kaart) => {
+                    const minPersonen = parseInt(kaart.dataset.persons || '0', 10);
+                    const matchPersonen = !geselecteerdePersonen || geselecteerdePersonen >= minPersonen;
+                    const matchType = !geselecteerdType || kaart.dataset.type === geselecteerdType;
+                    const matchKenmerk = !geselecteerdKenmerk || (kaart.dataset.features || '').toLowerCase()
+                        .includes(geselecteerdKenmerk.toLowerCase());
+                    const toonKaart = matchPersonen && matchType && matchKenmerk;
 
-                    card.classList.toggle('hidden', !showCard);
-                    if (showCard) visibleCount++;
+                    kaart.classList.toggle('hidden', !toonKaart);
+                    if (toonKaart) zichtbareTelling++;
                 });
 
-                filterMessage.classList.add('hidden');
-                resultsWrapper.classList.remove('hidden');
-                resultsCount.textContent = window.__('home.results_' + (visibleCount === 1 ? 'one' : 'other'), {
-                    count: visibleCount
+                filterBericht.classList.add('hidden');
+                resultatenWrapper.classList.remove('hidden');
+                resultatenTelling.textContent = window.__('home.results_' + (zichtbareTelling === 1 ? 'one' : 'other'), {
+                    count: zichtbareTelling
                 });
-                noResults.classList.toggle('hidden', visibleCount > 0);
-                noResults.textContent = visibleCount > 0 ? '' : window.__('home.no_results');
+                geenResultaten.classList.toggle('hidden', zichtbareTelling > 0);
+                geenResultaten.textContent = zichtbareTelling > 0 ? '' : window.__('home.no_results');
             }
 
-            personsControl.addEventListener('click', function(e) {
+            personenControle.addEventListener('click', function(e) {
                 e.stopPropagation();
-                togglePanel(personsPanel.classList.contains('hidden'));
+                wisselPaneel(personenPaneel.classList.contains('hidden'));
             });
 
-            personsClose.addEventListener('click', function() {
-                togglePanel(false);
+            personenSluit.addEventListener('click', function() {
+                wisselPaneel(false);
             });
 
             document.addEventListener('click', function(e) {
-                if (!personsControl.contains(e.target) && !personsPanel.contains(e.target)) {
-                    togglePanel(false);
+                if (!personenControle.contains(e.target) && !personenPaneel.contains(e.target)) {
+                    wisselPaneel(false);
                 }
             });
 
             document.querySelectorAll('.persons-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() {
-                    const key = btn.dataset.key;
+                    const sleutel = btn.dataset.key;
                     const isInc = btn.classList.contains('persons-increment');
-                    const el = document.getElementById('count-' + key);
+                    const el = document.getElementById('count-' + sleutel);
 
                     if (isInc) {
-                        counts[key]++;
+                        tellingen[sleutel]++;
                     } else {
-                        if (counts[key] <= 0) return;
-                        counts[key]--;
+                        if (tellingen[sleutel] <= 0) return;
+                        tellingen[sleutel]--;
                     }
 
-                    el.textContent = counts[key];
-                    updatePersonsSummary();
-                    applyFilters();
+                    el.textContent = tellingen[sleutel];
+                    updatePersonenSamenvatting();
+                    pasFiltersToe();
                 });
             });
 
-            [typeSelect, featuresSelect, arrivalInput, departureInput].forEach(el => {
+            [typeSelect, kenmerkenSelect, aankomstInput, vertrekInput].forEach(el => {
                 if (!el) return;
-                el.addEventListener('change', applyFilters);
+                el.addEventListener('change', pasFiltersToe);
             });
 
-            syncDateLimits();
-            updatePersonsSummary();
-            applyFilters();
+            syncDatumGrenzen();
+            updatePersonenSamenvatting();
+            pasFiltersToe();
         })();
     </script>
 @endsection

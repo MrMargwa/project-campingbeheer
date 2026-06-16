@@ -9,27 +9,27 @@
                 class="rounded-lg border border-border bg-white px-2 py-1.5 text-xs text-primary">
                 <option value="">Alle Verblijven</option>
                 @foreach ($types as $type)
-                    <option value="{{ $type }}" {{ $selectedType === $type ? 'selected' : '' }}>{{ $type }}
+                    <option value="{{ $type }}" {{ $geselecteerdType === $type ? 'selected' : '' }}>{{ $type }}
                     </option>
                 @endforeach
             </select>
 
             <div class="flex items-center gap-1">
-                <a href="{{ route('admin.planning-board.index', ['type' => $selectedType, 'week' => $weekOffset - 1]) }}"
+                <a href="{{ route('admin.planning-board.index', ['type' => $geselecteerdType, 'week' => $weekVerschuiving - 1]) }}"
                     class="rounded-lg border border-border bg-white px-2 py-1.5 text-xs text-primary transition hover:bg-secondary">
                     &larr;
                 </a>
                 <span class="min-w-[6rem] text-center text-xs font-medium text-primary">
-                    Week {{ $weekNumber }}, {{ $year }}
+                    Week {{ $weekNummer }}, {{ $jaar }}
                 </span>
-                <a href="{{ route('admin.planning-board.index', ['type' => $selectedType, 'week' => $weekOffset + 1]) }}"
+                <a href="{{ route('admin.planning-board.index', ['type' => $geselecteerdType, 'week' => $weekVerschuiving + 1]) }}"
                     class="rounded-lg border border-border bg-white px-2 py-1.5 text-xs text-primary transition hover:bg-secondary">
                     &rarr;
                 </a>
             </div>
 
-            <a href="{{ route('admin.planning-board.index', ['type' => $selectedType, 'week' => 0]) }}"
-                class="rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-secondary {{ $weekOffset === 0 ? 'ring-2 ring-accent/50' : '' }}">
+            <a href="{{ route('admin.planning-board.index', ['type' => $geselecteerdType, 'week' => 0]) }}"
+                class="rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-primary transition hover:bg-secondary {{ $weekVerschuiving === 0 ? 'ring-2 ring-accent/50' : '' }}">
                 Deze week
             </a>
         </div>
@@ -40,95 +40,95 @@
                     <tr class="border-b border-border bg-secondary/50">
                         <th class="sticky left-0 z-10 w-1 bg-secondary/50 px-2 py-1.5 text-left font-medium text-muted">
                             Accommodatie</th>
-                        @foreach ($days as $day)
+                        @foreach ($dagen as $dag)
                             @php
-                                $isWeekend = in_array($day['label'], ['za', 'zo']);
+                                $isWeekend = in_array($dag['label'], ['za', 'zo']);
                             @endphp
                             <th
-                                class="min-w-2.5 border-r border-border px-1 py-1 text-center font-medium last:border-r-0 {{ $day['isToday'] ? 'text-accent' : 'text-muted' }} {{ $isWeekend ? 'bg-secondary/80' : '' }}">
-                                <div class="text-[9px] uppercase leading-tight">{{ $day['label'] }}</div>
+                                class="min-w-2.5 border-r border-border px-1 py-1 text-center font-medium last:border-r-0 {{ $dag['isToday'] ? 'text-accent' : 'text-muted' }} {{ $isWeekend ? 'bg-secondary/80' : '' }}">
+                                <div class="text-[9px] uppercase leading-tight">{{ $dag['label'] }}</div>
                                 <div class="mt-0 text-[11px] leading-tight font-bold">
-                                    {{ \Carbon\Carbon::parse($day['date'])->format('d-m') }}
+                                    {{ \Carbon\Carbon::parse($dag['date'])->format('d-m') }}
                                 </div>
                             </th>
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($accommodations as $accommodation)
+                    @forelse($accommodaties as $accommodatie)
                         @php
-                            $accommodationBookings = $bookings->get($accommodation->id, collect());
+                            $accommodatieBoekingen = $boekingen->get($accommodatie->id, collect());
                         @endphp
                         <tr class="border-b border-border last:border-b-0 hover:bg-black/[0.03]">
                             <td class="sticky left-0 z-10 bg-surface px-2 py-1 font-medium text-primary">
-                                {{ $accommodation->title }}
+                                {{ $accommodatie->title }}
                             </td>
-                            @foreach ($days as $day)
+                            @foreach ($dagen as $dag)
                                 @php
-                                    $date = $day['date'];
-                                    $isWeekend = in_array($day['label'], ['za', 'zo']);
+                                    $datum = $dag['date'];
+                                    $isWeekend = in_array($dag['label'], ['za', 'zo']);
 
-                                    $hasCheckin = false;
-                                    $hasCheckout = false;
-                                    $isOccupied = false;
-                                    $cellBookings = [];
+                                    $heeftIncheck = false;
+                                    $heeftUitcheck = false;
+                                    $isBezet = false;
+                                    $celBoekingen = [];
 
-                                    foreach ($accommodationBookings as $booking) {
-                                        $aankomst = $booking->arrival_date;
-                                        $vertrek = $booking->departure_date;
-                                        $gast = $booking->user?->name ?? ($booking->name ?? 'Onbekend');
+                                    foreach ($accommodatieBoekingen as $boeking) {
+                                        $aankomst = $boeking->arrival_date;
+                                        $vertrek = $boeking->departure_date;
+                                        $gast = $boeking->user?->name ?? ($boeking->name ?? 'Onbekend');
 
-                                        if ($date === $aankomst) {
-                                            $hasCheckin = true;
+                                        if ($datum === $aankomst) {
+                                            $heeftIncheck = true;
                                         }
-                                        if ($date === $vertrek) {
-                                            $hasCheckout = true;
+                                        if ($datum === $vertrek) {
+                                            $heeftUitcheck = true;
                                         }
-                                        if ($date > $aankomst && $date < $vertrek) {
-                                            $isOccupied = true;
+                                        if ($datum > $aankomst && $datum < $vertrek) {
+                                            $isBezet = true;
                                         }
 
-                                        if ($date >= $aankomst && $date <= $vertrek) {
-                                            $cellBookings[] = [
+                                        if ($datum >= $aankomst && $datum <= $vertrek) {
+                                            $celBoekingen[] = [
                                                 'naam' => $gast,
-                                                'aankomst' => \Carbon\Carbon::parse($booking->arrival_date)->format(
+                                                'aankomst' => \Carbon\Carbon::parse($boeking->arrival_date)->format(
                                                     'd-m-Y',
                                                 ),
-                                                'aankomst_tijd' => $booking->arrival_time,
-                                                'is_aankomst_op_dag' => $date === $aankomst,
-                                                'vertrek' => \Carbon\Carbon::parse($booking->departure_date)->format(
+                                                'aankomst_tijd' => $boeking->arrival_time,
+                                                'is_aankomst_op_dag' => $datum === $aankomst,
+                                                'vertrek' => \Carbon\Carbon::parse($boeking->departure_date)->format(
                                                     'd-m-Y',
                                                 ),
-                                                'vertrek_tijd' => $booking->departure_time,
-                                                'is_vertrek_op_dag' => $date === $vertrek,
-                                                'personen' => $booking->number_of_persons,
-                                                'opmerking' => $booking->notes,
+                                                'vertrek_tijd' => $boeking->departure_time,
+                                                'is_vertrek_op_dag' => $datum === $vertrek,
+                                                'personen' => $boeking->number_of_persons,
+                                                'opmerking' => $boeking->notes,
                                             ];
                                         }
                                     }
 
-                                    if ($hasCheckin && $hasCheckout) {
-                                        $cellClass = 'diagonal-wissel';
+                                    if ($heeftIncheck && $heeftUitcheck) {
+                                        $celKlasse = 'diagonal-wissel';
                                         $label = '';
-                                    } elseif ($hasCheckin) {
-                                        $cellClass = 'diagonal-checkin';
+                                    } elseif ($heeftIncheck) {
+                                        $celKlasse = 'diagonal-checkin';
                                         $label = '';
-                                    } elseif ($hasCheckout) {
-                                        $cellClass = 'diagonal-checkout';
+                                    } elseif ($heeftUitcheck) {
+                                        $celKlasse = 'diagonal-checkout';
                                         $label = '';
-                                    } elseif ($isOccupied) {
-                                        $cellClass = 'bg-red-400';
+                                    } elseif ($isBezet) {
+                                        $celKlasse = 'bg-red-400';
                                         $label = '';
                                     } else {
-                                        $cellClass = 'bg-green-300';
+                                        $celKlasse = 'bg-green-300';
                                         $label = '';
                                     }
                                 @endphp
-                                <td class="planbord-cell border-r border-border px-0.5 py-5.5 text-center align-middle last:border-r-0 {{ $cellClass }} {{ count($cellBookings) > 0 ? 'cursor-pointer' : '' }}"
-                                    @if (count($cellBookings) > 0) data-tooltip="{{ json_encode([
-                                        'verblijf' => $accommodation->title,
-                                        'wisseldag' => $hasCheckin && $hasCheckout,
-                                        'boekingen' => $cellBookings,
+                                <td class="planbord-cell border-r border-border px-0.5 py-5.5 text-center align-middle last:border-r-0 {{ $celKlasse }} {{ count($celBoekingen) > 0 ? 'cursor-pointer' : '' }}"
+                                    @if (count($celBoekingen) > 0) data-tooltip="{{ json_encode([
+                                        'verblijf' => $accommodatie->title,
+                                        'wisseldag' => $heeftIncheck && $heeftUitcheck,
+                                        'boekingen' => $celBoekingen,
                                     ]) }}" @endif>
                                     <span>{{ $label }}</span>
                                 </td>
@@ -211,7 +211,7 @@
         function filterType(value) {
             const params = new URLSearchParams(window.location.search);
             params.set('type', value);
-            params.set('week', '{{ $weekOffset }}');
+            params.set('week', '{{ $weekVerschuiving }}');
             window.location.search = params.toString();
         }
 

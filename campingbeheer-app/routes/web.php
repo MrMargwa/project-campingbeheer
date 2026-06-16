@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\PlanningBoardController;
-use App\Http\Controllers\ReservationController;
-use App\Models\Accommodation;
-use App\Models\Feature;
+use App\Http\Controllers\BoekingController;
+use App\Http\Controllers\PlanbordController;
+use App\Http\Controllers\ReserveringController;
+use App\Models\Accommodatie;
+use App\Models\Kenmerk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -14,31 +14,31 @@ use Illuminate\Support\Facades\Route;
 
 function getLocale(): string
 {
-    $supported = ['nl', 'en', 'de', 'fy'];
-    $locale = request()->cookie('locale', 'nl');
-    if (!in_array($locale, $supported, true)) {
-        $locale = 'nl';
+    $ondersteund = ['nl', 'en', 'de', 'fy'];
+    $taal = request()->cookie('locale', 'nl');
+    if (!in_array($taal, $ondersteund, true)) {
+        $taal = 'nl';
     }
-    return $locale;
+    return $taal;
 }
 
 // Home Route
 Route::get('/', function () {
-    $locale = getLocale();
-    $accommodaties = Accommodation::all();
-    $types = Accommodation::select('type', 'type_en', 'type_de', 'type_fy')
+    $taal = getLocale();
+    $accommodaties = Accommodatie::all();
+    $types = Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
         ->distinct('type')
         ->get()
         ->keyBy('type');
-    $features = Feature::all();
-    $postcodeApiKey = Config::get('services.postcode.api_key');
+    $kenmerken = Kenmerk::all();
+    $postcodeApiSleutel = Config::get('services.postcode.api_key');
 
-    return view('home', compact('accommodaties', 'types', 'features', 'locale', 'postcodeApiKey'));
+    return view('home', compact('accommodaties', 'types', 'kenmerken', 'taal', 'postcodeApiSleutel'));
 })->name('home');
 
 // Reservation Routes
-Route::get('/reserveren', [ReservationController::class, 'index'])->name('reservation');
-Route::post('/reserveren', [BookingController::class, 'store'])->name('reservation.store');
+Route::get('/reserveren', [ReserveringController::class, 'index'])->name('reservation');
+Route::post('/reserveren', [BoekingController::class, 'store'])->name('reservation.store');
 
 // Admin Routes
 Route::get('/admin', function () {
@@ -49,11 +49,11 @@ Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
     ->middleware(['auth', 'admin'])
     ->name('admin.dashboard');
 
-Route::get('/admin/planning-board', [PlanningBoardController::class, 'index'])
+Route::get('/admin/planning-board', [PlanbordController::class, 'index'])
     ->middleware(['auth', 'admin'])
     ->name('admin.planning-board.index');
 
-Route::get('/admin/search-guests', [BookingController::class, 'searchGuests'])
+Route::get('/admin/search-guests', [BoekingController::class, 'searchGuests'])
     ->middleware(['auth', 'admin'])
     ->name('admin.search-guests');
 
@@ -63,7 +63,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::prefix('admin')->name('admin.accommodation.')->controller(\App\Http\Controllers\AccommodationController::class)->group(function () {
+    Route::prefix('admin')->name('admin.accommodation.')->controller(\App\Http\Controllers\AccommodatieController::class)->group(function () {
         Route::get('/accommodations', 'index')->name('index');
         Route::get('/accommodations/create', 'create')->name('create');
         Route::post('/accommodations', 'store')->name('store');
@@ -72,6 +72,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('/accommodations/{accommodation}', 'destroy')->name('destroy');
     });
 
-    Route::post('/admin/bookings/{booking}/approve', [\App\Http\Controllers\BookingController::class, 'approve'])->name('admin.bookings.approve');
-    Route::post('/admin/bookings/{booking}/reject', [\App\Http\Controllers\BookingController::class, 'reject'])->name('admin.bookings.reject');
+    Route::post('/admin/bookings/{boeking}/approve', [\App\Http\Controllers\BoekingController::class, 'approve'])->name('admin.bookings.approve');
+    Route::post('/admin/bookings/{boeking}/reject', [\App\Http\Controllers\BoekingController::class, 'reject'])->name('admin.bookings.reject');
 });

@@ -62,15 +62,15 @@
                     <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide">Type</legend>
                     <div class="space-y-2" id="type-filters">
                         @php
-                            $resTypes = \App\Models\Accommodation::select('type', 'type_en', 'type_de', 'type_fy')
+                            $resTypes = \App\Models\Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
                                 ->distinct('type')
                                 ->get()
                                 ->keyBy('type');
                         @endphp
-                        @foreach ($resTypes as $typeKey => $typeRow)
-                            @php $typeLabel = $typeRow->{'type_' . $locale} ?: $typeKey; @endphp
+                        @foreach ($resTypes as $typeSleutel => $typeRij)
+                            @php $typeLabel = $typeRij->{'type_' . $taal} ?: $typeSleutel; @endphp
                             <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
-                                <input type="checkbox" value="{{ $typeKey }}" checked
+                                <input type="checkbox" value="{{ $typeSleutel }}" checked
                                     class="filter-type w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
                                 {{ $typeLabel }}
                             </label>
@@ -102,11 +102,11 @@
 
     {{-- Legenda --}}
     @php
-        $legendTypes = \App\Models\Accommodation::select('type', 'type_en', 'type_de', 'type_fy')
+        $legendeTypes = \App\Models\Accommodatie::select('type', 'type_en', 'type_de', 'type_fy')
             ->distinct('type')
             ->get()
             ->keyBy('type');
-        $legendColors = [
+        $legendeKleuren = [
             'Chalet' => '#2A6A4E',
             'Blokhut' => '#8B4513',
             'Safaritent' => '#D97706',
@@ -144,21 +144,21 @@
 
 @section('scripts')
     <script>
-        var POSTCODE_API_KEY = '{{ $postcodeApiKey }}';
+        var POSTCODE_API_SLEUTEL = '{{ $postcodeApiSleutel }}';
 
         document.addEventListener('DOMContentLoaded', function() {
             (function() {
                 'use strict';
 
                 // --- Data ---
-                const accommodations = @json($accommodations);
-                const items = accommodations.filter(function(a) {
+                const accommodaties = @json($accommodaties);
+                const items = accommodaties.filter(function(a) {
                     return a.latitude != null && a.longitude != null;
                 });
                 if (items.length === 0) return;
 
                 // --- Map ---
-                var map = L.map('map', {
+                var kaart = L.map('map', {
                     center: [53.0968, 5.6878],
                     zoom: 17,
                     maxZoom: 19,
@@ -169,10 +169,10 @@
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
-                }).addTo(map);
+                }).addTo(kaart);
 
                 // --- GeoJSON polygons ---
-                var areaColors = {
+                var gebiedKleuren = {
                     'Chalets': '#2A6A4E',
                     'Blokhutten': '#8B4513',
                     'Safaritenten': '#D97706',
@@ -192,7 +192,7 @@
                             },
                             style: function(feature) {
                                 var name = feature.properties.name;
-                                var color = areaColors[name] || '#647069';
+                                var color = gebiedKleuren[name] || '#647069';
                                 return {
                                     color: color,
                                     weight: 2,
@@ -201,26 +201,26 @@
                                     fillOpacity: 0.12,
                                 };
                             }
-                        }).addTo(map);
+                        }).addTo(kaart);
                     });
 
                 // --- State ---
-                var selectedId = null;
-                var selectedMarkerData = null;
-                var detailCard = document.getElementById('detail-card');
-                var markerDataList = [];
+                var geselecteerdId = null;
+                var geselecteerdMarkerData = null;
+                var detailKaart = document.getElementById('detail-card');
+                var markerDataLijst = [];
 
                 // --- Helpers ---
-                function isAvailable(acc) {
+                function isBeschikbaar(acc) {
                     return acc.status === 'available';
                 }
 
-                function statusColor(acc) {
-                    return isAvailable(acc) ? '#2A6A4E' : '#BD4C4C';
+                function statusKleur(acc) {
+                    return isBeschikbaar(acc) ? '#2A6A4E' : '#BD4C4C';
                 }
 
-                function createIcon(acc, selected) {
-                    var color = statusColor(acc);
+                function maakIcoon(acc, selected) {
+                    var color = statusKleur(acc);
                     var size = selected ? 28 : 22;
                     var shadow = selected ?
                         '0 0 0 3px rgba(42,106,78,0.35), 0 3px 12px rgba(0,0,0,0.3)' :
@@ -245,18 +245,18 @@
 
                 // --- Build markers ---
                 items.forEach(function(acc) {
-                    var icon = createIcon(acc, false);
+                    var icoon = maakIcoon(acc, false);
                     var marker = L.marker([acc.latitude, acc.longitude], {
-                        icon: icon
-                    }).addTo(map);
+                        icon: icoon
+                    }).addTo(kaart);
 
                     marker.bindTooltip(
                         '<strong>' + esc(acc.title) + '</strong><br>' +
                         esc(acc.type) + ' &middot; ' +
                         (acc.price_per_night > 0 ? '&euro;' + parseFloat(acc.price_per_night)
                             .toFixed(2) + window.__('reserve.per_night') : '') +
-                        '<br><span style="color:' + statusColor(acc) + ';font-weight:500">' +
-                        (isAvailable(acc) ? 'Beschikbaar' : 'Niet beschikbaar') + '</span>', {
+                        '<br><span style="color:' + statusKleur(acc) + ';font-weight:500">' +
+                        (isBeschikbaar(acc) ? 'Beschikbaar' : 'Niet beschikbaar') + '</span>', {
                             direction: 'top',
                             offset: [0, -10]
                         }
@@ -264,10 +264,10 @@
 
                     marker.on('click', function(e) {
                         L.DomEvent.stopPropagation(e);
-                        selectAccommodation(acc, marker);
+                        selecteerAccommodatie(acc, marker);
                     });
 
-                    markerDataList.push({
+                    markerDataLijst.push({
                         marker: marker,
                         acc: acc,
                         visible: true
@@ -275,86 +275,86 @@
                 });
 
                 // --- Filtering ---
-                function applyFilters() {
-                    var activeTypes = [];
+                function pasFiltersToe() {
+                    var actieveTypes = [];
                     document.querySelectorAll('.filter-type:checked').forEach(function(cb) {
-                        activeTypes.push(cb.value);
+                        actieveTypes.push(cb.value);
                     });
 
-                    var activeStatuses = [];
+                    var actieveStatussen = [];
                     document.querySelectorAll('.filter-status:checked').forEach(function(cb) {
-                        activeStatuses.push(cb.value);
+                        actieveStatussen.push(cb.value);
                     });
 
-                    markerDataList.forEach(function(md) {
-                        var typeMatch = activeTypes.indexOf(md.acc.type) !== -1;
-                        var statusMatch = activeStatuses.indexOf(md.acc.status) !== -1;
-                        var shouldShow = typeMatch && statusMatch;
+                    markerDataLijst.forEach(function(md) {
+                        var typeMatch = actieveTypes.indexOf(md.acc.type) !== -1;
+                        var statusMatch = actieveStatussen.indexOf(md.acc.status) !== -1;
+                        var moetTonen = typeMatch && statusMatch;
 
-                        if (shouldShow && !md.visible) {
-                            map.addLayer(md.marker);
+                        if (moetTonen && !md.visible) {
+                            kaart.addLayer(md.marker);
                             md.visible = true;
-                        } else if (!shouldShow && md.visible) {
-                            map.removeLayer(md.marker);
+                        } else if (!moetTonen && md.visible) {
+                            kaart.removeLayer(md.marker);
                             md.visible = false;
                         }
                     });
 
                     // Close detail if selected accommodation is now hidden
-                    if (selectedId !== null) {
-                        var stillVisible = markerDataList.some(function(md) {
-                            return (md.acc.id || md.acc.title) === selectedId && md.visible;
+                    if (geselecteerdId !== null) {
+                        var nogZichtbaar = markerDataLijst.some(function(md) {
+                            return (md.acc.id || md.acc.title) === geselecteerdId && md.visible;
                         });
-                        if (!stillVisible) {
-                            closeDetail();
+                        if (!nogZichtbaar) {
+                            sluitDetail();
                         }
                     }
                 }
 
                 document.querySelectorAll('.filter-type, .filter-status').forEach(function(cb) {
-                    cb.addEventListener('change', applyFilters);
+                    cb.addEventListener('change', pasFiltersToe);
                 });
 
                 // --- Selection ---
-                map.on('click', function() {
-                    closeDetail();
+                kaart.on('click', function() {
+                    sluitDetail();
                 });
 
-                function selectAccommodation(acc, marker) {
-                    if (selectedId === (acc.id || acc.title)) return;
+                function selecteerAccommodatie(acc, marker) {
+                    if (geselecteerdId === (acc.id || acc.title)) return;
 
-                    if (selectedMarkerData != null) {
-                        var prev = selectedMarkerData;
-                        prev.marker.setIcon(createIcon(prev.acc, false));
-                        prev.marker.setZIndexOffset(0);
+                    if (geselecteerdMarkerData != null) {
+                        var vorige = geselecteerdMarkerData;
+                        vorige.marker.setIcon(maakIcoon(vorige.acc, false));
+                        vorige.marker.setZIndexOffset(0);
                     }
 
-                    selectedId = acc.id || acc.title;
-                    selectedMarkerData = {
+                    geselecteerdId = acc.id || acc.title;
+                    geselecteerdMarkerData = {
                         marker: marker,
                         acc: acc
                     };
 
-                    marker.setIcon(createIcon(acc, true));
+                    marker.setIcon(maakIcoon(acc, true));
                     marker.setZIndexOffset(1000);
                     marker.openTooltip();
 
-                    showDetail(acc);
+                    toonDetail(acc);
                 }
 
-                function closeDetail() {
-                    if (selectedMarkerData != null) {
-                        var prev = selectedMarkerData;
-                        prev.marker.setIcon(createIcon(prev.acc, false));
-                        prev.marker.setZIndexOffset(0);
+                function sluitDetail() {
+                    if (geselecteerdMarkerData != null) {
+                        var vorige = geselecteerdMarkerData;
+                        vorige.marker.setIcon(maakIcoon(vorige.acc, false));
+                        vorige.marker.setZIndexOffset(0);
                     }
-                    selectedId = null;
-                    selectedMarkerData = null;
-                    detailCard.classList.add('hidden');
+                    geselecteerdId = null;
+                    geselecteerdMarkerData = null;
+                    detailKaart.classList.add('hidden');
                 }
 
                 // --- Detail card ---
-                var typeColors = {
+                var typeKleurs = {
                     'Chalet': '#2A6A4E',
                     'Blokhut': '#8B4513',
                     'Camperplaats': '#2563EB',
@@ -364,20 +364,20 @@
                     'Vakantiewoning': '#7C3AED',
                 };
 
-                function showDetail(acc) {
-                    var free = isAvailable(acc);
-                    var price = '&euro;' + parseFloat(acc.price_per_night).toFixed(2);
+                function toonDetail(acc) {
+                    var vrij = isBeschikbaar(acc);
+                    var prijs = '&euro;' + parseFloat(acc.price_per_night).toFixed(2);
                     var accType = acc.type;
-                    var typeColor = typeColors[acc.type] || '#647069';
-                    var statusLabel = free ? 'Beschikbaar' : 'Niet beschikbaar';
-                    var statusColorVal = free ? '#2A6A4E' : '#BD4C4C';
-                    var accTitle = acc.title;
-                    var accDesc = acc.description;
+                    var typeKleur = typeKleurs[acc.type] || '#647069';
+                    var statusLabel = vrij ? 'Beschikbaar' : 'Niet beschikbaar';
+                    var statusKleurWaarde = vrij ? '#2A6A4E' : '#BD4C4C';
+                    var accTitel = acc.title;
+                    var accBeschrijving = acc.description;
 
                     // Build image HTML with fallback
                     var imgHtml = '';
                     if (acc.image) {
-                        imgHtml = '<img src="' + esc('/images/' + acc.image) + '" alt="' + esc(accTitle) +
+                        imgHtml = '<img src="' + esc('/images/' + acc.image) + '" alt="' + esc(accTitel) +
                             '" class="w-full h-full object-cover" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"><div class="hidden w-full h-full items-center justify-center bg-secondary text-muted text-sm font-medium" style="display:none">' +
                             esc(accType) + '</div>';
                     } else {
@@ -386,7 +386,7 @@
                             esc(accType) + '</div>';
                     }
 
-                    detailCard.innerHTML = [
+                    detailKaart.innerHTML = [
                         '<div class="bg-surface border border-border rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row">',
                         '<div class="md:w-[35%] h-52 md:h-auto bg-secondary overflow-hidden relative">',
                         imgHtml,
@@ -398,19 +398,19 @@
                         '</div>',
                         accType ?
                         '<span class="inline-block self-start px-2.5 py-0.5 rounded-full text-xs font-medium" style="background:' +
-                        typeColor + '15;color:' + typeColor + ';text-transform:capitalize">' + esc(acc
+                        typeKleur + '15;color:' + typeKleur + ';text-transform:capitalize">' + esc(acc
                             .type) + '</span>' : '',
                         acc.description ? '<p class="text-sm text-muted leading-relaxed">' + esc(acc
                             .description) + '</p>' : '',
                         '<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">',
                         '<span>' + acc.min_persons + '-' + acc.max_persons + ' personen</span>',
-                        acc.price_per_night > 0 ? '<span class="font-semibold" style="color:' + typeColor +
-                        '">' + price + ' ' + window.__('reserve.per_night') + '</span>' : '',
+                        acc.price_per_night > 0 ? '<span class="font-semibold" style="color:' + typeKleur +
+                        '">' + prijs + ' ' + window.__('reserve.per_night') + '</span>' : '',
                         '<span class="inline-flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:' +
-                        statusColorVal + '"></span>' + statusLabel + '</span>',
+                        statusKleurWaarde + '"></span>' + statusLabel + '</span>',
                         '</div>',
                         '<div class="mt-auto pt-3 border-t border-border flex justify-end">',
-                        (free && acc.id) ? '<button type="button" data-id="' + acc.id +
+                        (vrij && acc.id) ? '<button type="button" data-id="' + acc.id +
                         '" data-title="' + esc(acc.title) +
                         '" class="reserveer-btn bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">Reserveer Nu</button>' :
                         '<span class="text-sm text-muted italic">Deze accommodatie is momenteel niet beschikbaar voor reservering.</span>',
@@ -419,26 +419,26 @@
                         '</div>',
                     ].join('');
 
-                    detailCard.classList.remove('hidden');
+                    detailKaart.classList.remove('hidden');
 
                     document.getElementById('detail-close').addEventListener('click', function(e) {
                         e.stopPropagation();
-                        closeDetail();
+                        sluitDetail();
                     });
 
-                    detailCard.scrollIntoView({
+                    detailKaart.scrollIntoView({
                         behavior: 'smooth',
                         block: 'nearest'
                     });
                 }
 
                 // --- Fit bounds ---
-                var group = L.featureGroup(
+                var groep = L.featureGroup(
                     items.map(function(a) {
                         return L.marker([a.latitude, a.longitude]);
                     })
                 );
-                map.fitBounds(group.getBounds().pad(0.1));
+                kaart.fitBounds(groep.getBounds().pad(0.1));
 
                 function esc(str) {
                     if (typeof str !== 'string') return str;
@@ -450,35 +450,35 @@
         });
 
         // --- Reserveer Modal ---
-        function openBookingModal(id, title) {
+        function openBoekModal(id, titel) {
             document.getElementById('modal-accommodation-id').value = id;
-            document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', title);
+            document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', titel);
             document.getElementById('booking-modal').classList.remove('hidden');
             document.getElementById('booking-modal').classList.add('flex');
             document.body.style.overflow = 'hidden';
             document.getElementById('booking-error').classList.add('hidden');
             document.getElementById('booking-error').textContent = '';
 
-            var today = new Date();
-            today.setHours(0, 0, 0, 0);
-            var tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            var dayAfter = new Date(today);
-            dayAfter.setDate(dayAfter.getDate() + 2);
+            var vandaag = new Date();
+            vandaag.setHours(0, 0, 0, 0);
+            var morgen = new Date(vandaag);
+            morgen.setDate(morgen.getDate() + 1);
+            var overmorgen = new Date(vandaag);
+            overmorgen.setDate(overmorgen.getDate() + 2);
 
-            var arrivalInput = document.getElementById('arrival-date');
-            var departureInput = document.getElementById('departure-date');
-            arrivalInput.min = tomorrow.toISOString().split('T')[0];
-            departureInput.min = dayAfter.toISOString().split('T')[0];
-            if (arrivalInput && !arrivalInput.value) {
-                arrivalInput.value = tomorrow.toISOString().split('T')[0];
+            var aankomstInput = document.getElementById('arrival-date');
+            var vertrekInput = document.getElementById('departure-date');
+            aankomstInput.min = morgen.toISOString().split('T')[0];
+            vertrekInput.min = overmorgen.toISOString().split('T')[0];
+            if (aankomstInput && !aankomstInput.value) {
+                aankomstInput.value = morgen.toISOString().split('T')[0];
             }
-            if (departureInput && !departureInput.value) {
-                departureInput.value = dayAfter.toISOString().split('T')[0];
+            if (vertrekInput && !vertrekInput.value) {
+                vertrekInput.value = overmorgen.toISOString().split('T')[0];
             }
         }
 
-        function closeBookingModal() {
+        function sluitBoekModal() {
             document.getElementById('booking-modal').classList.add('hidden');
             document.getElementById('booking-modal').classList.remove('flex');
             document.body.style.overflow = '';
@@ -488,21 +488,21 @@
         document.addEventListener('click', function(e) {
             var btn = e.target.closest('.reserveer-btn');
             if (btn) {
-                openBookingModal(btn.getAttribute('data-id'), btn.getAttribute('data-title'));
+                openBoekModal(btn.getAttribute('data-id'), btn.getAttribute('data-title'));
             }
         });
 
         // Close modal on backdrop click
         document.getElementById('booking-modal')?.addEventListener('click', function(e) {
             if (e.target === this) {
-                closeBookingModal();
+                sluitBoekModal();
             }
         });
 
         // Close on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeBookingModal();
+                sluitBoekModal();
             }
         });
 

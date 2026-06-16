@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Booking extends Model
+class Boeking extends Model
 {
     protected $table = 'bookings';
 
@@ -37,6 +37,6 @@ class Booking extends Model
 
     public function accommodation(): BelongsTo
     {
-        return $this->belongsTo(Accommodation::class, 'accommodation_id');
+        return $this->belongsTo(Accommodatie::class, 'accommodation_id');
     }
 }

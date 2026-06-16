@@ -28,12 +28,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($todayArrivals as $booking)
+                        @forelse ($vandaagAankomsten as $boeking)
                             <tr>
-                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $booking->name }}</td>
+                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $boeking->name }}</td>
                                 <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">
-                                    @if ($booking->accommodation)
-                                        {{ $booking->accommodation->title }}
+                                    @if ($boeking->accommodation)
+                                        {{ $boeking->accommodation->title }}
                                     @else
                                         <span data-i18n="admin.dashboard.unknown">Onbekend</span>
                                     @endif
@@ -57,12 +57,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($todayDepartures as $booking)
+                        @forelse ($vandaagVertrekken as $boeking)
                             <tr>
-                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $booking->name }}</td>
+                                <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">{{ $boeking->name }}</td>
                                 <td class="border border-border px-4 py-2 text-primary" style="text-align:center;background:#FFF">
-                                    @if ($booking->accommodation)
-                                        {{ $booking->accommodation->title }}
+                                    @if ($boeking->accommodation)
+                                        {{ $boeking->accommodation->title }}
                                     @else
                                         <span data-i18n="admin.dashboard.unknown">Onbekend</span>
                                     @endif
@@ -96,31 +96,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($bookings as $booking)
+                        @forelse ($boekingen as $boeking)
                             <tr class="border-b border-border last:border-0 bg-surface">
-                                <td class="px-4 py-3 font-medium" style="text-align:center;color:#000;background:#FFF">{{ $booking->name }}</td>
+                                <td class="px-4 py-3 font-medium" style="text-align:center;color:#000;background:#FFF">{{ $boeking->name }}</td>
                                 <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">
-                                    @if ($booking->accommodation)
-                                        {{ $booking->accommodation->title }}
+                                    @if ($boeking->accommodation)
+                                        {{ $boeking->accommodation->title }}
                                     @else
                                         <span data-i18n="admin.dashboard.unknown">Onbekend</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ \Carbon\Carbon::parse($booking->arrival_date)->format('d-m-Y') }}</td>
-                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ \Carbon\Carbon::parse($booking->departure_date)->format('d-m-Y') }}</td>
-                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ $booking->number_of_persons }}</td>
-                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">&euro; {{ number_format($booking->accommodation?->price_per_night ?? $booking->total_price, 2, ',', '.') }}</td>
+                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ \Carbon\Carbon::parse($boeking->arrival_date)->format('d-m-Y') }}</td>
+                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ \Carbon\Carbon::parse($boeking->departure_date)->format('d-m-Y') }}</td>
+                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">{{ $boeking->number_of_persons }}</td>
+                                <td class="px-4 py-3" style="text-align:center;color:#000;background:#FFF">&euro; {{ number_format($boeking->accommodation?->price_per_night ?? $boeking->total_price, 2, ',', '.') }}</td>
                                 <td class="px-4 py-3" style="text-align:center;background:#FFF">
-                                    @if ($booking->status === 'pending')
+                                    @if ($boeking->status === 'pending')
                                         <div class="flex items-center gap-3" style="justify-content:center">
-                                            <form action="{{ route('admin.bookings.approve', $booking) }}" method="POST" class="inline">
+                                            <form action="{{ route('admin.bookings.approve', $boeking) }}" method="POST" class="inline">
                                                 @csrf
                                                 <button type="submit"
                                                     class="text-green-600 hover:text-green-800 text-lg leading-none bg-transparent border-0 cursor-pointer p-0"
                                                     title="Goedkeuren" data-i18n-title="admin.reserveringen.approve">&check;</button>
                                             </form>
                                             <button type="button"
-                                                onclick="openRejectModal({{ $booking->id }}, '{{ addslashes($booking->name) }}')"
+                                                onclick="openAfkeurModal({{ $boeking->id }}, '{{ addslashes($boeking->name) }}')"
                                                 class="text-red-600 hover:text-red-800 text-lg leading-none bg-transparent border-0 cursor-pointer p-0"
                                                 title="Afkeuren" data-i18n-title="admin.reserveringen.reject">&times;</button>
                                         </div>
@@ -137,19 +137,19 @@
                     </tbody>
                 </table>
             </div>
-            @if ($bookings->hasPages())
+            @if ($boekingen->hasPages())
                 <div class="border-t border-border px-5 py-3">
                     <div class="flex items-center justify-center gap-1">
-                        @if ($bookings->onFirstPage())
+                        @if ($boekingen->onFirstPage())
                             <span class="px-2 py-1 text-xs text-muted">&lsaquo;</span>
                         @else
-                            <a href="{{ $bookings->previousPageUrl() }}" class="px-2 py-1 text-xs text-primary hover:text-accent">&lsaquo;</a>
+                            <a href="{{ $boekingen->previousPageUrl() }}" class="px-2 py-1 text-xs text-primary hover:text-accent">&lsaquo;</a>
                         @endif
-                        @foreach ($bookings->getUrlRange(1, $bookings->lastPage()) as $page => $url)
-                            <a href="{{ $url }}" class="px-2 py-1 text-xs rounded {{ $page === $bookings->currentPage() ? 'bg-accent text-white' : 'text-primary hover:text-accent' }}">{{ $page }}</a>
+                        @foreach ($boekingen->getUrlRange(1, $boekingen->lastPage()) as $pagina => $url)
+                            <a href="{{ $url }}" class="px-2 py-1 text-xs rounded {{ $pagina === $boekingen->currentPage() ? 'bg-accent text-white' : 'text-primary hover:text-accent' }}">{{ $pagina }}</a>
                         @endforeach
-                        @if ($bookings->hasMorePages())
-                            <a href="{{ $bookings->nextPageUrl() }}" class="px-2 py-1 text-xs text-primary hover:text-accent">&rsaquo;</a>
+                        @if ($boekingen->hasMorePages())
+                            <a href="{{ $boekingen->nextPageUrl() }}" class="px-2 py-1 text-xs text-primary hover:text-accent">&rsaquo;</a>
                         @else
                             <span class="px-2 py-1 text-xs text-muted">&rsaquo;</span>
                         @endif
@@ -164,7 +164,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
             <div class="border-b border-border px-6 py-4 flex items-center justify-between rounded-t-2xl">
                 <h3 class="text-lg font-semibold text-primary" data-i18n="admin.reserveringen.reject_title">Reservering afkeuren</h3>
-                <button type="button" onclick="closeRejectModal()"
+                <button type="button" onclick="sluitAfkeurModal()"
                     class="text-muted hover:text-primary text-2xl leading-none bg-transparent border-0 cursor-pointer">&times;</button>
             </div>
             <form id="reject-form" method="POST" class="p-6 space-y-4">
@@ -176,7 +176,7 @@
                         class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none resize-none"></textarea>
                 </div>
                 <div class="flex justify-end gap-3">
-                    <button type="button" onclick="closeRejectModal()"
+                    <button type="button" onclick="sluitAfkeurModal()"
                         class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-primary hover:bg-secondary border-0 cursor-pointer" data-i18n="admin.reserveringen.cancel">Annuleren</button>
                     <button type="submit"
                         class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 border-0 cursor-pointer" data-i18n="admin.reserveringen.confirm_reject">Afkeuren</button>
@@ -190,17 +190,17 @@
 
 @section('scripts')
     <script>
-        var POSTCODE_API_KEY = '{{ $postcodeApiKey }}';
+        var POSTCODE_API_SLEUTEL = '{{ $postcodeApiSleutel }}';
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('admin-reserveer-btn').addEventListener('click', function() {
-                openBookingModal();
+                openBoekModal();
             });
 
-            initGuestSearch();
+            initGastZoek();
         });
 
-    function openBookingModal(id, title) {
+    function openBoekModal(id, title) {
         var modal = document.getElementById('booking-modal');
         var titleEl = document.getElementById('modal-title');
         var accSelect = document.getElementById('modal-accommodation-select');
@@ -241,7 +241,7 @@
         }
     }
 
-        function closeBookingModal() {
+        function sluitBoekModal() {
             document.getElementById('booking-modal').classList.add('hidden');
             document.getElementById('booking-modal').classList.remove('flex');
             document.body.style.overflow = '';
@@ -249,71 +249,71 @@
 
         document.addEventListener('click', function(e) {
             if (e.target === document.getElementById('booking-modal')) {
-                closeBookingModal();
+                sluitBoekModal();
             }
         });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeBookingModal();
+                sluitBoekModal();
             }
         });
 
-        function initGuestSearch() {
-            var searchInput = document.getElementById('guest-search');
-            if (!searchInput) return;
+        function initGastZoek() {
+            var zoekInput = document.getElementById('guest-search');
+            if (!zoekInput) return;
 
-            var resultsContainer = document.getElementById('guest-search-results');
+            var resultatenContainer = document.getElementById('guest-search-results');
             var debounceTimer;
 
-            searchInput.addEventListener('input', function() {
+            zoekInput.addEventListener('input', function() {
                 clearTimeout(debounceTimer);
-                var query = this.value.trim();
+                var zoekopdracht = this.value.trim();
 
-                if (query.length < 2) {
-                    resultsContainer.classList.add('hidden');
-                    resultsContainer.innerHTML = '';
+                if (zoekopdracht.length < 2) {
+                    resultatenContainer.classList.add('hidden');
+                    resultatenContainer.innerHTML = '';
                     return;
                 }
 
                 debounceTimer = setTimeout(function() {
-                    fetch('/admin/search-guests?q=' + encodeURIComponent(query))
+                    fetch('/admin/search-guests?q=' + encodeURIComponent(zoekopdracht))
                         .then(function(r) {
                             return r.json();
                         })
                         .then(function(data) {
                             if (data.length === 0) {
-                                resultsContainer.innerHTML =
+                                resultatenContainer.innerHTML =
                                     '<div class="px-3 py-2 text-muted">' + window.__('admin.dashboard.no_guests_found') + '</div>';
-                                resultsContainer.classList.remove('hidden');
+                                resultatenContainer.classList.remove('hidden');
                                 return;
                             }
 
                             var html = '';
-                            data.forEach(function(guest) {
+                            data.forEach(function(gast) {
                                 html +=
                                     '<div class="guest-result px-3 py-2 cursor-pointer hover:bg-secondary border-b border-border last:border-0" data-name="' +
-                                    esc(guest.name) + '" data-email="' + esc(guest.email) +
-                                    '" data-phone="' + esc(guest.phone) +
-                                    '" data-postal-code="' + esc(guest.postal_code) +
-                                    '" data-house-number="' + esc(guest.house_number) +
-                                    '" data-street="' + esc(guest.street) + '" data-city="' +
-                                    esc(guest.city) + '" data-country="' + esc(guest.country) + '">';
-                                html += '<div class="font-medium text-primary">' + esc(guest
+                                    esc(gast.name) + '" data-email="' + esc(gast.email) +
+                                    '" data-phone="' + esc(gast.phone) +
+                                    '" data-postal-code="' + esc(gast.postal_code) +
+                                    '" data-house-number="' + esc(gast.house_number) +
+                                    '" data-street="' + esc(gast.street) + '" data-city="' +
+                                    esc(gast.city) + '" data-country="' + esc(gast.country) + '">';
+                                html += '<div class="font-medium text-primary">' + esc(gast
                                     .name) + '</div>';
-                                if (guest.email) {
-                                    html += '<div class="text-xs text-muted">' + esc(guest
+                                if (gast.email) {
+                                    html += '<div class="text-xs text-muted">' + esc(gast
                                         .email) + '</div>';
                                 }
                                 html += '</div>';
                             });
-                            resultsContainer.innerHTML = html;
-                            resultsContainer.classList.remove('hidden');
+                            resultatenContainer.innerHTML = html;
+                            resultatenContainer.classList.remove('hidden');
                         });
                 }, 300);
             });
 
-            resultsContainer.addEventListener('click', function(e) {
+            resultatenContainer.addEventListener('click', function(e) {
                 var result = e.target.closest('.guest-result');
                 if (!result) return;
 
@@ -326,13 +326,13 @@
                 document.querySelector('input[name="city"]').value = result.dataset.city || '';
                 document.querySelector('input[name="country"]').value = result.dataset.country || 'Nederland';
 
-                resultsContainer.classList.add('hidden');
-                resultsContainer.innerHTML = '';
+                resultatenContainer.classList.add('hidden');
+                resultatenContainer.innerHTML = '';
             });
 
             document.addEventListener('click', function(e) {
                 if (!e.target.closest('#guest-search, #guest-search-results')) {
-                    resultsContainer.classList.add('hidden');
+                    resultatenContainer.classList.add('hidden');
                 }
             });
         }
@@ -346,7 +346,7 @@
             return d.innerHTML;
         }
 
-        function openRejectModal(id, name) {
+        function openAfkeurModal(id, name) {
             document.getElementById('reject-form').action = '/admin/bookings/' + id + '/reject';
             document.getElementById('reject-guest-name').textContent = window.__('admin.dashboard.confirm_reject', {name: name});
             document.getElementById('reject-modal').classList.remove('hidden');
@@ -354,7 +354,7 @@
             document.body.style.overflow = 'hidden';
         }
 
-        function closeRejectModal() {
+        function sluitAfkeurModal() {
             document.getElementById('reject-modal').classList.add('hidden');
             document.getElementById('reject-modal').classList.remove('flex');
             document.body.style.overflow = '';
@@ -362,13 +362,13 @@
 
         document.addEventListener('click', function(e) {
             if (e.target === document.getElementById('reject-modal')) {
-                closeRejectModal();
+                sluitAfkeurModal();
             }
         });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeRejectModal();
+                sluitAfkeurModal();
             }
         });
     </script>
