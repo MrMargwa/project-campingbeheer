@@ -12,9 +12,9 @@
     @stack('styles')
 </head>
 
-@include('partials.nav')
-
 <body class="min-h-screen bg-primary text-primary">
+
+    @include('partials.nav')
 
     <main class="w-full py-10 px-32 xl:px-56 min-h-screen">
         @yield('content')

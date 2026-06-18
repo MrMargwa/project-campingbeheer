@@ -1,4 +1,4 @@
-<nav class="bg-surface border-b border-border">
+<nav class="sticky top-0 z-50 bg-surface border-b border-border">
     <div class="w-full px-4 lg:px-6">
         <div class="flex items-center h-16">
 

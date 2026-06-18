@@ -78,63 +78,11 @@
                     </div>
                 </fieldset>
 
-                {{-- Status filters --}}
-                <fieldset>
-                    <legend class="text-xs font-medium text-muted mb-2 uppercase tracking-wide">Status</legend>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
-                            <input type="checkbox" value="available" checked id="filter-available"
-                                class="filter-status w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
-                            <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#2A6A4E]"></span>
-                            <span data-i18n="reserve.available">Beschikbaar</span>
-                        </label>
-                        <label class="flex items-center gap-2.5 text-sm text-primary cursor-pointer select-none">
-                            <input type="checkbox" value="unavailable" checked id="filter-unavailable"
-                                class="filter-status w-4 h-4 rounded border-border text-accent focus:ring-accent/30 cursor-pointer">
-                            <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[#BD4C4C]"></span>
-                            <span data-i18n="reserve.not_available">Niet beschikbaar</span>
-                        </label>
-                    </div>
-                </fieldset>
             </div>
         </aside>
     </section>
 
-    {{-- Legenda --}}
-    @php
-        $legendTypes = \App\Models\Accommodation::select('type', 'type_en', 'type_de', 'type_fy')
-            ->distinct('type')
-            ->get()
-            ->keyBy('type');
-        $legendColors = [
-            'Chalet' => '#2A6A4E',
-            'Blokhut' => '#8B4513',
-            'Safaritent' => '#D97706',
-            'Vakantiehuis' => '#7C3AED',
-            'Camper' => '#2563EB',
-        ];
-    @endphp
-    <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
-        <span class="font-medium text-primary">Legenda</span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#2A6A4E"></span> Chalets
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#8B4513"></span> Blokhutten
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#D97706"></span> Safaritenten
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#7C3AED"></span> Vakantiehuisjes
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#2563EB"></span> Camperplaatsen
-        </span>
-        <span class="inline-flex items-center gap-1.5">
-            <span class="inline-block w-3 h-3 rounded-sm" style="background:#6B7280"></span> Parkeerplaats
-        </span>
-    </div>
+
 
     {{-- Detail card --}}
     <div id="detail-card" class="hidden mt-8"></div>
@@ -154,7 +102,7 @@
                 const accommodations = @json($accommodations);
                 window.ACCOMMODATIONS = accommodations;
                 const items = accommodations.filter(function(a) {
-                    return a.latitude != null && a.longitude != null;
+                    return a.latitude != null && a.longitude != null && a.status === 'available';
                 });
                 if (items.length === 0) return;
 
@@ -205,6 +153,24 @@
                         }).addTo(map);
                     });
 
+                // --- Legend control (inside map) ---
+                var legendControl = L.control({ position: 'bottomleft' });
+                legendControl.onAdd = function() {
+                    var div = L.DomUtil.create('div', 'rounded-lg bg-white/90 backdrop-blur-sm shadow-md border border-border px-3 py-2 text-xs');
+                    div.innerHTML =
+                        '<div class="font-medium text-primary mb-1 text-xs">Legenda</div>' +
+                        '<div class="space-y-0.5">' +
+                        '<span class="inline-flex items-center gap-1.5 mr-3"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#2A6A4E"></span> Chalets</span>' +
+                        '<span class="inline-flex items-center gap-1.5 mr-3"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#8B4513"></span> Blokhutten</span>' +
+                        '<span class="inline-flex items-center gap-1.5 mr-3"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#D97706"></span> Safaritenten</span>' +
+                        '<span class="inline-flex items-center gap-1.5 mr-3"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#7C3AED"></span> Vakantiehuisjes</span>' +
+                        '<span class="inline-flex items-center gap-1.5 mr-3"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#2563EB"></span> Camperplaatsen</span>' +
+                        '<span class="inline-flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:#6B7280"></span> Parkeerplaats</span>' +
+                        '</div>';
+                    return div;
+                };
+                legendControl.addTo(map);
+
                 // --- State ---
                 var selectedId = null;
                 var selectedMarkerData = null;
@@ -212,16 +178,7 @@
                 var markerDataList = [];
 
                 // --- Helpers ---
-                function isAvailable(acc) {
-                    return acc.status === 'available';
-                }
-
-                function statusColor(acc) {
-                    return isAvailable(acc) ? '#2A6A4E' : '#BD4C4C';
-                }
-
                 function createIcon(acc, selected) {
-                    var color = statusColor(acc);
                     var size = selected ? 28 : 22;
                     var shadow = selected ?
                         '0 0 0 3px rgba(42,106,78,0.35), 0 3px 12px rgba(0,0,0,0.3)' :
@@ -233,7 +190,7 @@
                         html: '<div class="accommodation-marker' + (selected ? ' selected' : '') +
                             '" style="' +
                             'width:' + size + 'px;height:' + size + 'px;' +
-                            'background:' + color + ';' +
+                            'background:#2A6A4E;' +
                             'border:3px solid #fff;' +
                             'border-radius:4px;' +
                             'box-shadow:' + shadow + ';' +
@@ -253,13 +210,10 @@
 
                     marker.bindTooltip(
                         '<strong>' + esc(acc.title) + '</strong><br>' +
-                        esc(acc.type) + ' &middot; ' +
-                        (acc.price_per_night > 0 ? '&euro;' + parseFloat(acc.price_per_night)
-                            .toFixed(2) + window.__('reserve.per_night') : '') +
-                        '<br><span style="color:' + statusColor(acc) + ';font-weight:500">' +
-                        (isAvailable(acc) ? 'Beschikbaar' : 'Niet beschikbaar') + '</span>', {
+                        esc(acc.type),
+                        {
                             direction: 'top',
-                            offset: [0, -10]
+                            offset: [0, -10],
                         }
                     );
 
@@ -275,27 +229,20 @@
                     });
                 });
 
-                // --- Filtering ---
+                // --- Filtering (type only) ---
                 function applyFilters() {
                     var activeTypes = [];
                     document.querySelectorAll('.filter-type:checked').forEach(function(cb) {
                         activeTypes.push(cb.value);
                     });
 
-                    var activeStatuses = [];
-                    document.querySelectorAll('.filter-status:checked').forEach(function(cb) {
-                        activeStatuses.push(cb.value);
-                    });
-
                     markerDataList.forEach(function(md) {
                         var typeMatch = activeTypes.indexOf(md.acc.type) !== -1;
-                        var statusMatch = activeStatuses.indexOf(md.acc.status) !== -1;
-                        var shouldShow = typeMatch && statusMatch;
 
-                        if (shouldShow && !md.visible) {
+                        if (typeMatch && !md.visible) {
                             map.addLayer(md.marker);
                             md.visible = true;
-                        } else if (!shouldShow && md.visible) {
+                        } else if (!typeMatch && md.visible) {
                             map.removeLayer(md.marker);
                             md.visible = false;
                         }
@@ -312,7 +259,7 @@
                     }
                 }
 
-                document.querySelectorAll('.filter-type, .filter-status').forEach(function(cb) {
+                document.querySelectorAll('.filter-type').forEach(function(cb) {
                     cb.addEventListener('change', applyFilters);
                 });
 
@@ -366,12 +313,9 @@
                 };
 
                 function showDetail(acc) {
-                    var free = isAvailable(acc);
                     var price = '&euro;' + parseFloat(acc.price_per_night).toFixed(2);
                     var accType = acc.type;
                     var typeColor = typeColors[acc.type] || '#647069';
-                    var statusLabel = free ? 'Beschikbaar' : 'Niet beschikbaar';
-                    var statusColorVal = free ? '#2A6A4E' : '#BD4C4C';
                     var accTitle = acc.title;
                     var accDesc = acc.description;
 
@@ -407,14 +351,13 @@
                         '<span>' + acc.min_persons + '-' + acc.max_persons + ' personen</span>',
                         acc.price_per_night > 0 ? '<span class="font-semibold" style="color:' + typeColor +
                         '">' + price + ' ' + window.__('reserve.per_night') + '</span>' : '',
-                        '<span class="inline-flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm" style="background:' +
-                        statusColorVal + '"></span>' + statusLabel + '</span>',
                         '</div>',
                         '<div class="mt-auto pt-3 border-t border-border flex justify-end">',
-                        (free && acc.id) ? '<button type="button" data-id="' + acc.id +
+                        acc.id ? '<button type="button" data-id="' + acc.id +
                         '" data-title="' + esc(acc.title) +
-                        '" class="reserveer-btn bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">Reserveer Nu</button>' :
-                        '<span class="text-sm text-muted italic">Deze accommodatie is momenteel niet beschikbaar voor reservering.</span>',
+                        '" data-min-persons="' + (acc.min_persons || 1) +
+                        '" data-max-persons="' + (acc.max_persons || 99) +
+                        '" class="reserveer-btn bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer">Reserveer Nu</button>' : '',
                         '</div>',
                         '</div>',
                         '</div>',
@@ -451,7 +394,7 @@
         });
 
         // --- Reserveer Modal ---
-        function openBookingModal(id, title) {
+        function openBookingModal(id, title, minPersons, maxPersons) {
             document.getElementById('modal-accommodation-id').value = id;
             document.getElementById('modal-title').textContent = window.__('reserve.modal_title').replace('{name}', title);
             document.getElementById('booking-modal').classList.remove('hidden');
@@ -459,6 +402,18 @@
             document.body.style.overflow = 'hidden';
             document.getElementById('booking-error').classList.add('hidden');
             document.getElementById('booking-error').textContent = '';
+
+            var personsInput = document.getElementById('number-of-guests');
+            var personsHint = document.getElementById('persons-range-hint');
+            if (personsInput && minPersons && maxPersons) {
+                personsInput.min = minPersons;
+                personsInput.max = maxPersons;
+                personsInput.value = minPersons;
+                if (personsHint) {
+                    personsHint.textContent = window.__('reserve.form.persons_range', {min: minPersons, max: maxPersons}) || '(min. ' + minPersons + ', max. ' + maxPersons + ')';
+                    personsHint.classList.remove('hidden');
+                }
+            }
 
             var today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -489,7 +444,12 @@
         document.addEventListener('click', function(e) {
             var btn = e.target.closest('.reserveer-btn');
             if (btn) {
-                openBookingModal(btn.getAttribute('data-id'), btn.getAttribute('data-title'));
+                openBookingModal(
+                    btn.getAttribute('data-id'),
+                    btn.getAttribute('data-title'),
+                    btn.getAttribute('data-min-persons'),
+                    btn.getAttribute('data-max-persons')
+                );
             }
         });
 

@@ -183,6 +183,36 @@ function initBookingForm() {
             return;
         }
 
+        // Validate number of guests against min/max
+        var guestsVal = parseInt(formData.get('number_of_guests'), 10);
+        var guestsInput = document.getElementById('number-of-guests');
+        if (guestsInput && !isNaN(guestsVal)) {
+            var min = parseInt(guestsInput.min, 10);
+            var max = parseInt(guestsInput.max, 10);
+            if (!isNaN(min) && guestsVal < min) {
+                if (errorEl) {
+                    errorEl.textContent = 'Minimaal ' + min + ' persoon/personen vereist.';
+                    errorEl.classList.remove('hidden');
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = window.__('reserve.form.confirm');
+                }
+                return;
+            }
+            if (!isNaN(max) && guestsVal > max) {
+                if (errorEl) {
+                    errorEl.textContent = 'Maximaal ' + max + ' persoon/personen toegestaan.';
+                    errorEl.classList.remove('hidden');
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = window.__('reserve.form.confirm');
+                }
+                return;
+            }
+        }
+
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.textContent = window.__('reserve.form.confirming');
@@ -210,8 +240,8 @@ function initBookingForm() {
                     if (typeof window.closeBookingModal === 'function') {
                         window.closeBookingModal();
                     }
-                    alert(data.message || window.__('reserve.form.success'));
                     form.reset();
+                    window.location.href = '/?booking=success';
                 }
             })
             .catch(function(err) {

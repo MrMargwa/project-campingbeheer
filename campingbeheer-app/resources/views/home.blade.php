@@ -31,19 +31,19 @@
                             </button>
 
                             <div id="persons-panel"
-                                class="absolute left-0 right-0 z-10 mt-2 hidden rounded-lg border border-border bg-white p-4 shadow-lg">
-                                <div class="space-y-3">
+                                class="absolute left-0 right-0 z-10 mt-2 hidden rounded-lg border border-border bg-white p-5 shadow-lg">
+                                <div class="space-y-4">
                                     <h4 class="text-lg font-semibold text-primary" data-i18n="home.filter.travel_party">
                                         Reisgezelschap</h4>
 
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between gap-2">
                                         <div>
                                             <div class="text-sm" data-i18n="home.filter.adults_label">Personen v.a 14 jaar
                                             </div>
                                             <div class="text-xs text-muted" data-i18n="home.filter.adults_desc">Aantal
                                                 volwassenen</div>
                                         </div>
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-2 shrink-0">
                                             <button type="button" data-key="adults"
                                                 class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
                                             <span id="count-adults" class="w-6 text-center text-sm tabular-nums">0</span>
@@ -52,14 +52,14 @@
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between gap-2">
                                         <div>
                                             <div class="text-sm" data-i18n="home.filter.children_label">Kinderen 3 t/m 13
                                                 jaar</div>
                                             <div class="text-xs text-muted" data-i18n="home.filter.children_desc">Kinderen
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-2 shrink-0">
                                             <button type="button" data-key="children"
                                                 class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
                                             <span id="count-children" class="w-6 text-center text-sm tabular-nums">0</span>
@@ -68,12 +68,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between gap-2">
                                         <div>
                                             <div class="text-sm" data-i18n="home.filter.babies_label">Baby t/m 2 jaar</div>
                                             <div class="text-xs text-muted" data-i18n="home.filter.babies_desc">Baby's</div>
                                         </div>
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-2 shrink-0">
                                             <button type="button" data-key="babies"
                                                 class="persons-btn persons-decrement rounded-full border border-border px-3 py-1 text-sm leading-none">-</button>
                                             <span id="count-babies" class="w-6 text-center text-sm tabular-nums">0</span>
@@ -209,6 +209,8 @@
                                         class="reserveer-btn inline-flex items-center justify-center rounded-lg border border-border bg-white px-5 py-2.5 text-sm font-medium text-primary transition hover:border-accent hover:text-accent cursor-pointer"
                                         data-id="{{ $accommodation->id }}"
                                         data-title="{{ $accommodation->translatedTitle($locale) }}"
+                                        data-min-persons="{{ $accommodation->min_persons }}"
+                                        data-max-persons="{{ $accommodation->max_persons }}"
                                         data-i18n="home.accommodations.book">Reserveer
                                     </button>
                                 </div>
@@ -221,6 +223,50 @@
     </section>
 
     @include('partials.reserveer-modal')
+
+    {{-- Success popup --}}
+    <div id="booking-success-popup"
+        class="fixed inset-0 z-[10001] hidden items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-8 text-center">
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
+                <svg class="h-8 w-8 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-primary mb-2" data-i18n="reserve.form.success_title">Reservering gelukt!
+            </h3>
+            <p class="text-sm text-muted mb-6" data-i18n="reserve.form.success_message">Uw reservering is succesvol
+                aangemaakt en moet nog worden goedgekeurd door de beheerder.</p>
+            <button type="button" onclick="closeSuccessPopup()"
+                class="bg-accent hover:bg-accent-hover text-white font-medium px-6 py-2.5 rounded-lg transition text-sm border-0 cursor-pointer"
+                data-i18n="reserve.form.success_close">Sluiten</button>
+        </div>
+    </div>
+
+    <script>
+        function closeSuccessPopup() {
+            document.getElementById('booking-success-popup').classList.add('hidden');
+            document.getElementById('booking-success-popup').classList.remove('flex');
+            document.body.style.overflow = '';
+            // Remove query param from URL
+            var url = new URL(window.location);
+            url.searchParams.delete('booking');
+            window.history.replaceState({}, '', url);
+        }
+
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('booking') === 'success') {
+                var popup = document.getElementById('booking-success-popup');
+                if (popup) {
+                    popup.classList.remove('hidden');
+                    popup.classList.add('flex');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+        })();
+    </script>
 @endsection
 
 @section('scripts')
@@ -230,7 +276,7 @@
         });
     </script>
     <script>
-        function openBookingModal(id, title) {
+        function openBookingModal(id, title, minPersons, maxPersons) {
             document.getElementById('modal-accommodation-id').value = id;
             document.getElementById('modal-title').textContent = window.__('reserve.modal_title') ? window.__('reserve.modal_title').replace('{name}', title) : 'Reserveren - ' + title;
             document.getElementById('booking-modal').classList.remove('hidden');
@@ -238,6 +284,18 @@
             document.body.style.overflow = 'hidden';
             var err = document.getElementById('booking-error');
             if (err) { err.classList.add('hidden'); err.textContent = ''; }
+
+            var personsInput = document.getElementById('number-of-guests');
+            var personsHint = document.getElementById('persons-range-hint');
+            if (personsInput && minPersons && maxPersons) {
+                personsInput.min = minPersons;
+                personsInput.max = maxPersons;
+                personsInput.value = minPersons;
+                if (personsHint) {
+                    personsHint.textContent = window.__('reserve.form.persons_range', {min: minPersons, max: maxPersons}) || '(min. ' + minPersons + ', max. ' + maxPersons + ')';
+                    personsHint.classList.remove('hidden');
+                }
+            }
 
             var today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -267,7 +325,12 @@
         document.addEventListener('click', function(e) {
             var btn = e.target.closest('.reserveer-btn');
             if (btn) {
-                openBookingModal(btn.getAttribute('data-id'), btn.getAttribute('data-title'));
+                openBookingModal(
+                    btn.getAttribute('data-id'),
+                    btn.getAttribute('data-title'),
+                    btn.getAttribute('data-min-persons'),
+                    btn.getAttribute('data-max-persons')
+                );
             }
         });
 
@@ -411,7 +474,8 @@
 
                 cards.forEach((card) => {
                     const minPersons = parseInt(card.dataset.persons || '0', 10);
-                    const matchPersons = !selectedPersons || selectedPersons >= minPersons;
+                    const maxPersons = parseInt(card.dataset.maxPersons || '99', 10);
+                    const matchPersons = !selectedPersons || (selectedPersons >= minPersons && selectedPersons <= maxPersons);
                     const matchType = !selectedType || card.dataset.type === selectedType;
                     const matchPets = !selectedPets || card.dataset.huisdieren === selectedPets;
                     const showCard = matchPersons && matchType && matchPets;

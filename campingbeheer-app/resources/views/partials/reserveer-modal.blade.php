@@ -115,8 +115,9 @@
 
             <div>
                 <label class="block text-sm font-medium text-primary mb-1">Aantal personen *</label>
-                <input type="number" name="number_of_guests" min="1" max="99" required
+                <input type="number" name="number_of_guests" id="number-of-guests" min="1" max="99" required
                     class="w-full rounded-lg border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none">
+                <p id="persons-range-hint" class="hidden text-xs text-muted mt-1"></p>
             </div>
 
             <div>
